@@ -1,44 +1,6 @@
 const navigation = () => {
   return [
     {
-      title: 'Dashboards',
-      icon: 'mdi:home-outline',
-      badgeContent: 'new',
-      badgeColor: 'error',
-      children: [
-        {
-          title: 'CRM',
-          path: '/dashboards/crm'
-        },
-        {
-          title: 'Analytics',
-          path: '/dashboards/analytics'
-        },
-        {
-          title: 'eCommerce',
-          path: '/dashboards/ecommerce'
-        }
-      ]
-    },
-    {
-      sectionTitle: 'Apps & Pages'
-    },
-    {
-      title: 'Email',
-      icon: 'mdi:email-outline',
-      path: '/apps/email'
-    },
-    {
-      title: 'Chat',
-      icon: 'mdi:message-outline',
-      path: '/apps/chat'
-    },
-    {
-      title: 'Calendar',
-      icon: 'mdi:calendar-blank-outline',
-      path: '/apps/calendar'
-    },
-    {
       title: 'Invoice',
       icon: 'mdi:file-document-outline',
       children: [
@@ -96,16 +58,37 @@ const navigation = () => {
       ]
     },
     {
-      title: 'Roles & Permissions',
-      icon: 'mdi:shield-outline',
+      title: 'Maşın',
+      icon: 'mdi:account-outline',
       children: [
         {
-          title: 'Roles',
-          path: '/apps/roles'
+          title: 'List',
+          path: '/apps/maşın/list'
         },
         {
-          title: 'Permissions',
-          path: '/apps/permissions'
+          title: 'View',
+          children: [
+            {
+              title: 'Overview',
+              path: '/apps/maşın/view/overview'
+            },
+            {
+              title: 'Security',
+              path: '/apps/maşın/view/security'
+            },
+            {
+              title: 'Billing & Plans',
+              path: '/apps/maşın/view/billing-plan'
+            },
+            {
+              title: 'Notifications',
+              path: '/apps/maşın/view/notification'
+            },
+            {
+              title: 'Connection',
+              path: '/apps/maşın/view/connection'
+            }
+          ]
         }
       ]
     },
@@ -159,18 +142,7 @@ const navigation = () => {
             }
           ]
         },
-        {
-          title: 'FAQ',
-          path: '/pages/faq'
-        },
-        {
-          title: 'Help Center',
-          path: '/pages/help-center'
-        },
-        {
-          title: 'Pricing',
-          path: '/pages/pricing'
-        },
+
         {
           title: 'Miscellaneous',
           children: [
@@ -306,316 +278,6 @@ const navigation = () => {
               path: '/pages/auth/two-steps-v2'
             }
           ]
-        }
-      ]
-    },
-    {
-      title: 'Wizard Examples',
-      icon: 'mdi:transit-connection-horizontal',
-      children: [
-        {
-          title: 'Checkout',
-          path: '/pages/wizard-examples/checkout'
-        },
-        {
-          title: 'Property Listing',
-          path: '/pages/wizard-examples/property-listing'
-        },
-        {
-          title: 'Create Deal',
-          path: '/pages/wizard-examples/create-deal'
-        }
-      ]
-    },
-    {
-      icon: 'mdi:vector-arrange-below',
-      title: 'Dialog Examples',
-      path: '/pages/dialog-examples'
-    },
-    {
-      sectionTitle: 'User Interface'
-    },
-    {
-      title: 'Typography',
-      icon: 'mdi:format-letter-case',
-      path: '/ui/typography'
-    },
-    {
-      title: 'Icons',
-      path: '/ui/icons',
-      icon: 'mdi:google-circles-extended'
-    },
-    {
-      
-      title: 'Cards',
-      icon: 'mdi:credit-card-outline',
-      children: [
-        {
-          title: 'Basic',
-          path: '/ui/cards/basic'
-        },
-        {
-          title: 'Advanced',
-          path: '/ui/cards/advanced'
-        },
-        {
-          title: 'Statistics',
-          path: '/ui/cards/statistics'
-        },
-        {
-          title: 'Widgets',
-          path: '/ui/cards/widgets'
-        },
-        {
-          title: 'Gamification',
-          path: '/ui/cards/gamification'
-        },
-        {
-          title: 'Actions',
-          path: '/ui/cards/actions'
-        }
-      ]
-    },
-    {
-      badgeContent: '19',
-      title: 'Components',
-      icon: 'mdi:archive-outline',
-      badgeColor: 'primary',
-      children: [
-        {
-          title: 'Accordion',
-          path: '/components/accordion'
-        },
-        {
-          title: 'Alerts',
-          path: '/components/alerts'
-        },
-        {
-          title: 'Avatars',
-          path: '/components/avatars'
-        },
-        {
-          title: 'Badges',
-          path: '/components/badges'
-        },
-        {
-          title: 'Buttons',
-          path: '/components/buttons'
-        },
-        {
-          title: 'Button Group',
-          path: '/components/button-group'
-        },
-        {
-          title: 'Chips',
-          path: '/components/chips'
-        },
-        {
-          title: 'Dialogs',
-          path: '/components/dialogs'
-        },
-        {
-          title: 'List',
-          path: '/components/list'
-        },
-        {
-          title: 'Menu',
-          path: '/components/menu'
-        },
-        {
-          title: 'Pagination',
-          path: '/components/pagination'
-        },
-        {
-          title: 'Progress',
-          path: '/components/progress'
-        },
-        {
-          title: 'Ratings',
-          path: '/components/ratings'
-        },
-        {
-          title: 'Snackbar',
-          path: '/components/snackbar'
-        },
-        {
-          title: 'Swiper',
-          path: '/components/swiper'
-        },
-        {
-          title: 'Tabs',
-          path: '/components/tabs'
-        },
-        {
-          title: 'Timeline',
-          path: '/components/timeline'
-        },
-        {
-          title: 'Toasts',
-          path: '/components/toast'
-        },
-        {
-          title: 'Tree View',
-          path: '/components/tree-view'
-        },
-        {
-          title: 'More',
-          path: '/components/more'
-        },
-      ]
-    },
-    {
-      sectionTitle: 'Forms & Tables'
-    },
-    {
-      title: 'Form Elements',
-      icon: 'mdi:form-select',
-      children: [
-        {
-          title: 'Text Field',
-          path: '/forms/form-elements/text-field'
-        },
-        {
-          title: 'Select',
-          path: '/forms/form-elements/select'
-        },
-        {
-          title: 'Checkbox',
-          path: '/forms/form-elements/checkbox'
-        },
-        {
-          title: 'Radio',
-          path: '/forms/form-elements/radio'
-        },
-        {
-          title: 'Custom Inputs',
-          path: '/forms/form-elements/custom-inputs'
-        },
-        {
-          title: 'Textarea',
-          path: '/forms/form-elements/textarea'
-        },
-        {
-          title: 'Autocomplete',
-          path: '/forms/form-elements/autocomplete'
-        },
-        {
-          title: 'Date Pickers',
-          path: '/forms/form-elements/pickers'
-        },
-        {
-          title: 'Switch',
-          path: '/forms/form-elements/switch'
-        },
-        {
-          title: 'File Uploader',
-          path: '/forms/form-elements/file-uploader'
-        },
-        {
-          title: 'Editor',
-          path: '/forms/form-elements/editor'
-        },
-        {
-          title: 'Slider',
-          path: '/forms/form-elements/slider'
-        },
-        {
-          title: 'Input Mask',
-          path: '/forms/form-elements/input-mask'
-        },
-      ]
-    },
-    {
-      icon: 'mdi:cube-outline',
-      title: 'Form Layouts',
-      path: '/forms/form-layouts'
-    },
-    {
-      title: 'Form Validation',
-      path: '/forms/form-validation',
-      icon: 'mdi:checkbox-marked-circle-outline'
-    },
-    {
-      title: 'Form Wizard',
-      path: '/forms/form-wizard',
-      icon: 'mdi:transit-connection-horizontal'
-    },
-    {
-      title: 'Table',
-      icon: 'mdi:grid-large',
-      path: '/tables/mui'
-    },
-    {
-      title: 'Mui DataGrid',
-      icon: 'mdi:grid',
-      path: '/tables/data-grid'
-    },
-    {
-      sectionTitle: 'Charts & Misc'
-    },
-    {
-      title: 'Charts',
-      icon: 'mdi:chart-donut',
-      children: [
-        {
-          title: 'Apex',
-          path: '/charts/apex-charts'
-        },
-        {
-          title: 'Recharts',
-          path: '/charts/recharts'
-        },
-        {
-          title: 'ChartJS',
-          path: '/charts/chartjs'
-        }
-      ]
-    },
-    {
-      path: '/acl',
-      action: 'read',
-      subject: 'acl-page',
-      icon: 'mdi:shield-outline',
-      title: 'Access Control'
-    },
-    {
-      title: 'Others',
-      icon: 'mdi:dots-horizontal',
-      children: [
-        {
-          title: 'Menu Levels',
-          children: [
-            {
-              title: 'Menu Level 2.1'
-            },
-            {
-              title: 'Menu Level 2.2',
-              children: [
-                {
-                  title: 'Menu Level 3.1'
-                },
-                {
-                  title: 'Menu Level 3.2'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Disabled Menu',
-          disabled: true
-        },
-        {
-          title: 'Raise Support',
-          externalLink: true,
-          openInNewTab: true,
-          path: 'https://pixinvent.ticksy.com/'
-        },
-        {
-          title: 'Documentation',
-          externalLink: true,
-          openInNewTab: true,
-          path: 'https://demos.pixinvent.com/materialize-nextjs-admin-template/documentation'
         }
       ]
     }

@@ -20,7 +20,7 @@ import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
-
+import showUpdate, { openShowUpdate } from 'src/store/apps/showUpdate'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
@@ -36,7 +36,7 @@ import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData, deleteUser } from 'src/store/apps/user'
+import { fetchData, deleteUser, updateUser } from 'src/store/apps/user'
 
 // ** Third Party Components
 import axios from 'axios'
@@ -44,6 +44,7 @@ import axios from 'axios'
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
+import UserUpdate from 'src/views/apps/user/list/UserUpdate'
 
 // ** Vars
 const userRoleObj = {
@@ -109,6 +110,13 @@ const RowOptions = ({ id }) => {
     handleRowOptionsClose()
   }
 
+  const { ShowUpdate } = useSelector(state => state.ShowUpdate)
+  console.log(ShowUpdate)
+  const handleEdit = () => {  
+    dispatch(updateUser(id))
+    dispatch(openShowUpdate(true))
+    console.log()
+  }
   return (
     <>
       <IconButton size='small' onClick={handleRowOptionsClick}>
@@ -138,7 +146,7 @@ const RowOptions = ({ id }) => {
           <Icon icon='mdi:eye-outline' fontSize={20} />
           View
         </MenuItem>
-        <MenuItem onClick={handleRowOptionsClose} sx={{ '& svg': { mr: 2 } }}>
+        <MenuItem onClick={handleEdit} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
         </MenuItem>
@@ -158,7 +166,7 @@ const columns = [
     field: 'markasi',
     headerName: 'Marka',
     renderCell: ({ row }) => {
-      const {  markasi , nv_dovlet_nisani } = row
+      const { markasi, nv_dovlet_nisani } = row
 
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -195,7 +203,7 @@ const columns = [
     renderCell: ({ row }) => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3 } }}>
-          <Icon icon={""} fontSize={20} />
+          <Icon icon={''} fontSize={20} />
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
             {row.id_nv_novu}
           </Typography>
@@ -216,7 +224,7 @@ const columns = [
       )
     }
   },
-    {
+  {
     flex: 0.1,
     minWidth: 100,
     headerName: 'Dəstə',
@@ -229,7 +237,7 @@ const columns = [
       )
     }
   },
- 
+
   {
     flex: 0.1,
     minWidth: 90,
@@ -379,19 +387,20 @@ const UserList = ({ apiData }) => {
       </Grid>
 
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
+      <UserUpdate open={showUpdate} toggle={toggleAddUserDrawer} />
     </Grid>
   )
 }
 
-export const getStaticProps = async () => {
-  const res = await axios.get('/cards/statistics')
-  const apiData = res.data
+// export const getStaticProps = async () => {
+//   const res = await axios.get('/cards/statistics')
+//   const apiData = res.data
 
-  return {
-    props: {
-      apiData
-    }
-  }
-}
+//   return {
+//     props: {
+//       apiData
+//     }
+//   }
+// }
 
 export default UserList

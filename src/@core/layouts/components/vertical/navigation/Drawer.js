@@ -102,7 +102,7 @@ const Drawer = props => {
       }}
       {...userNavMenuProps}
     >
-      {children}  
+      {children}   
     </SwipeableDrawer>
   )
 }
