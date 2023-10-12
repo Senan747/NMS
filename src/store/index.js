@@ -4,7 +4,7 @@ import { configureStore } from '@reduxjs/toolkit'
 // ** Reducers
 import user from 'src/store/apps/user'
 import invoice from 'src/store/apps/invoice'
-import ShowUpdate from './apps/showUpdate'
+import ShowUpdate from './apps/ShowUpdate'
 
 
 export const store = configureStore({
@@ -15,6 +15,6 @@ export const store = configureStore({
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false
+      serializableCheck: false  
     })
 })

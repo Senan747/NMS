@@ -58,35 +58,35 @@ const navigation = () => {
       ]
     },
     {
-      title: 'Maşın',
+      title: 'Cars',
       icon: 'mdi:account-outline',
       children: [
         {
           title: 'List',
-          path: '/apps/maşın/list'
+          path: '/apps/cars/list'
         },
         {
           title: 'View',
           children: [
             {
               title: 'Overview',
-              path: '/apps/maşın/view/overview'
+              path: '/apps/cars/view/overview'
             },
             {
               title: 'Security',
-              path: '/apps/maşın/view/security'
+              path: '/apps/cars/view/security'
             },
             {
               title: 'Billing & Plans',
-              path: '/apps/maşın/view/billing-plan'
+              path: '/apps/cars/view/billing-plan'
             },
             {
               title: 'Notifications',
-              path: '/apps/maşın/view/notification'
+              path: '/apps/cars/view/notification'
             },
             {
               title: 'Connection',
-              path: '/apps/maşın/view/connection'
+              path: '/apps/cars/view/connection'
             }
           ]
         }

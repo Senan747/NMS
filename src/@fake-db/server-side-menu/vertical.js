@@ -2,7 +2,6 @@
 import mock from 'src/@fake-db/mock'
 
 const navigation = [
-  
   {
     title: 'User',
     icon: 'mdi:account-outline',
@@ -38,7 +37,41 @@ const navigation = [
       }
     ]
   },
- 
+  {
+    title: 'car',
+    icon: 'mdi:account-outline',
+    children: [
+      {
+        title: 'List',
+        path: '/apps/car/list'
+      },
+      {
+        title: 'View',
+        children: [
+          {
+            title: 'Overview',
+            path: '/apps/car/view/overview'
+          },
+          {
+            title: 'Security',
+            path: '/apps/car/view/security'
+          },
+          {
+            title: 'Billing & Plans',
+            path: '/apps/car/view/billing-plan'
+          },
+          {
+            title: 'Notifications',
+            path: '/apps/car/view/notification'
+          },
+          {
+            title: 'Connection',
+            path: '/apps/car/view/connection'
+          }
+        ]
+      }
+    ]
+  },
   {
     title: 'Pages',
     icon: 'mdi:file-document-outline',
@@ -237,6 +270,7 @@ const navigation = [
     ]
   },
 ]
+
 mock.onGet('/api/vertical-nav/data').reply(() => {
   return [200, navigation]
 })

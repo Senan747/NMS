@@ -68,6 +68,12 @@ const shortcuts = [
     subtitle: 'Manage Users',
     icon: 'mdi:account-outline'
   },
+  {
+    title: 'Cars',
+    url: '/apps/cars/list',
+    subtitle: 'Manage Cars',
+    icon: 'mdi:account-outline'
+  },
 
   {
     title: 'Settings',

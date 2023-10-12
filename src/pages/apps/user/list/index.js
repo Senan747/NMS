@@ -20,7 +20,7 @@ import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
-import showUpdate, { openShowUpdate } from 'src/store/apps/showUpdate'
+import showUpdate, { openShowUpdate } from 'src/store/apps/ShowUpdate'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
@@ -112,7 +112,7 @@ const RowOptions = ({ id }) => {
 
   const { ShowUpdate } = useSelector(state => state.ShowUpdate)
   console.log(ShowUpdate)
-  const handleEdit = () => {  
+  const handleEdit = () => {
     dispatch(updateUser(id))
     dispatch(openShowUpdate(true))
     console.log()
@@ -287,6 +287,8 @@ const UserList = ({ apiData }) => {
     setStatus(e.target.value)
   }, [])
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
+  const [userUpdate, setUserUpdate] = useState(false)
+  const toggleUserUpdate = () => setUserUpdate(!userUpdate)
 
   return (
     <Grid container spacing={6}>
@@ -387,7 +389,7 @@ const UserList = ({ apiData }) => {
       </Grid>
 
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
-      <UserUpdate open={showUpdate} toggle={toggleAddUserDrawer} />
+      <UserUpdate open={userUpdate} toggle={toggleUserUpdate} />
     </Grid>
   )
 }

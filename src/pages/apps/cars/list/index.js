@@ -20,7 +20,7 @@ import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
-
+import showUpdate, { openShowUpdate } from 'src/store/apps/ShowUpdate'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
@@ -36,7 +36,7 @@ import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData, deleteUser } from 'src/store/apps/user'
+import { fetchData, deleteUser, updateUser } from 'src/store/apps/user'
 
 // ** Third Party Components
 import axios from 'axios'
@@ -44,6 +44,7 @@ import axios from 'axios'
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
+import UserUpdate from 'src/views/apps/user/list/UserUpdate'
 
 // ** Vars
 const userRoleObj = {
@@ -73,7 +74,7 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 
 // ** renders client column
 const renderClient = row => {
-  if (row.avatar.length) {
+  if (row.avatar) {
     return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
   } else {
     return (
@@ -82,7 +83,7 @@ const renderClient = row => {
         color={row.avatarColor || 'primary'}
         sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
       >
-        {getInitials(row.fullName ? row.fullName : 'John Doe')}
+        {getInitials(row.markasi ? row.markasi : 'John Doe')}
       </CustomAvatar>
     )
   }
@@ -109,10 +110,22 @@ const RowOptions = ({ id }) => {
     handleRowOptionsClose()
   }
 
+  const { ShowUpdate } = useSelector(state => state.ShowUpdate)
+  console.log(ShowUpdate)
+  const handleEdit = () => {
+    dispatch(updateUser(id))
+    dispatch(openShowUpdate())
+  }
+
+  const handleUpdate = () => {
+    dispatch(openShowUpdate())
+    handleRowOptionsClose();
+  }
+
   return (
     <>
       <IconButton size='small' onClick={handleRowOptionsClick}>
-        <Icon icon='mdi:dots-vertical' />
+        <Icon icon='mdi:dots-vertical' /> 
       </IconButton>
       <Menu
         keepMounted
@@ -138,7 +151,7 @@ const RowOptions = ({ id }) => {
           <Icon icon='mdi:eye-outline' fontSize={20} />
           View
         </MenuItem>
-        <MenuItem onClick={handleRowOptionsClose} sx={{ '& svg': { mr: 2 } }}>
+        <MenuItem onClick={handleUpdate} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
         </MenuItem>
@@ -155,19 +168,19 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 230,
-    field: 'fullName',
-    headerName: 'User',
+    field: 'markasi',
+    headerName: 'Marka',
     renderCell: ({ row }) => {
-      const { fullName, username } = row
+      const { markasi, nv_dovlet_nisani } = row
 
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <LinkStyled href='/apps/user/view/overview/'>{fullName}</LinkStyled>
-            <Typography noWrap variant='caption'>
-              {`@${username}`} senan
-            </Typography>
+            <LinkStyled href='/apps/user/view/overview/'>{markasi}</LinkStyled>
+            {/* <Typography noWrap variant='caption'>
+              {`@${nv_dovlet_nisani}`} senan
+            </Typography> */}
           </Box>
         </Box>
       )
@@ -176,62 +189,60 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 250,
-    field: 'email',
-    headerName: 'Email',
+    field: 'Dövlət nişanı',
+    headerName: 'Dövlət nişanı',
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.email}
+          {row.nv_dovlet_nisani}
         </Typography>
       )
     }
   },
+
   {
     flex: 0.15,
-    field: 'role',
+    field: 'Növü',
     minWidth: 150,
-    headerName: 'Role',
+    headerName: 'Növü',
     renderCell: ({ row }) => {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3, color: userRoleObj[row.role].color } }}>
-          <Icon icon={userRoleObj[row.role].icon} fontSize={20} />
+        <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3 } }}>
+          <Icon icon={''} fontSize={20} />
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.role}
+            {row.id_nv_novu}
           </Typography>
         </Box>
       )
     }
   },
   {
-    flex: 0.15,
-    minWidth: 120,
-    headerName: 'Plan',
-    field: 'currentPlan',
+    flex: 0.1,
+    minWidth: 100,
+    headerName: 'Yanacaq doldurma forması',
+    field: 'Yanacaq doldurma forması',
     renderCell: ({ row }) => {
       return (
         <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.currentPlan}
+          {row.id_yan_doldurma_formasi}
         </Typography>
       )
     }
   },
   {
     flex: 0.1,
-    minWidth: 110,
-    field: 'status',
-    headerName: 'Status',
+    minWidth: 100,
+    headerName: 'Dəstə',
+    field: 'Dəstə',
     renderCell: ({ row }) => {
       return (
-        <CustomChip
-          skin='light'
-          size='small'
-          label={row.status}
-          color={userStatusObj[row.status]}
-          sx={{ textTransform: 'capitalize', '& .MuiChip-label': { lineHeight: '18px' } }}
-        />
+        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
+          {row.kolon}
+        </Typography>
       )
     }
   },
+
   {
     flex: 0.1,
     minWidth: 90,
@@ -281,6 +292,10 @@ const UserList = ({ apiData }) => {
     setStatus(e.target.value)
   }, [])
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
+
+  // const [userUpdate, setUserUpdate] = useState(false)
+
+  const { ShowUpdate } = useSelector(state => state.ShowUpdate)
 
   return (
     <Grid container spacing={6}>
@@ -381,19 +396,20 @@ const UserList = ({ apiData }) => {
       </Grid>
 
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
+      <UserUpdate open={showUpdate} />
     </Grid>
   )
 }
 
-export const getStaticProps = async () => {
-  const res = await axios.get('/cards/statistics')
-  const apiData = res.data
+// export const getStaticProps = async () => {
+//   const res = await axios.get('/cards/statistics')
+//   const apiData = res.data
 
-  return {
-    props: {
-      apiData
-    }
-  }
-}
+//   return {
+//     props: {
+//       apiData
+//     }
+//   }
+// }
 
 export default UserList
