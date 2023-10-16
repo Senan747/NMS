@@ -1,4 +1,3 @@
-// ** React Imports
 import { useState, useEffect, useCallback } from 'react'
 
 // ** Next Imports
@@ -21,8 +20,17 @@ import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
 import showUpdate, { openShowUpdate } from 'src/store/apps/ShowUpdate'
+import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableRow from '@mui/material/TableRow'
+import TableHead from '@mui/material/TableHead'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+
+import TablePagination from '@mui/material/TablePagination'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import { TableContainer } from '@mui/material'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
@@ -159,6 +167,8 @@ const RowOptions = ({ id }) => {
   )
 }
 
+import rows from '../../../../@fake-db/apps/user.json'
+
 const columns = [
   {
     flex: 0.2,
@@ -178,6 +188,32 @@ const columns = [
             </Typography> */}
           </Box>
         </Box>
+      )
+    }
+  },
+  {
+    flex: 0.2,
+    minWidth: 250,
+    field: 'Dövlət nişanı',
+    headerName: 'Dövlət nişanı',
+    renderCell: ({ row }) => {
+      return (
+        <Typography noWrap variant='body2'>
+          {row.nv_dovlet_nisani}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.2,
+    minWidth: 250,
+    field: 'Dövlət nişanı',
+    headerName: 'Dövlət nişanı',
+    renderCell: ({ row }) => {
+      return (
+        <Typography noWrap variant='body2'>
+          {row.nv_dovlet_nisani}
+        </Typography>
       )
     }
   },
@@ -214,7 +250,7 @@ const columns = [
   {
     flex: 0.1,
     minWidth: 100,
-    headerName: 'Yanacaq doldurma forması',
+    headerName: 'YDF',
     field: 'Yanacaq doldurma forması',
     renderCell: ({ row }) => {
       return (
@@ -289,6 +325,24 @@ const UserList = ({ apiData }) => {
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
   const [userUpdate, setUserUpdate] = useState(false)
   const toggleUserUpdate = () => setUserUpdate(!userUpdate)
+
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  // ...
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
+
+  // Update your table data based on current page and rows per page
+  const startIndex = page * rowsPerPage
+  const endIndex = startIndex + rowsPerPage
+  const displayedRows = rows.slice(startIndex, endIndex)
 
   return (
     <Grid container spacing={6}>
@@ -374,16 +428,38 @@ const UserList = ({ apiData }) => {
           </CardContent>
           <Divider />
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
-          <DataGrid
-            autoHeight
-            rows={store.data}
-            columns={columns}
-            checkboxSelection
-            disableRowSelectionOnClick
-            pageSizeOptions={[10, 25, 50]}
-            paginationModel={paginationModel}
-            onPaginationModelChange={setPaginationModel}
-            sx={{ '& .MuiDataGrid-columnHeaders': { borderRadius: 0 } }}
+          <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+            <Table stickyHeader aria-label='sticky table'>
+              <TableHead>
+                <TableRow>
+                  {columns.map(column => (
+                    <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                      {column.headerName}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {displayedRows.map(row => (
+                  <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                    {columns.map(column => (
+                      <TableCell key={column.field} align={column.align}>
+                        {column.renderCell({ row })}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component='div'
+            count={rows.length} // Use the total number of rows in your data array
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
       </Grid>
