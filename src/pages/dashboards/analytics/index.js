@@ -9,6 +9,7 @@ import CardStatisticsVertical from 'src/@core/components/card-statistics/card-st
 
 // ** Styled Component Import
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import { fetchData } from 'src/store/apps/user'
 
 // ** Demo Components Imports
 import AnalyticsSessions from 'src/views/dashboards/analytics/AnalyticsSessions'
@@ -23,8 +24,18 @@ import AnalyticsActivityTimeline from 'src/views/dashboards/analytics/AnalyticsA
 import AnalyticsTotalTransactions from 'src/views/dashboards/analytics/AnalyticsTotalTransactions'
 import AnalyticsProjectStatistics from 'src/views/dashboards/analytics/AnalyticsProjectStatistics'
 import AnalyticsTopReferralSources from 'src/views/dashboards/analytics/AnalyticsTopReferralSources'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
 
 const AnalyticsDashboard = () => {
+  // console.log("salam");
+  // const dispatch = useDispatch()
+  // useEffect(() => {
+  //   dispatch(fetchData())
+  // }, dispatch)
+  // const {data} = useSelector(state => state.index)
+  // console.log(data)
+  // console.log()
   return (
     <ApexChartWrapper>
       <Grid container spacing={6} className='match-height'>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -19,7 +19,7 @@ import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
-import showUpdate, { openShowUpdate } from 'src/store/apps/ShowUpdate'
+
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
@@ -31,7 +31,7 @@ import TablePagination from '@mui/material/TablePagination'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { TableContainer } from '@mui/material'
-
+import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -44,30 +44,24 @@ import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData, deleteUser, updateUser } from 'src/store/apps/user'
+import { fetchData, deleteData } from 'src/store/apps/user'
+
+import {
+  fetchVehicleEngine,
+  fetchVehicleFuel,
+  fetchTechnicalConditions,
+  fetchVehicleKindes,
+  fetchVehicleTypes,
+  fetchStacks
+} from 'src/store/apps/user/vehicleDetails'
 
 // ** Third Party Components
 import axios from 'axios'
-
+import { useRouter } from 'next/router'
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
 import UserUpdate from 'src/views/apps/user/list/UserUpdate'
-
-// ** Vars
-const userRoleObj = {
-  admin: { icon: 'mdi:laptop', color: 'error.main' },
-  author: { icon: 'mdi:cog-outline', color: 'warning.main' },
-  editor: { icon: 'mdi:pencil-outline', color: 'info.main' },
-  maintainer: { icon: 'mdi:chart-donut', color: 'success.main' },
-  subscriber: { icon: 'mdi:account-outline', color: 'primary.main' }
-}
-
-const userStatusObj = {
-  active: 'success',
-  pending: 'warning',
-  inactive: 'secondary'
-}
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -91,7 +85,7 @@ const renderClient = row => {
         color={row.avatarColor || 'primary'}
         sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
       >
-        {getInitials(row.markasi ? row.markasi : 'John Doe')}
+        {getInitials(row.vehicle_brand ? row.vehicle_brand : 'John Doe')}
       </CustomAvatar>
     )
   }
@@ -114,16 +108,15 @@ const RowOptions = ({ id }) => {
   }
 
   const handleDelete = () => {
-    dispatch(deleteUser(id))
+    dispatch(deleteData(id))
     handleRowOptionsClose()
   }
 
-  const { ShowUpdate } = useSelector(state => state.ShowUpdate)
-  console.log(ShowUpdate)
+
   const handleEdit = () => {
-    dispatch(updateUser(id))
-    dispatch(openShowUpdate(true))
-    console.log()
+    dispatch(openShowUpdate())
+
+    dispatch(setUpdateId(id))
   }
   return (
     <>
@@ -145,7 +138,7 @@ const RowOptions = ({ id }) => {
         }}
         PaperProps={{ style: { minWidth: '8rem' } }}
       >
-        <MenuItem
+        {/* <MenuItem
           component={Link}
           sx={{ '& svg': { mr: 2 } }}
           onClick={handleRowOptionsClose}
@@ -153,7 +146,7 @@ const RowOptions = ({ id }) => {
         >
           <Icon icon='mdi:eye-outline' fontSize={20} />
           View
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={handleEdit} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
@@ -167,25 +160,18 @@ const RowOptions = ({ id }) => {
   )
 }
 
-import rows from '../../../../@fake-db/apps/user.json'
-
 const columns = [
   {
     flex: 0.2,
-    minWidth: 230,
-    field: 'markasi',
-    headerName: 'Marka',
+    minWidth: 150,
+    field: 'Plate number',
+    headerName: 'Plate number',
     renderCell: ({ row }) => {
-      const { markasi, nv_dovlet_nisani } = row
-
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <LinkStyled href='/apps/user/view/overview/'>{markasi}</LinkStyled>
-            {/* <Typography noWrap variant='caption'>
-              {`@${nv_dovlet_nisani}`} senan
-            </Typography> */}
+            <LinkStyled href='/apps/user/view/overview/'>{row.vehicle_plate_number}</LinkStyled>
           </Box>
         </Box>
       )
@@ -193,55 +179,76 @@ const columns = [
   },
   {
     flex: 0.2,
-    minWidth: 250,
-    field: 'Dövlət nişanı',
-    headerName: 'Dövlət nişanı',
+    minWidth: 150,
+    field: 'Brand',
+    headerName: 'Brand',
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.nv_dovlet_nisani}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 0.2,
-    minWidth: 250,
-    field: 'Dövlət nişanı',
-    headerName: 'Dövlət nişanı',
-    renderCell: ({ row }) => {
-      return (
-        <Typography noWrap variant='body2'>
-          {row.nv_dovlet_nisani}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 0.2,
-    minWidth: 250,
-    field: 'Dövlət nişanı',
-    headerName: 'Dövlət nişanı',
-    renderCell: ({ row }) => {
-      return (
-        <Typography noWrap variant='body2'>
-          {row.nv_dovlet_nisani}
+          {row.vehicle_brand}
         </Typography>
       )
     }
   },
 
   {
-    flex: 0.15,
-    field: 'Növü',
+    flex: 0.2,
     minWidth: 150,
-    headerName: 'Növü',
+    field: 'Vehicle year',
+    headerName: 'Vehicle year',
+    renderCell: ({ row }) => {
+      return (
+        <Typography noWrap variant='body2'>
+          {row.vehicle_year}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Type',
+    headerName: 'Type',
+    renderCell: ({ row, vehicleType }) => (
+      <Typography noWrap variant='body2'>
+        {vehicleType
+          .filter(type => row.id_vehicle_type === type.id)
+          .map(type => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {type.vehicle_types_title}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Subject',
+    headerName: 'Subject',
+    renderCell: ({ row, vehicleKind }) => (
+      <Typography noWrap variant='body2'>
+        {vehicleKind
+          .filter(kind => row.id_vehicle_subject === kind.id)
+          .map(kind => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {kind.vehicle_kindes_title}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    field: 'Weight',
+    minWidth: 150,
+    headerName: 'Weight',
     renderCell: ({ row }) => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3 } }}>
           <Icon icon={''} fontSize={20} />
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.id_nv_novu}
+            {row.vehicle_weight}
           </Typography>
         </Box>
       )
@@ -249,31 +256,141 @@ const columns = [
   },
   {
     flex: 0.1,
-    minWidth: 100,
-    headerName: 'YDF',
-    field: 'Yanacaq doldurma forması',
+    minWidth: 150,
+    headerName: 'Power',
+    field: 'Power',
     renderCell: ({ row }) => {
       return (
         <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.id_yan_doldurma_formasi}
+          {row.vehicle_power}
+        </Typography>
+      )
+    }
+  },
+
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Engine',
+    headerName: 'Engine',
+    renderCell: ({ row, engineTypes }) => (
+      <Typography noWrap variant='body2'>
+        {engineTypes
+          .filter(type => row.id_vehicle_type === type.id)
+          .map(type => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {type.engine_types_title}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
+
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Fuel',
+    headerName: 'Fuel',
+    renderCell: ({ row, vehicleFuel }) => (
+      <Typography noWrap variant='body2'>
+        {vehicleFuel
+          .filter(fuel => row.id_vehicle_fuel === fuel.id)
+          .map(fuel => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {fuel.fuel_kindes_title}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.1,
+    minWidth: 150,
+    headerName: 'comsuption km',
+    field: 'comsuption km',
+    renderCell: ({ row }) => {
+      return (
+        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
+          {row.vehicle_comsumption_km}
         </Typography>
       )
     }
   },
   {
     flex: 0.1,
-    minWidth: 100,
-    headerName: 'Dəstə',
-    field: 'Dəstə',
+    minWidth: 150,
+    headerName: 'Comsuption mc',
+    field: 'Comsuption mc',
     renderCell: ({ row }) => {
       return (
         <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.kolon}
+          {row.vehicle_comsumption_mc}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.1,
+    minWidth: 150,
+    headerName: 'Comsuption day',
+    field: 'Comsuption day',
+    renderCell: ({ row }) => {
+      return (
+        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
+          {row.vehicle_comsumption_day}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.1,
+    minWidth: 150,
+    headerName: 'mileage',
+    field: 'mileage',
+    renderCell: ({ row }) => {
+      return (
+        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
+          {row.vehicle_milage}
         </Typography>
       )
     }
   },
 
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Conditions',
+    headerName: 'Conditions',
+    renderCell: ({ row, technicalConditions }) => (
+      <Typography noWrap variant='body2'>
+        {technicalConditions
+          .filter(condition => row.id_vehicle_condition === condition.id)
+          .map(condition => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {condition.technical_conditions_title}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
+
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Colon',
+    headerName: 'Colon',
+    renderCell: ({ row, stacks }) => (
+      <Typography noWrap variant='body2'>
+        {stacks
+          .filter(stack => row.id_vehicle_colon === stack.id)
+          .map(stack => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {stack.stacks_title}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
   {
     flex: 0.1,
     minWidth: 90,
@@ -284,28 +401,36 @@ const columns = [
   }
 ]
 
+
 const UserList = ({ apiData }) => {
-  // ** State
   const [role, setRole] = useState('')
   const [plan, setPlan] = useState('')
   const [value, setValue] = useState('')
   const [status, setStatus] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
-  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
 
-  // ** Hooks
+
   const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
+  const { data } = useSelector(state => state.index)
+  const { addDataLoading } = useSelector(state => state.index1)
+
+  const {updateId} = useSelector(state => state.ShowUpdate)
   useEffect(() => {
-    dispatch(
-      fetchData({
-        role,
-        status,
-        q: value,
-        currentPlan: plan
-      })
-    )
-  }, [dispatch, plan, role, status, value])
+    dispatch(fetchData())
+    dispatch(fetchVehicleEngine())
+    dispatch(fetchVehicleFuel())
+    dispatch(fetchVehicleKindes())
+    dispatch(fetchTechnicalConditions())
+    dispatch(fetchStacks())
+    dispatch(fetchVehicleTypes())
+  }, [dispatch, addDataLoading])
+
+  const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
+    state => state.vehicleDetails
+  )
+
+  const memoizedData = useMemo(() => data, [data])
 
   const handleFilter = useCallback(val => {
     setValue(val)
@@ -324,25 +449,25 @@ const UserList = ({ apiData }) => {
   }, [])
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
   const [userUpdate, setUserUpdate] = useState(false)
-  const toggleUserUpdate = () => setUserUpdate(!userUpdate)
+  const toggleUserUpdate = () => dispatch(closeShowUpdate())
 
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [rowsPerPage, setRowsPerPage] = useState(4)
 
-  // ...
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10))
+    setRowsPerPage(parseInt(event.target.value, 4))
     setPage(0)
   }
 
-  // Update your table data based on current page and rows per page
+
   const startIndex = page * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  const displayedRows = rows.slice(startIndex, endIndex)
+  const displayedRows = memoizedData.slice(startIndex, endIndex)
+
 
   return (
     <Grid container spacing={6}>
@@ -440,11 +565,19 @@ const UserList = ({ apiData }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {displayedRows.map(row => (
+                { displayedRows.map(row => (
                   <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
                     {columns.map(column => (
                       <TableCell key={column.field} align={column.align}>
-                        {column.renderCell({ row })}
+                        {column.renderCell({
+                          row,
+                          engineTypes,
+                          vehicleFuel,
+                          vehicleType,
+                          vehicleKind,
+                          technicalConditions,
+                          stacks
+                        })}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -453,9 +586,9 @@ const UserList = ({ apiData }) => {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
+            // rowsPerPageOptions={[10, 25, 100]}
             component='div'
-            count={rows.length} // Use the total number of rows in your data array
+            count={memoizedData.length} // Use the total number of rows in your data array
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -465,7 +598,9 @@ const UserList = ({ apiData }) => {
       </Grid>
 
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
-      <UserUpdate open={userUpdate} toggle={toggleUserUpdate} />
+      {
+        updateId ? <UserUpdate open={userUpdate} toggle={toggleUserUpdate} /> : " "
+      }
     </Grid>
   )
 }

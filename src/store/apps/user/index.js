@@ -1,50 +1,113 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-// Fetch Users
-export const fetchData = createAsyncThunk('appUsers/fetchData', async (params) => {
-  const response = await axios.get('/apps/users/list', { params });
-  return response.data;
+export const fetchData = createAsyncThunk('appUsers/fetchData', async () => {
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/vehicles')
+
+    if (!response.ok) {
+      throw new Error('HTTP error! Status: ' + response.status)
+    }
+    const data = await response.json()
+    return data.vehicles
+  } catch (error) {
+    throw new Error('Fetch error: ' + error.message)
+  }
+})
+
+export const postData = createAsyncThunk('appUsers/postData', async dataToPost => {
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/vehicles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataToPost)
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+
+      throw new Error('HTTP error! Status: ' + response.status)
+    }
+
+    const data = await response.json()
+    console.log('Data posted successfully:', data)
+    return data
+  } catch (error) {
+    throw new Error('Fetch error: ' + error.message)
+  }
+})
+
+export const putData = createAsyncThunk('/appUsers/putData', async ({combinedData, updateId}) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${updateId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(combinedData)
+    })
+    if (!response.ok) {
+      const errorData = await response.json()
+
+      throw new Error('HTTP error! Status: ' + response.status)
+    }
+
+    const data = await response.json()
+    console.log('Data updated successfully:', data)
+    return data
+  } catch (error) {
+    throw new Error('Fetch error: ' + error.message)
+  }
+})
+
+export const deleteData = createAsyncThunk('appUsers/deleteData', async (idToDelete) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${idToDelete}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error('HTTP error! Status: ' + response.status);
+    }
+
+    // Return the ID of the deleted item to identify it
+    return idToDelete;
+  } catch (error) {
+    throw new Error('Fetch error: ' + error.message);
+  }
 });
 
-// Add User
-export const addUser = createAsyncThunk('appUsers/addUser', async (data, { getState, dispatch }) => {
-  const response = await axios.post('/apps/users/add-user', { data });
-  dispatch(fetchData(getState().user.params));
-  return response.data;
-});
-
-// Delete User
-export const deleteUser = createAsyncThunk('appUsers/deleteUser', async (id, { getState, dispatch }) => {
-  const response = await axios.delete('/apps/users/delete', { data: id });
-  dispatch(fetchData(getState().user.params));
-  return response.data;
-});
-
-// Update User
-export const updateUser = createAsyncThunk('appUsers/updateUser', async (data, { getState, dispatch }) => {
-  const response = await axios.put('/apps/users/update-user', { data });
-  dispatch(fetchData(getState().user.params));
-  return response.data;
-});
 
 const appUsersSlice = createSlice({
   name: 'appUsers',
   initialState: {
-    data: [],
-    total: 1,
-    params: {},
-    allData: [],
+    data: []
   },
   reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(fetchData.fulfilled, (state, action) => {
-      state.data = action.payload.users;
-      state.total = action.payload.total;
-      state.params = action.payload.params;
-      state.allData = action.payload.allData;
-    });
-  },
-});
+  extraReducers: builder => {
+    builder
+      .addCase(fetchData.fulfilled, (state, action) => {
+        state.data = action.payload
+      })
+      .addCase(postData.fulfilled, (state, action) => {
+        state.data = [...state.data, action.payload]
+      })
+      .addCase(putData.fulfilled, (state, action) => {
+        const updatedData = state.data.map(item => {
+          if (item.id === action.payload.id) {
+            return action.payload
+          }
+          return item
+        })
+        state.data = updatedData
+      })
+      .addCase(deleteData.fulfilled, (state, action) => {
+        // Remove the item with the matching ID from the state
+        state.data = state.data.filter(item => item.id !== action.payload);
+      })
+  }
+})
 
-export default appUsersSlice.reducer;
+export default appUsersSlice.reducer

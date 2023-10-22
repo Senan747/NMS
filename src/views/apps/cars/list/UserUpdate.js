@@ -112,7 +112,7 @@ const SidebarAddUser = props => {
   }
 
   const { ShowUpdate } = useSelector(state => state.ShowUpdate)
-  console.log(ShowUpdate)
+
   return (
     <Drawer
       open={ShowUpdate}

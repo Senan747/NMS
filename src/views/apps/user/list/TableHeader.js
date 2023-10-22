@@ -30,7 +30,7 @@ const TableHeader = props => {
         />
 
         <Button sx={{ mb: 2 }} onClick={toggle} variant='contained'>
-          Add User
+          Add Vehicle
         </Button>
       </Box>
     </Box>

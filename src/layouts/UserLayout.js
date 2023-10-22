@@ -77,7 +77,7 @@ const UserLayout = ({ children, contentHeightFixed }) => {
         }
       })}
     >
-      {children} senan
+      {children} 
       
     </Layout>
   )

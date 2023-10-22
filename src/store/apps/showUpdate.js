@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   ShowUpdate: false,
+  updateId: ''
 };
 
 const ShowUpdate = createSlice({
@@ -13,9 +14,12 @@ const ShowUpdate = createSlice({
     },
     closeShowUpdate: (state, action) => {
       state.ShowUpdate = false
+    },
+    setUpdateId: (state, action) => {
+      state.updateId = action.payload
     }
   },
 });
 
-export const { closeShowUpdate, openShowUpdate } = ShowUpdate.actions;
+export const { closeShowUpdate, openShowUpdate, setUpdateId } = ShowUpdate.actions;
 export default ShowUpdate.reducer;
