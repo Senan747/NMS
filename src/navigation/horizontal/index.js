@@ -63,35 +63,35 @@ const navigation = () => {
           ]
         },
         {
-          title: 'User',
+          title: 'Vehicle',
           icon: 'mdi:account-outline',
           children: [
             {
               title: 'List',
-              path: '/apps/user/list'
+              path: '/apps/vehicle/list'
             },
             {
               title: 'View',
               children: [
                 {
                   title: 'Overview',
-                  path: '/apps/user/view/overview'
+                  path: '/apps/vehicle/view/overview'
                 },
                 {
                   title: 'Security',
-                  path: '/apps/user/view/security'
+                  path: '/apps/vehicle/view/security'
                 },
                 {
                   title: 'Billing & Plans',
-                  path: '/apps/user/view/billing-plan'
+                  path: '/apps/vehicle/view/billing-plan'
                 },
                 {
                   title: 'Notifications',
-                  path: '/apps/user/view/notification'
+                  path: '/apps/vehicle/view/notification'
                 },
                 {
                   title: 'Connection',
-                  path: '/apps/user/view/connection'
+                  path: '/apps/vehicle/view/connection'
                 }
               ]
             }
