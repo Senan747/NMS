@@ -257,7 +257,14 @@ const SidebarAddUser = props => {
       variant='temporary'
       onClose={handleClose}
       ModalProps={{ keepMounted: true }}
-      sx={{ '& .MuiDrawer-paper': { width: { xs: 400, sm: 800 } } }}
+      sx={{
+        '& .MuiDrawer-paper': {
+          width: { xs: 200, sm: 800 },
+          maxHeight: '100vh', 
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }}
     >
       <Header>
         <Typography variant='h6'>Add vehicle</Typography>
@@ -265,11 +272,11 @@ const SidebarAddUser = props => {
           <Icon icon='mdi:close' fontSize={20} />
         </IconButton>
       </Header>
-      <Box sx={{ p: 5 }}>
+      <Box sx={{ p: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_plate_number'
                   control={control}
@@ -291,7 +298,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_brand'
                   control={control}
@@ -313,7 +320,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_year'
                   control={control}
@@ -335,7 +342,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='role-select'>Select Role</InputLabel>
                 <Select
                   fullWidth
@@ -359,7 +366,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='fuel-select'>Select Fuel</InputLabel>
                 <Select
                   fullWidth
@@ -383,7 +390,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='type-select'>Select Type</InputLabel>
                 <Select
                   fullWidth
@@ -407,7 +414,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='kind-select'>Select Kind</InputLabel>
                 <Select
                   fullWidth
@@ -431,7 +438,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='technical-conditions-select'>Select Technical Conditions</InputLabel>
                 <Select
                   fullWidth
@@ -455,7 +462,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='stacks-select'>Select Stacks</InputLabel>
                 <Select
                   fullWidth
@@ -479,7 +486,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_weight'
                   control={control}
@@ -501,7 +508,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_power'
                   control={control}
@@ -523,7 +530,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_comsumption_km'
                   control={control}
@@ -545,7 +552,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_comsumption_mc'
                   control={control}
@@ -567,7 +574,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_comsumption_day'
                   control={control}
@@ -589,7 +596,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_milage'
                   control={control}
@@ -611,7 +618,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 6 }}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
                 <Controller
                   name='vehicle_status'
                   control={control}

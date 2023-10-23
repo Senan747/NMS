@@ -8,6 +8,7 @@ import invoice from 'src/store/apps/invoice'
 import ShowUpdate from './apps/ShowUpdate'
 import vehicleDetails from './apps/vehicle/vehicleDetails'
 import details from './apps/vehicle/details'
+import CRUD from './apps/waybills/CRUD'
 
 export const store = configureStore({
   reducer: {
@@ -16,7 +17,8 @@ export const store = configureStore({
     invoice,
     ShowUpdate,
     vehicleDetails,
-    details
+    details, 
+    CRUD
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

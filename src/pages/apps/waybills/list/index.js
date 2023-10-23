@@ -45,15 +45,9 @@ import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
 import { fetchData, deleteData } from 'src/store/apps/vehicle'
+import { fetchWaybills, putWaybills, postWaybills, deleteWaybills } from 'src/store/apps/waybills/CRUD'
 
-import {
-  fetchVehicleEngine,
-  fetchVehicleFuel,
-  fetchTechnicalConditions,
-  fetchVehicleKindes,
-  fetchVehicleTypes,
-  fetchStacks
-} from 'src/store/apps/vehicle/vehicleDetails'
+import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 
 // ** Third Party Components
 import axios from 'axios'
@@ -163,14 +157,14 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 200,
-    field: 'Plate number',
-    headerName: 'Plate number',
+    field: 'Waybills date',
+    headerName: 'Waybills date',
     renderCell: ({ row }) => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <LinkStyled href='/apps/user/view/overview/'>{row.vehicle_plate_number}</LinkStyled>
+            <LinkStyled href='/apps/user/view/overview/'>{row.waybills_date}</LinkStyled>
           </Box>
         </Box>
       )
@@ -179,26 +173,80 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 150,
-    field: 'Brand',
-    headerName: 'Brand',
+    field: 'Waybills no',
+    headerName: 'Waybills no',
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.vehicle_brand}
+          {row.waybills_no}
         </Typography>
       )
     }
   },
-
   {
     flex: 0.2,
     minWidth: 150,
-    field: 'Vehicle year',
-    headerName: 'Vehicle year',
+    field: 'Vehicle type',
+    headerName: 'Vehicle type',
+    renderCell: ({ row, data }) => (
+      <Typography noWrap variant='body2'>
+        {data
+          .filter(type => row.id_vehicle_brand === type.id)
+          .map(type => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {type.vehicle_brand}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 200,
+    field: 'Vehicle kind',
+    headerName: 'Vehicle kind',
+    renderCell: ({ row, data, vehicleKind }) => (
+      <Typography noWrap variant='body2'>
+        {data
+          .filter(type => row.id_vehicles_subject === type.id)
+          .map(type => {
+            const kind = vehicleKind.find(k => k.id === type.id_vehicle_subject)
+            return (
+              <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+                {kind ? kind.vehicle_kindes_title : 'N/A'}
+              </Typography>
+            )
+          })}
+      </Typography>
+    )
+  },
+
+  {
+    flex: 0.2,
+    minWidth: 200,
+    field: 'Vehicle plate number',
+    headerName: 'Vehicle plate number',
+    renderCell: ({ row, data }) => (
+      <Typography noWrap variant='body2'>
+        {data
+          .filter(type => row.id_plate_number === type.id)
+          .map(type => (
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              {type.vehicle_plate_number}
+            </Typography>
+          ))}
+      </Typography>
+    )
+  },
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Waybills od start',
+    headerName: 'Waybills od start',
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.vehicle_year}
+          {row.waybills_od_start}
         </Typography>
       )
     }
@@ -206,62 +254,39 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 150,
-    field: 'Type',
-    headerName: 'Type',
-    renderCell: ({ row, vehicleType }) => (
-      <Typography noWrap variant='body2'>
-        {vehicleType
-          .filter(type => row.id_vehicle_type === type.id)
-          .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-              {type.vehicle_types_title}
-            </Typography>
-          ))}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.2,
-    minWidth: 150,
-    field: 'Subject',
-    headerName: 'Subject',
-    renderCell: ({ row, vehicleKind }) => (
-      <Typography noWrap variant='body2'>
-        {vehicleKind
-          .filter(kind => row.id_vehicle_subject === kind.id)
-          .map(kind => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-              {kind.vehicle_kindes_title}
-            </Typography>
-          ))}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.2,
-    field: 'Weight',
-    minWidth: 150,
-    headerName: 'Weight',
+    field: 'Waybills od finish',
+    headerName: 'Waybills od finish',
     renderCell: ({ row }) => {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3 } }}>
-          <Icon icon={''} fontSize={20} />
-          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.vehicle_weight}
-          </Typography>
-        </Box>
+        <Typography noWrap variant='body2'>
+          {row.waybills_od_finish}
+        </Typography>
       )
     }
   },
   {
-    flex: 0.1,
+    flex: 0.2,
     minWidth: 150,
-    headerName: 'Power',
-    field: 'Power',
+    field: 'Waybills od gone',
+    headerName: 'Waybills od gone',
+    renderCell: ({ row }) => {
+      
+      return (
+        <Typography noWrap variant='body2'>
+          {row.waybills_od_gone}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.2,
+    minWidth: 150,
+    field: 'Waybills fuel start',
+    headerName: 'Waybills fuel start',
     renderCell: ({ row }) => {
       return (
-        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.vehicle_power}
+        <Typography noWrap variant='body2'>
+          {row.waybills_fuel_start}
         </Typography>
       )
     }
@@ -270,86 +295,12 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 150,
-    field: 'Engine',
-    headerName: 'Engine',
-    renderCell: ({ row, engineTypes }) => (
-      <Typography noWrap variant='body2'>
-        {engineTypes
-          .filter(type => row.id_vehicle_type === type.id)
-          .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-              {type.engine_types_title}
-            </Typography>
-          ))}
-      </Typography>
-    )
-  },
-
-  {
-    flex: 0.2,
-    minWidth: 150,
-    field: 'Fuel',
-    headerName: 'Fuel',
-    renderCell: ({ row, vehicleFuel }) => (
-      <Typography noWrap variant='body2'>
-        {vehicleFuel
-          .filter(fuel => row.id_vehicle_fuel === fuel.id)
-          .map(fuel => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-              {fuel.fuel_kindes_title}
-            </Typography>
-          ))}
-      </Typography>
-    )
-  },
-  {
-    flex: 0.1,
-    minWidth: 150,
-    headerName: 'comsuption km',
-    field: 'comsuption km',
+    field: 'Waybills fuel given',
+    headerName: 'Waybills fuel given',
     renderCell: ({ row }) => {
       return (
-        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.vehicle_comsumption_km}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 0.1,
-    minWidth: 150,
-    headerName: 'Comsuption mc',
-    field: 'Comsuption mc',
-    renderCell: ({ row }) => {
-      return (
-        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.vehicle_comsumption_mc}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 0.1,
-    minWidth: 150,
-    headerName: 'Comsuption day',
-    field: 'Comsuption day',
-    renderCell: ({ row }) => {
-      return (
-        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.vehicle_comsumption_day}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 0.1,
-    minWidth: 150,
-    headerName: 'mileage',
-    field: 'mileage',
-    renderCell: ({ row }) => {
-      return (
-        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.vehicle_milage}
+        <Typography noWrap variant='body2'>
+          {row.waybills_fuel_given}
         </Typography>
       )
     }
@@ -358,38 +309,32 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 150,
-    field: 'Conditions',
-    headerName: 'Conditions',
-    renderCell: ({ row, technicalConditions }) => (
-      <Typography noWrap variant='body2'>
-        {technicalConditions
-          .filter(condition => row.id_vehicle_condition === condition.id)
-          .map(condition => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-              {condition.technical_conditions_title}
-            </Typography>
-          ))}
-      </Typography>
-    )
+    field: 'Waybills fuel consumed',
+    headerName: 'Waybills fuel consumed',
+    renderCell: ({ row }) => {
+      return (
+        <Typography noWrap variant='body2'>
+          {row.waybills_fuel_consumed}
+        </Typography>
+      )
+    }
   },
 
   {
     flex: 0.2,
     minWidth: 150,
-    field: 'Colon',
-    headerName: 'Colon',
-    renderCell: ({ row, stacks }) => (
-      <Typography noWrap variant='body2'>
-        {stacks
-          .filter(stack => row.id_vehicle_colon === stack.id)
-          .map(stack => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-              {stack.stacks_title}
-            </Typography>
-          ))}
-      </Typography>
-    )
+    field: 'Waybills fuel finish',
+    headerName: 'Waybills fuel finish',
+    renderCell: ({ row }) => {
+     
+      return (
+        <Typography noWrap variant='body2'>
+          {row.waybills_fuel_finish}
+        </Typography>
+      )
+    }
   },
+
   {
     flex: 0.1,
     minWidth: 90,
@@ -410,29 +355,22 @@ const UserList = ({ apiData }) => {
 
   const dispatch = useDispatch()
   const { data } = useSelector(state => state.index)
+  const { dataWaybills } = useSelector(state => state.CRUD)
   const { addDataLoading } = useSelector(state => state.index1)
 
   const { updateId } = useSelector(state => state.ShowUpdate)
   useEffect(() => {
+    dispatch(fetchWaybills())
     dispatch(fetchData())
-    dispatch(fetchVehicleEngine())
-    dispatch(fetchVehicleFuel())
     dispatch(fetchVehicleKindes())
-    dispatch(fetchTechnicalConditions())
-    dispatch(fetchStacks())
-    dispatch(fetchVehicleTypes())
   }, [dispatch, addDataLoading])
 
+  console.log(dataWaybills)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
-  const [senan, setSenan] = useState(false)
-  setTimeout(() => {
-    setSenan(true)
-  }, [useEffect])
 
-  console.log(senan)
-  const memoizedData = useMemo(() => data, [data])
+  const memoizedData = useMemo(() => dataWaybills, [dataWaybills])
 
   const handleFilter = useCallback(val => {
     setValue(val)
@@ -571,12 +509,8 @@ const UserList = ({ apiData }) => {
                       <TableCell key={column.field} align={column.align}>
                         {column.renderCell({
                           row,
-                          engineTypes,
-                          vehicleFuel,
-                          vehicleType,
                           vehicleKind,
-                          technicalConditions,
-                          stacks
+                          data
                         })}
                       </TableCell>
                     ))}

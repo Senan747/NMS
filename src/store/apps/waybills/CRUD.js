@@ -1,20 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-export const fetchData = createAsyncThunk('waybills/fetchData', async () => {
+export const fetchWaybills = createAsyncThunk('waybills/fetchData', async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/vehicles')
+    const response = await fetch('http://127.0.0.1:8000/api/waybills')
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)
     }
     const data = await response.json()
-    return data.vehicles
+    return data.waybills
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)
   }
 })
 
-export const postData = createAsyncThunk('waybills/postData', async dataToPost => {
+export const postWaybills = createAsyncThunk('waybills/postData', async dataToPost => {
   try {
     const response = await fetch('http://127.0.0.1:8000/api/vehicles', {
       method: 'POST',
@@ -38,7 +38,7 @@ export const postData = createAsyncThunk('waybills/postData', async dataToPost =
   }
 })
 
-export const putData = createAsyncThunk('/waybills/putData', async ({combinedData, updateId}) => {
+export const putWaybills = createAsyncThunk('/waybills/putData', async ({combinedData, updateId}) => {
   try {
     const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${updateId}`, {
       method: 'PUT',
@@ -60,7 +60,7 @@ export const putData = createAsyncThunk('/waybills/putData', async ({combinedDat
   }
 })
 
-export const deleteData = createAsyncThunk('waybills/deleteData', async (idToDelete) => {
+export const deleteWaybills = createAsyncThunk('waybills/deleteData', async (idToDelete) => {
   try {
     const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${idToDelete}`, {
       method: 'DELETE',
@@ -71,7 +71,7 @@ export const deleteData = createAsyncThunk('waybills/deleteData', async (idToDel
       throw new Error('HTTP error! Status: ' + response.status);
     }
 
-    // Return the ID of the deleted item to identify it
+
     return idToDelete;
   } catch (error) {
     throw new Error('Fetch error: ' + error.message);
@@ -82,29 +82,28 @@ export const deleteData = createAsyncThunk('waybills/deleteData', async (idToDel
 const waybillsSlice = createSlice({
   name: 'waybills',
   initialState: {
-    data: []
+    dataWaybills: []
   },
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(fetchData.fulfilled, (state, action) => {
-        state.data = action.payload
+      .addCase(fetchWaybills.fulfilled, (state, action) => {
+        state.dataWaybills = action.payload
       })
-      .addCase(postData.fulfilled, (state, action) => {
-        state.data = [...state.data, action.payload]
+      .addCase(postWaybills.fulfilled, (state, action) => {
+        state.dataWaybills = [...state.data, action.payload]
       })
-      .addCase(putData.fulfilled, (state, action) => {
+      .addCase(putWaybills.fulfilled, (state, action) => {
         const updatedData = state.data.map(item => {
           if (item.id === action.payload.id) {
             return action.payload
           }
           return item
         })
-        state.data = updatedData
+        state.dataWaybills = updatedData
       })
-      .addCase(deleteData.fulfilled, (state, action) => {
-        // Remove the item with the matching ID from the state
-        state.data = state.data.filter(item => item.id !== action.payload);
+      .addCase(deleteWaybills.fulfilled, (state, action) => {
+        state.dataWaybills = state.data.filter(item => item.id !== action.payload);
       })
   }
 })

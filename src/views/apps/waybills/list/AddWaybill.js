@@ -30,19 +30,10 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
-import { postData, fetchData, putData } from 'src/store/apps/vehicle'
+import { postData, fetchData } from 'src/store/apps/vehicle'
 import { setAddDataLoading } from 'src/store/apps/vehicle/index1'
 
-import {
-  fetchVehicleEngine,
-  fetchVehicleFuel,
-  fetchTechnicalConditions,
-  fetchVehicleKindes,
-  fetchVehicleTypes,
-  fetchStacks
-} from 'src/store/apps/vehicle/vehicleDetails'
-
-import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
+import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -108,6 +99,22 @@ const schema = yup.object().shape({
     .required()
 })
 
+const defaultValues = {
+  waybill_date: '',
+  waybill_no: '',
+  waybill_od_start: '',
+  waybill_od_finish: '',
+  waybill_fuel_start: '',
+  waybill_fuel_given: '',
+  waybill_fuel_consumed: ''
+}
+
+const initialState = {
+  id_waybill_subject: '',
+  id_plate_number: '',
+  id_plate_brand: ''
+}
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'UPDATE_SELECTED_ENGINE':
@@ -130,35 +137,13 @@ const reducer = (state, action) => {
 const SidebarAddUser = props => {
   // ** Props
   const { open, toggle } = props
-  const dispatch = useDispatch()
-  const { updateId } = useSelector(state => state.ShowUpdate)
-  const { data } = useSelector(state => state.index)
 
-  const idData = data.find(vehicle => vehicle.id === updateId)
+  // ** State
 
-  const defaultValues = {
-    vehicle_plate_number: idData ? idData.vehicle_plate_number : '',
-    vehicle_brand: idData ? idData.vehicle_brand : '',
-    vehicle_year: idData ? idData.vehicle_year : '',
-    vehicle_weight: idData ? idData.vehicle_weight : '',
-    vehicle_power: idData ? idData.vehicle_power : '',
-    vehicle_comsumption_km: idData ? idData.vehicle_comsumption_km : '',
-    vehicle_comsumption_mc: idData ? idData.vehicle_comsumption_mc : '',
-    vehicle_comsumption_day: idData ? idData.vehicle_comsumption_day : '',
-    vehicle_milage: idData ? idData.vehicle_milage : '',
-    vehicle_status: idData ? idData.vehicle_status : ''
-  }
-
-  const initialState = {
-    id_vehicle_engine: idData ? idData.id_vehicle_engine : '',
-    id_vehicle_fuel: idData ? idData.id_vehicle_fuel : '',
-    id_vehicle_type: idData ? idData.id_vehicle_type : '',
-    id_vehicle_subject: idData ? idData.id_vehicle_subject : '',
-    id_vehicle_condition: idData ? idData.id_vehicle_condition : '',
-    id_vehicle_colon: idData ? idData.id_vehicle_colon : ''
-  }
+  // ** Hooks
 
   const [state, dispatch1] = useReducer(reducer, initialState)
+
   const newStates = {
     id_vehicle_engine: state.id_vehicle_engine,
     id_vehicle_fuel: state.id_vehicle_fuel,
@@ -214,16 +199,31 @@ const SidebarAddUser = props => {
     })
   }
 
+  const router = useRouter()
+  const data = useSelector(state => state.index)
   const onSubmit = formData => {
     const combinedData = { ...formData, ...newStates }
 
-    dispatch(putData({ combinedData, updateId }))
-    dispatch(fetchData())
+    if (data.data.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
+      console.error('Plate number already exists!')
+    } else {
+      dispatch(postData(combinedData))
+      dispatch(fetchData())
+
+      toggle()
+      reset()
+      resetForm()
+      // router.reload();
+      dispatch(setAddDataLoading(true))
+    }
+  }
+
+  const handleClose = () => {
     toggle()
     reset()
     resetForm()
-    dispatch(setAddDataLoading(true))
   }
+  const dispatch = useDispatch()
   useEffect(() => {
     dispatch(fetchVehicleEngine())
     dispatch(fetchVehicleFuel())
@@ -233,24 +233,13 @@ const SidebarAddUser = props => {
     dispatch(fetchTechnicalConditions())
   }, [dispatch])
 
-  const handleClose = () => {
-    // toggle();
-    dispatch(closeShowUpdate())
-    reset()
-  }
-
-  const handleClick = () => {
-    dispatch(closeShowUpdate())
-  }
-
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
 
-  const { ShowUpdate } = useSelector(state => state.ShowUpdate)
   return (
     <Drawer
-      open={ShowUpdate}
+      open={open}
       anchor='right'
       variant='temporary'
       onClose={handleClose}
@@ -265,7 +254,7 @@ const SidebarAddUser = props => {
       }}
     >
       <Header>
-        <Typography variant='h6'>Update vehicle</Typography>
+        <Typography variant='h6'>Add vehicle</Typography>
         <IconButton size='small' onClick={handleClose} sx={{ color: 'text.primary' }}>
           <Icon icon='mdi:close' fontSize={20} />
         </IconButton>
@@ -626,7 +615,7 @@ const SidebarAddUser = props => {
                       value={value}
                       label='vehicle status'
                       onChange={onChange}
-                      placeholder='Active'
+                      placeholder='1'
                       error={Boolean(errors.vehicle_status)}
                     />
                   )}
