@@ -58,6 +58,41 @@ const navigation = () => {
       ]
     },
     {
+      title: 'Waybills',
+      icon: 'mdi:account-outline',
+      children: [
+        {
+          title: 'List',
+          path: '/apps/waybills/list'
+        },
+        {
+          title: 'View',
+          children: [
+            {
+              title: 'Overview',
+              path: '/apps/waybills/view/overview'
+            },
+            {
+              title: 'Security',
+              path: '/apps/waybills/view/security'
+            },
+            {
+              title: 'Billing & Plans',
+              path: '/apps/waybills/view/billing-plan'
+            },
+            {
+              title: 'Notifications',
+              path: '/apps/waybills/view/notification'
+            },
+            {
+              title: 'Connection',
+              path: '/apps/waybills/view/connection'
+            }
+          ]
+        }
+      ]
+    },
+    {
       title: 'Cars',
       icon: 'mdi:account-outline',
       children: [

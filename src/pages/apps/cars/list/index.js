@@ -36,7 +36,7 @@ import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData, deleteUser, updateUser } from 'src/store/apps/user'
+import { fetchData, deleteUser, updateUser } from 'src/store/apps/vehicle'
 
 // ** Third Party Components
 import axios from 'axios'
@@ -119,13 +119,13 @@ const RowOptions = ({ id }) => {
 
   const handleUpdate = () => {
     dispatch(openShowUpdate())
-    handleRowOptionsClose();
+    handleRowOptionsClose()
   }
 
   return (
     <>
       <IconButton size='small' onClick={handleRowOptionsClick}>
-        <Icon icon='mdi:dots-vertical' /> 
+        <Icon icon='mdi:dots-vertical' />
       </IconButton>
       <Menu
         keepMounted

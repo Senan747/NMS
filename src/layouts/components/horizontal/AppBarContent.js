@@ -59,12 +59,6 @@ const notifications = [
 
 const shortcuts = [
   {
-    title: 'Calendar',
-    url: '/apps/calendar',
-    subtitle: 'Appointments',
-    icon: 'mdi:calendar-month-outline'
-  },
-  {
     title: 'Invoice App',
     url: '/apps/invoice/list',
     subtitle: 'Manage Accounts',
@@ -82,12 +76,7 @@ const shortcuts = [
     subtitle: 'Permissions',
     icon: 'mdi:shield-check-outline'
   },
-  {
-    url: '/',
-    title: 'Dashboard',
-    icon: 'mdi:chart-pie',
-    subtitle: 'User Dashboard'
-  },
+
   {
     title: 'Settings',
     icon: 'mdi:cog-outline',

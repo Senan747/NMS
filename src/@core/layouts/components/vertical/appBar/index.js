@@ -78,7 +78,7 @@ const LayoutAppBar = props => {
           })
         }}
       >
-        {(userAppBarContent && userAppBarContent(props)) || null} 
+        {(userAppBarContent && userAppBarContent(props)) || null}  
       </Toolbar>
     </AppBar>
   )

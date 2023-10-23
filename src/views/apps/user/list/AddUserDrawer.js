@@ -30,8 +30,8 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
-import { postData, fetchData } from 'src/store/apps/user'
-import { setAddDataLoading } from 'src/store/apps/user/index1'
+import { postData, fetchData } from 'src/store/apps/vehicle'
+import { setAddDataLoading } from 'src/store/apps/vehicle/index1'
 
 import {
   fetchVehicleEngine,
@@ -40,7 +40,7 @@ import {
   fetchVehicleKindes,
   fetchVehicleTypes,
   fetchStacks
-} from 'src/store/apps/user/vehicleDetails'
+} from 'src/store/apps/vehicle/vehicleDetails'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -178,42 +178,41 @@ const SidebarAddUser = props => {
   })
 
   const resetForm = () => {
-    reset(defaultValues); // Reset the form fields
-  
+    reset(defaultValues) // Reset the form fields
+
     // Reset newStates to their initial values
     dispatch1({
       type: 'UPDATE_SELECTED_ENGINE',
       payload: initialState.id_vehicle_engine
-    });
-  
+    })
+
     dispatch1({
       type: 'UPDATE_SELECTED_FUEL',
       payload: initialState.id_vehicle_fuel
-    });
-  
+    })
+
     dispatch1({
       type: 'UPDATE_SELECTED_TYPE',
       payload: initialState.id_vehicle_type
-    });
-  
+    })
+
     dispatch1({
       type: 'UPDATE_SELECTED_KIND',
       payload: initialState.id_vehicle_subject
-    });
-  
+    })
+
     dispatch1({
       type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS',
       payload: initialState.id_vehicle_condition
-    });
-  
+    })
+
     dispatch1({
       type: 'UPDATE_SELECTED_STACKS',
       payload: initialState.id_vehicle_colon
-    });
-  };
+    })
+  }
 
-
-  const router = useRouter();
+  const router = useRouter()
   const data = useSelector(state => state.index)
   const onSubmit = formData => {
     const combinedData = { ...formData, ...newStates }
@@ -258,10 +257,10 @@ const SidebarAddUser = props => {
       variant='temporary'
       onClose={handleClose}
       ModalProps={{ keepMounted: true }}
-      sx={{ '& .MuiDrawer-paper': { width: { xs: 200, sm: 800 } } }}
+      sx={{ '& .MuiDrawer-paper': { width: { xs: 400, sm: 800 } } }}
     >
       <Header>
-        <Typography variant='h6'>Add User</Typography>
+        <Typography variant='h6'>Add vehicle</Typography>
         <IconButton size='small' onClick={handleClose} sx={{ color: 'text.primary' }}>
           <Icon icon='mdi:close' fontSize={20} />
         </IconButton>

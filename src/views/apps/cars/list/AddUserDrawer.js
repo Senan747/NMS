@@ -1,51 +1,51 @@
 // ** React Imports
-import { useState } from 'react';
+import { useState } from 'react'
 
 // ** MUI Imports
-import Drawer from '@mui/material/Drawer';
-import Select from '@mui/material/Select';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import { styled } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
+import Drawer from '@mui/material/Drawer'
+import Select from '@mui/material/Select'
+import Button from '@mui/material/Button'
+import MenuItem from '@mui/material/MenuItem'
+import { styled } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+import IconButton from '@mui/material/IconButton'
+import InputLabel from '@mui/material/InputLabel'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 
 // ** Third Party Imports
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, Controller } from 'react-hook-form';
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm, Controller } from 'react-hook-form'
 
 // ** Icon Imports
-import Icon from 'src/@core/components/icon';
+import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
-import { addUser } from 'src/store/apps/user';
+import { addUser } from 'src/store/apps/vehicle'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
-    return `${field} field is required`;
+    return `${field} field is required`
   } else if (valueLen > 0 && valueLen < min) {
-    return `${field} must be at least ${min} characters`;
+    return `${field} must be at least ${min} characters`
   } else {
-    return '';
+    return ''
   }
-};
+}
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(3, 4),
   justifyContent: 'space-between',
-  backgroundColor: theme.palette.background.default,
-}));
+  backgroundColor: theme.palette.background.default
+}))
 
 const schema = yup.object().shape({
   marka: yup.string().required(),
@@ -56,54 +56,54 @@ const schema = yup.object().shape({
     .number()
     .typeError('Dəstə field is required')
     .min(1, obj => showErrors('Dəstə', obj.value, obj.min))
-    .required(),
-});
+    .required()
+})
 
 const defaultValues = {
   marka: '',
   dovlet_nisani: '',
   yanacaq_novu: '',
   yanacaq_doldurma_novu: '',
-  dəstə: '',
-};
+  dəstə: ''
+}
 
 const SidebarAddUser = props => {
   // ** Props
-  const { open, toggle } = props;
+  const { open, toggle } = props
 
   // ** State
 
   // ** Hooks
-  const dispatch = useDispatch();
-  const store = useSelector(state => state.user);
+  const dispatch = useDispatch()
+  const store = useSelector(state => state.user)
 
   const {
     reset,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm({
     defaultValues,
     mode: 'onChange',
-    resolver: yupResolver(schema),
-  });
+    resolver: yupResolver(schema)
+  })
 
   const onSubmit = data => {
     if (store.allData.some(u => u.marka === data.marka)) {
       setError('marka', {
-        message: 'Marka already exists!',
-      });
+        message: 'Marka already exists!'
+      })
     } else {
-      dispatch(addUser({ ...data }));
-      toggle();
-      reset();
+      dispatch(addUser({ ...data }))
+      toggle()
+      reset()
     }
-  };
+  }
 
   const handleClose = () => {
-    toggle();
-    reset();
-  };
+    toggle()
+    reset()
+  }
 
   return (
     <Drawer
@@ -154,7 +154,9 @@ const SidebarAddUser = props => {
                 />
               )}
             />
-            {errors.dovlet_nisani && <FormHelperText sx={{ color: 'error.main' }}>{errors.dovlet_nisani.message}</FormHelperText>}
+            {errors.dovlet_nisani && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.dovlet_nisani.message}</FormHelperText>
+            )}
           </FormControl>
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
@@ -171,7 +173,9 @@ const SidebarAddUser = props => {
                 />
               )}
             />
-            {errors.yanacaq_novu && <FormHelperText sx={{ color: 'error.main' }}>{errors.yanacaq_novu.message}</FormHelperText>}
+            {errors.yanacaq_novu && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.yanacaq_novu.message}</FormHelperText>
+            )}
           </FormControl>
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
@@ -188,7 +192,9 @@ const SidebarAddUser = props => {
                 />
               )}
             />
-            {errors.yanacaq_doldurma_novu && <FormHelperText sx={{ color: 'error.main' }}>{errors.yanacaq_doldurma_novu.message}</FormHelperText>}
+            {errors.yanacaq_doldurma_novu && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.yanacaq_doldurma_novu.message}</FormHelperText>
+            )}
           </FormControl>
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
@@ -220,7 +226,7 @@ const SidebarAddUser = props => {
         </form>
       </Box>
     </Drawer>
-  );
-};
+  )
+}
 
-export default SidebarAddUser;
+export default SidebarAddUser

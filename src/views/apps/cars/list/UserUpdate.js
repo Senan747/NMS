@@ -27,7 +27,7 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
-import { addUser } from 'src/store/apps/user'
+import { addUser } from 'src/store/apps/vehicle'
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 
 const showErrors = (field, valueLen, min) => {

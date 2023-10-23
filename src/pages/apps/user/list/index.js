@@ -44,7 +44,7 @@ import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData, deleteData } from 'src/store/apps/user'
+import { fetchData, deleteData } from 'src/store/apps/vehicle'
 
 import {
   fetchVehicleEngine,
@@ -53,7 +53,7 @@ import {
   fetchVehicleKindes,
   fetchVehicleTypes,
   fetchStacks
-} from 'src/store/apps/user/vehicleDetails'
+} from 'src/store/apps/vehicle/vehicleDetails'
 
 // ** Third Party Components
 import axios from 'axios'
@@ -111,7 +111,6 @@ const RowOptions = ({ id }) => {
     dispatch(deleteData(id))
     handleRowOptionsClose()
   }
-
 
   const handleEdit = () => {
     dispatch(openShowUpdate())
@@ -401,7 +400,6 @@ const columns = [
   }
 ]
 
-
 const UserList = ({ apiData }) => {
   const [role, setRole] = useState('')
   const [plan, setPlan] = useState('')
@@ -410,12 +408,11 @@ const UserList = ({ apiData }) => {
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
 
-
   const dispatch = useDispatch()
   const { data } = useSelector(state => state.index)
   const { addDataLoading } = useSelector(state => state.index1)
 
-  const {updateId} = useSelector(state => state.ShowUpdate)
+  const { updateId } = useSelector(state => state.ShowUpdate)
   useEffect(() => {
     dispatch(fetchData())
     dispatch(fetchVehicleEngine())
@@ -463,11 +460,9 @@ const UserList = ({ apiData }) => {
     setPage(0)
   }
 
-
   const startIndex = page * rowsPerPage
   const endIndex = startIndex + rowsPerPage
   const displayedRows = memoizedData.slice(startIndex, endIndex)
-
 
   return (
     <Grid container spacing={6}>
@@ -565,7 +560,7 @@ const UserList = ({ apiData }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                { displayedRows.map(row => (
+                {displayedRows.map(row => (
                   <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
                     {columns.map(column => (
                       <TableCell key={column.field} align={column.align}>
@@ -598,9 +593,7 @@ const UserList = ({ apiData }) => {
       </Grid>
 
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
-      {
-        updateId ? <UserUpdate open={userUpdate} toggle={toggleUserUpdate} /> : " "
-      }
+      {updateId ? <UserUpdate open={userUpdate} toggle={toggleUserUpdate} /> : ' '}
     </Grid>
   )
 }

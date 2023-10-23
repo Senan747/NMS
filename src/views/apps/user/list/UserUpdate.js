@@ -30,8 +30,8 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
-import { postData, fetchData, putData } from 'src/store/apps/user'
-import { setAddDataLoading } from 'src/store/apps/user/index1'
+import { postData, fetchData, putData } from 'src/store/apps/vehicle'
+import { setAddDataLoading } from 'src/store/apps/vehicle/index1'
 
 import {
   fetchVehicleEngine,
@@ -40,7 +40,7 @@ import {
   fetchVehicleKindes,
   fetchVehicleTypes,
   fetchStacks
-} from 'src/store/apps/user/vehicleDetails'
+} from 'src/store/apps/vehicle/vehicleDetails'
 
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 
@@ -108,7 +108,6 @@ const schema = yup.object().shape({
     .required()
 })
 
-
 const reducer = (state, action) => {
   switch (action.type) {
     case 'UPDATE_SELECTED_ENGINE':
@@ -136,7 +135,6 @@ const SidebarAddUser = props => {
   const { data } = useSelector(state => state.index)
 
   const idData = data.find(vehicle => vehicle.id === updateId)
-
 
   const defaultValues = {
     vehicle_plate_number: idData ? idData.vehicle_plate_number : '',
@@ -219,16 +217,12 @@ const SidebarAddUser = props => {
   const onSubmit = formData => {
     const combinedData = { ...formData, ...newStates }
 
-    if (data.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
-      console.error('Plate number already exists!')
-    } else {
-      dispatch(putData({combinedData, updateId}))
-      dispatch(fetchData())
-      toggle()
-      reset()
-      resetForm()
-      dispatch(setAddDataLoading(true))
-    }
+    dispatch(putData({ combinedData, updateId }))
+    dispatch(fetchData())
+    toggle()
+    reset()
+    resetForm()
+    dispatch(setAddDataLoading(true))
   }
   useEffect(() => {
     dispatch(fetchVehicleEngine())
@@ -261,10 +255,10 @@ const SidebarAddUser = props => {
       variant='temporary'
       onClose={handleClose}
       ModalProps={{ keepMounted: true }}
-      sx={{ '& .MuiDrawer-paper': { width: { xs: 200, sm: 800 } } }}
+      sx={{ '& .MuiDrawer-paper': { width: { xs: 200, sm: 800 } }, maxHeight: '100vh' }}
     >
       <Header>
-        <Typography variant='h6'>Add User</Typography>
+        <Typography variant='h6'>Update vehicle</Typography>
         <IconButton size='small' onClick={handleClose} sx={{ color: 'text.primary' }}>
           <Icon icon='mdi:close' fontSize={20} />
         </IconButton>

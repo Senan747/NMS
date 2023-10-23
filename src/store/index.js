@@ -2,13 +2,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 
 // ** Reducers
-import index from 'src/store/apps/user/index'
-import index1 from 'src/store/apps/user/index1'
+import index from 'src/store/apps/vehicle/index'
+import index1 from 'src/store/apps/vehicle/index1'
 import invoice from 'src/store/apps/invoice'
 import ShowUpdate from './apps/ShowUpdate'
-import vehicleDetails from './apps/user/vehicleDetails'
-import details from './apps/user/details'
-
+import vehicleDetails from './apps/vehicle/vehicleDetails'
+import details from './apps/vehicle/details'
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +20,6 @@ export const store = configureStore({
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false  
+      serializableCheck: false
     })
 })

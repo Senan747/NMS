@@ -26,7 +26,7 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData } from 'src/store/apps/user'
+import { fetchData } from 'src/store/apps/vehicle'
 
 // ** Custom Components Imports
 import TableHeader from 'src/views/apps/roles/TableHeader'
