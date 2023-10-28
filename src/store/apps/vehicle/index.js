@@ -8,7 +8,7 @@ export const fetchData = createAsyncThunk('appUsers/fetchData', async () => {
       throw new Error('HTTP error! Status: ' + response.status)
     }
     const data = await response.json()
-    return data.vehicles
+    return data.vehicles.data
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)
   }
@@ -31,14 +31,15 @@ export const postData = createAsyncThunk('appUsers/postData', async dataToPost =
     }
 
     const data = await response.json()
-    console.log('Data posted successfully:', data)
+
+    // console.log('Data posted successfully:', data)
     return data
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)
   }
 })
 
-export const putData = createAsyncThunk('/appUsers/putData', async ({combinedData, updateId}) => {
+export const putData = createAsyncThunk('/appUsers/putData', async ({ combinedData, updateId }) => {
   try {
     const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${updateId}`, {
       method: 'PUT',
@@ -60,29 +61,49 @@ export const putData = createAsyncThunk('/appUsers/putData', async ({combinedDat
   }
 })
 
-export const deleteData = createAsyncThunk('appUsers/deleteData', async (idToDelete) => {
+export const deleteData = createAsyncThunk('appUsers/deleteData', async idToDelete => {
   try {
     const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${idToDelete}`, {
-      method: 'DELETE',
-    });
+      method: 'DELETE'
+    })
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error('HTTP error! Status: ' + response.status);
+      const errorData = await response.json()
+
+      if (response.status === 500) {
+        // Burada heç bir şey etməyin və yalnız errorı geri qaytarın
+        return thunkAPI.rejectWithValue(errorData)
+      }
+
+      throw new Error('HTTP error! Status: ' + response.status)
     }
 
     // Return the ID of the deleted item to identify it
-    return idToDelete;
+    return idToDelete
   } catch (error) {
-    throw new Error('Fetch error: ' + error.message);
+    throw new Error('Fetch error: ' + error.message)
   }
-});
+})
 
+export const fetchIdData = createAsyncThunk('appUsers/fetchIdData', async idToGet => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${idToGet}`)
+
+    if (!response.ok) {
+      throw new Error('HTTP error! Status: ' + response.status)
+    }
+    const vehicle = await response.json()
+    return vehicle
+  } catch (error) {
+    throw new Error('Fetch error: ' + error.message)
+  }
+})
 
 const appUsersSlice = createSlice({
   name: 'appUsers',
   initialState: {
-    data: []
+    data: [],
+    vehicle: []
   },
   reducers: {},
   extraReducers: builder => {
@@ -103,8 +124,10 @@ const appUsersSlice = createSlice({
         state.data = updatedData
       })
       .addCase(deleteData.fulfilled, (state, action) => {
-        // Remove the item with the matching ID from the state
-        state.data = state.data.filter(item => item.id !== action.payload);
+        state.data = state.data.filter(item => item.id !== action.payload)
+      })
+      .addCase(fetchIdData.fulfilled, (state, action) => {
+        state.vehicle = action.payload
       })
   }
 })

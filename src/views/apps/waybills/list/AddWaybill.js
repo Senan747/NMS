@@ -2,6 +2,7 @@
 import { useEffect, useState, useReducer } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useTheme } from '@mui/material/styles'
 
 // ** MUI Imports
 import Drawer from '@mui/material/Drawer'
@@ -18,11 +19,15 @@ import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
 
+import DatePicker from 'react-datepicker'
+import CustomInput from './CustomInput'
+import * as source from 'src/views/apps/waybills/list/PickerSourceCode'
+
 // ** Third Party Imports
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
-
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
@@ -30,10 +35,11 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
-import { postData, fetchData } from 'src/store/apps/vehicle'
-import { setAddDataLoading } from 'src/store/apps/vehicle/index1'
+import { fetchData } from 'src/store/apps/vehicle'
+import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
+import { fetchWaybills, postWaybills } from 'src/store/apps/waybills/CRUD'
 
-import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
+
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -53,189 +59,87 @@ const Header = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default
 }))
 
-const schema = yup.object().shape({
-  vehicle_plate_number: yup.string().required(),
-  vehicle_brand: yup.string().required(),
-  vehicle_year: yup
-    .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_weight: yup
-    .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_power: yup
-    .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_comsumption_mc: yup
-    .number()
-    .typeError('comsumption mc field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_comsumption_day: yup
-    .number()
-    .typeError('comsumption day field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_comsumption_km: yup
-    .number()
-    .typeError('comsumption day field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-
-  vehicle_milage: yup
-    .number()
-    .typeError('Mileage field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_status: yup
-    .number()
-    .typeError('Mileage field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required()
-})
-
-const defaultValues = {
-  waybill_date: '',
-  waybill_no: '',
-  waybill_od_start: '',
-  waybill_od_finish: '',
-  waybill_fuel_start: '',
-  waybill_fuel_given: '',
-  waybill_fuel_consumed: ''
-}
-
-const initialState = {
-  id_waybill_subject: '',
-  id_plate_number: '',
-  id_plate_brand: ''
-}
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'UPDATE_SELECTED_ENGINE':
-      return { ...state, id_vehicle_engine: action.payload }
-    case 'UPDATE_SELECTED_FUEL':
-      return { ...state, id_vehicle_fuel: action.payload }
-    case 'UPDATE_SELECTED_TYPE':
-      return { ...state, id_vehicle_type: action.payload }
-    case 'UPDATE_SELECTED_KIND':
-      return { ...state, id_vehicle_subject: action.payload }
-    case 'UPDATE_SELECTED_TECHNICAL_CONDITIONS':
-      return { ...state, id_vehicle_condition: action.payload }
-    case 'UPDATE_SELECTED_STACKS':
-      return { ...state, id_vehicle_colon: action.payload }
-    default:
-      return state
-  }
-}
-
 const SidebarAddUser = props => {
   // ** Props
   const { open, toggle } = props
 
-  // ** State
+  const [date, setDate] = useState(new Date())
 
-  // ** Hooks
-
-  const [state, dispatch1] = useReducer(reducer, initialState)
-
-  const newStates = {
-    id_vehicle_engine: state.id_vehicle_engine,
-    id_vehicle_fuel: state.id_vehicle_fuel,
-    id_vehicle_type: state.id_vehicle_type,
-    id_vehicle_subject: state.id_vehicle_subject,
-    id_vehicle_condition: state.id_vehicle_condition,
-    id_vehicle_colon: state.id_vehicle_colon
-  }
-
-  const {
-    reset,
-    control,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    defaultValues,
-    mode: 'onChange',
-    resolver: yupResolver(schema)
+  const [formData, setFormData] = useState({
+    waybills_no: null,
+    id_vehicle: null,
+    waybills_od_start: null,
+    waybills_od_finish: null,
+    waybills_fuel_start: null,
+    waybills_fuel_given: null,
+    waybills_fuel_consumed: null
   })
 
   const resetForm = () => {
-    reset(defaultValues) // Reset the form fields
-
-    // Reset newStates to their initial values
-    dispatch1({
-      type: 'UPDATE_SELECTED_ENGINE',
-      payload: initialState.id_vehicle_engine
-    })
-
-    dispatch1({
-      type: 'UPDATE_SELECTED_FUEL',
-      payload: initialState.id_vehicle_fuel
-    })
-
-    dispatch1({
-      type: 'UPDATE_SELECTED_TYPE',
-      payload: initialState.id_vehicle_type
-    })
-
-    dispatch1({
-      type: 'UPDATE_SELECTED_KIND',
-      payload: initialState.id_vehicle_subject
-    })
-
-    dispatch1({
-      type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS',
-      payload: initialState.id_vehicle_condition
-    })
-
-    dispatch1({
-      type: 'UPDATE_SELECTED_STACKS',
-      payload: initialState.id_vehicle_colon
+    setFormData({
+      ...formData,
+      waybills_no: null,
+      id_vehicle: null,
+      waybills_od_start: null,
+      waybills_od_finish: null,
+      waybills_fuel_start: null,
+      waybills_fuel_given: null,
+      waybills_fuel_consumed: null
     })
   }
 
-  const router = useRouter()
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetchData()).then(() => {})
+    dispatch(fetchData())
+  }, [dispatch])
+
   const data = useSelector(state => state.index)
+  const theme = useTheme()
+  const { direction } = theme
+  const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
+  const dataWaybills = useSelector(state => state.CRUD)
+
+  const formatDate = date => {
+    const year = date.getFullYear()
+    const month = (date.getMonth() + 1).toString().padStart(2, '0') // Add 1 to month since it's zero-based
+    const day = date.getDate().toString().padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const newDate = formatDate(date)
+
   const onSubmit = formData => {
-    const combinedData = { ...formData, ...newStates }
+    console.log(formData)
+    console.log('salam  ')
+    const combinedData = { ...formData, waybills_date: newDate }
 
-    if (data.data.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
-      console.error('Plate number already exists!')
+    console.log(combinedData)
+    if (dataWaybills.dataWaybills.some(waybill => waybill.waybills_no === formData.waybills_no)) {
+      console.error('Waybill already exists!')
     } else {
-      dispatch(postData(combinedData))
-      dispatch(fetchData())
-
+      dispatch(postWaybills(combinedData))
+      dispatch(fetchWaybills())
       toggle()
-      reset()
+      // reset()
       resetForm()
-      // router.reload();
       dispatch(setAddDataLoading(true))
+      setDate(new Date())
+      setAddWaybillCondition('add')
     }
   }
 
   const handleClose = () => {
     toggle()
-    reset()
+    // reset()
     resetForm()
   }
-  const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(fetchVehicleEngine())
-    dispatch(fetchVehicleFuel())
-    dispatch(fetchVehicleKindes())
-    dispatch(fetchVehicleTypes())
-    dispatch(fetchStacks())
-    dispatch(fetchTechnicalConditions())
-  }, [dispatch])
 
-  const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
-    state => state.vehicleDetails
-  )
+  const handleSubmit = e => {
+    e.preventDefault()
+    onSubmit(formData)
+  }
+  const [check, setCheck] = useState(false)
 
   return (
     <Drawer
@@ -260,375 +164,131 @@ const SidebarAddUser = props => {
         </IconButton>
       </Header>
       <Box sx={{ p: 3 }}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_plate_number'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='Plate number'
-                      onChange={onChange}
-                      placeholder='10 AA 99'
-                      error={Boolean(errors.vehicle_plate_number)}
-                    />
-                  )}
+                <TextField
+                  value={formData.waybills_no}
+                  label='waybill no'
+                  onChange={e => setFormData({ ...formData, waybills_no: e.target.value })}
+                  placeholder='10'
                 />
-                {errors.vehicle_plate_number && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_plate_number.message}</FormHelperText>
+
+                {!formData.waybills_no && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>waybills no field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_brand'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='Vehicle brand'
-                      onChange={onChange}
-                      placeholder='Mercedez'
-                      error={Boolean(errors.vehicle_brand)}
-                    />
-                  )}
-                />
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
-                )}
+                <DatePickerWrapper>
+                  <DatePicker
+                    selected={date}
+                    id='basic-input'
+                    value={date}
+                    popperPlacement={popperPlacement}
+                    onChange={date => setDate(date)}
+                    placeholderText='Click to select a date'
+                    customInput={<CustomInput label='Basic' />}
+                  />
+                </DatePickerWrapper>
               </FormControl>
             </Grid>
 
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_year'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='Vehicle year'
-                      onChange={onChange}
-                      placeholder='2010'
-                      error={Boolean(errors.vehicle_year)}
-                    />
-                  )}
-                />
-                {errors.vehicle_year && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_year.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='role-select'>Select Role</InputLabel>
+                <InputLabel id='vehicle-select'>Select vehicle</InputLabel>
                 <Select
                   fullWidth
-                  value={state.id_vehicle_engine}
-                  id='select-engine'
-                  label='Select Engine'
-                  labelId='engine-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_ENGINE', payload: e.target.value })}
-                  inputProps={{ placeholder: 'Select Engine' }}
+                  onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
+                  id='select-vehicle'
+                  label='Select vehicle'
+                  labelId='vehicle-select'
+                  inputProps={{ placeholder: 'Select vehicle' }}
                 >
-                  {engineTypes.map(engine => (
-                    <MenuItem key={engine.id} value={engine.id}>
-                      {engine.engine_types_title}
+                  {data.data.map(number => (
+                    <MenuItem key={number.id} value={number.id}>
+                      {number.vehicle_plate_number}
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!formData.id_vehicle && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>waybills vehicle field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='fuel-select'>Select Fuel</InputLabel>
-                <Select
-                  fullWidth
-                  value={state.id_vehicle_fuel}
-                  id='select-fuel'
-                  label='Select Fuel'
-                  labelId='fuel-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_FUEL', payload: e.target.value })}
-                  inputProps={{ placeholder: 'Select Fuel' }}
-                >
-                  {vehicleFuel.map(fuel => (
-                    <MenuItem key={fuel.id} value={fuel.id}>
-                      {fuel.fuel_kindes_title}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='type-select'>Select Type</InputLabel>
-                <Select
-                  fullWidth
-                  value={state.id_vehicle_type}
-                  id='select-type'
-                  label='Select Type'
-                  labelId='type-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_TYPE', payload: e.target.value })}
-                  inputProps={{ placeholder: 'Select Type' }}
-                >
-                  {vehicleType.map(type => (
-                    <MenuItem key={type.id} value={type.id}>
-                      {type.vehicle_types_title}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='kind-select'>Select Kind</InputLabel>
-                <Select
-                  fullWidth
-                  value={state.id_vehicle_subject}
-                  id='select-kind'
-                  label='Select Kind'
-                  labelId='kind-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_KIND', payload: e.target.value })}
-                  inputProps={{ placeholder: 'Select Kind' }}
-                >
-                  {vehicleKind.map(kind => (
-                    <MenuItem key={kind.id} value={kind.id}>
-                      {kind.vehicle_kindes_title}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='technical-conditions-select'>Select Technical Conditions</InputLabel>
-                <Select
-                  fullWidth
-                  value={state.id_vehicle_condition}
-                  id='select-technical-conditions'
-                  label='Select Technical Conditions'
-                  labelId='technical-conditions-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS', payload: e.target.value })}
-                  inputProps={{ placeholder: 'Select Technical Conditions' }}
-                >
-                  {technicalConditions.map(condition => (
-                    <MenuItem key={condition.id} value={condition.id}>
-                      {condition.technical_conditions_title}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='stacks-select'>Select Stacks</InputLabel>
-                <Select
-                  fullWidth
-                  value={state.id_vehicle_colon}
-                  id='select-stacks'
-                  label='Select Stacks'
-                  labelId='stacks-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_STACKS', payload: e.target.value })}
-                  inputProps={{ placeholder: 'Select Stacks' }}
-                >
-                  {stacks.map(stack => (
-                    <MenuItem key={stack.id} value={stack.id}>
-                      {stack.stacks_title}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_weight'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='weight'
-                      onChange={onChange}
-                      placeholder='500'
-                      error={Boolean(errors.vehicle_weight)}
-                    />
-                  )}
+                <TextField
+                  value={formData.waybills_od_start}
+                  label='waybill od start'
+                  onChange={e => setFormData({ ...formData, waybills_od_start: e.target.value })}
+                  placeholder='10'
                 />
-                {errors.vehicle_weight && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_weight.message}</FormHelperText>
+                {!formData.waybills_od_start && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>waybills od start field is required</FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <TextField
+                  value={formData.waybills_od_finish}
+                  label='waybill od finish'
+                  onChange={e => setFormData({ ...formData, waybills_od_finish: e.target.value })}
+                  placeholder='10'
+                />
+
+                {!formData.waybills_od_finish && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>waybills od finish field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_power'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='power'
-                      onChange={onChange}
-                      placeholder='200'
-                      error={Boolean(errors.vehicle_power)}
-                    />
-                  )}
+                <TextField
+                  value={formData.waybills_fuel_start}
+                  label='waybill fuel start'
+                  onChange={e => setFormData({ ...formData, waybills_fuel_start: e.target.value })}
+                  placeholder='10'
                 />
-                {errors.vehicle_power && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_power.message}</FormHelperText>
-                )}
               </FormControl>
             </Grid>
 
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_comsumption_km'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='comsumption km'
-                      onChange={onChange}
-                      placeholder='200'
-                      error={Boolean(errors.vehicle_comsumption_km)}
-                    />
-                  )}
+                <TextField
+                  value={formData.waybills_fuel_given}
+                  label='waybill fuel given'
+                  onChange={e => setFormData({ ...formData, waybills_fuel_given: e.target.value })}
+                  placeholder='10'
                 />
-                {errors.vehicle_comsumption_km && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_comsumption_km.message}</FormHelperText>
+                {!formData.waybills_fuel_given && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>waybills fuel given field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
-
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_comsumption_mc'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='comsumption mc'
-                      onChange={onChange}
-                      placeholder='200'
-                      error={Boolean(errors.vehicle_comsumption_mc)}
-                    />
-                  )}
+                <TextField
+                  value={formData.waybills_fuel_consumed}
+                  label='waybill fuel consumed'
+                  onChange={e => setFormData({ ...formData, waybills_fuel_consumed: e.target.value })}
+                  placeholder='10'
                 />
-                {errors.vehicle_comsumption_mc && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_comsumption_mc.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_comsumption_day'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='comsumption day'
-                      onChange={onChange}
-                      placeholder='5'
-                      error={Boolean(errors.vehicle_comsumption_day)}
-                    />
-                  )}
-                />
-                {errors.vehicle_comsumption_day && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_comsumption_day.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_milage'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='mileage'
-                      onChange={onChange}
-                      placeholder='5'
-                      error={Boolean(errors.vehicle_milage)}
-                    />
-                  )}
-                />
-                {errors.vehicle_milage && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_milage.message}</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <Controller
-                  name='vehicle_status'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <TextField
-                      value={value}
-                      label='vehicle status'
-                      onChange={onChange}
-                      placeholder='1'
-                      error={Boolean(errors.vehicle_status)}
-                    />
-                  )}
-                />
-                {errors.vehicle_status && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_status.message}</FormHelperText>
+                {!formData.waybills_fuel_consumed && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>waybills fuel consumed field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
           </Grid>
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
+            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }} onClick={() => setCheck(true)}>
               Submit
             </Button>
             <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>

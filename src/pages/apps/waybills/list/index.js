@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-
-// ** Next Imports
 import Link from 'next/link'
 
 // ** MUI Imports
@@ -19,43 +17,39 @@ import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
-
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
 import TableCell from '@mui/material/TableCell'
-
-import TablePagination from '@mui/material/TablePagination'
-// ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { TableContainer } from '@mui/material'
-import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
-// ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
+import TablePagination from '@mui/material/TablePagination'
 
 // ** Custom Components Imports
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-stats-horizontal'
 
+// ** Store Imports
+import { useDispatch, useSelector } from 'react-redux'
+import { closeShowEdit, openShowEdit, setEditId } from 'src/store/apps/waybills/editWaybills'
+import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
+
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData, deleteData } from 'src/store/apps/vehicle'
-import { fetchWaybills, putWaybills, postWaybills, deleteWaybills } from 'src/store/apps/waybills/CRUD'
-
+import { fetchWaybills, deleteWaybills } from 'src/store/apps/waybills/CRUD'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 
-// ** Third Party Components
-import axios from 'axios'
-import { useRouter } from 'next/router'
 // ** Custom Table Components Imports
-import TableHeader from 'src/views/apps/user/list/TableHeader'
-import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
-import UserUpdate from 'src/views/apps/user/list/UserUpdate'
+import TableHeader from 'src/views/apps/waybills/list/TableHeader'
+import AddWaybills from 'src/views/apps/waybills/list/AddWaybill'
+import EditWaybill from 'src/views/apps/waybills/list/EditWaybill'
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -86,12 +80,10 @@ const renderClient = row => {
 }
 
 const RowOptions = ({ id }) => {
-  // ** Hooks
   const dispatch = useDispatch()
-
-  // ** State
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
+  const { addDataLoading } = useSelector(state => state.index1)
 
   const handleRowOptionsClick = event => {
     setAnchorEl(event.currentTarget)
@@ -102,15 +94,18 @@ const RowOptions = ({ id }) => {
   }
 
   const handleDelete = () => {
-    dispatch(deleteData(id))
+    dispatch(deleteWaybills(id))
     handleRowOptionsClose()
+    dispatch(setAddWaybillCondition('delete'))
+    dispatch(setAddDataLoading(!addDataLoading))
   }
 
   const handleEdit = () => {
-    dispatch(openShowUpdate())
+    dispatch(openShowEdit())
     handleRowOptionsClose()
-    dispatch(setUpdateId(id))
+    dispatch(setEditId(id))
   }
+
   return (
     <>
       <IconButton size='small' onClick={handleRowOptionsClick}>
@@ -131,15 +126,6 @@ const RowOptions = ({ id }) => {
         }}
         PaperProps={{ style: { minWidth: '8rem' } }}
       >
-        {/* <MenuItem
-          component={Link}
-          sx={{ '& svg': { mr: 2 } }}
-          onClick={handleRowOptionsClose}
-          href='/apps/user/view/overview/'
-        >
-          <Icon icon='mdi:eye-outline' fontSize={20} />
-          View
-        </MenuItem> */}
         <MenuItem onClick={handleEdit} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
@@ -172,7 +158,7 @@ const columns = [
   },
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 200,
     field: 'Waybills no',
     headerName: 'Waybills no',
     renderCell: ({ row }) => {
@@ -185,13 +171,13 @@ const columns = [
   },
   {
     flex: 0.2,
-    minWidth: 150,
-    field: 'Vehicle type',
-    headerName: 'Vehicle type',
+    minWidth: 200,
+    field: 'Vehicle brand',
+    headerName: 'Vehicle brand',
     renderCell: ({ row, data }) => (
       <Typography noWrap variant='body2'>
         {data
-          .filter(type => row.id_vehicle_brand === type.id)
+          .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
               {type.vehicle_brand}
@@ -208,12 +194,13 @@ const columns = [
     renderCell: ({ row, data, vehicleKind }) => (
       <Typography noWrap variant='body2'>
         {data
-          .filter(type => row.id_vehicles_subject === type.id)
+          .filter(type => row.id_vehicle === type.id)
           .map(type => {
             const kind = vehicleKind.find(k => k.id === type.id_vehicle_subject)
+
             return (
               <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-                {kind ? kind.vehicle_kindes_title : 'N/A'}
+                {kind && kind.vehicle_kindes_title}
               </Typography>
             )
           })}
@@ -229,7 +216,7 @@ const columns = [
     renderCell: ({ row, data }) => (
       <Typography noWrap variant='body2'>
         {data
-          .filter(type => row.id_plate_number === type.id)
+          .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
               {type.vehicle_plate_number}
@@ -240,7 +227,7 @@ const columns = [
   },
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 200,
     field: 'Waybills od start',
     headerName: 'Waybills od start',
     renderCell: ({ row }) => {
@@ -253,7 +240,7 @@ const columns = [
   },
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 200,
     field: 'Waybills od finish',
     headerName: 'Waybills od finish',
     renderCell: ({ row }) => {
@@ -266,11 +253,10 @@ const columns = [
   },
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 200,
     field: 'Waybills od gone',
     headerName: 'Waybills od gone',
     renderCell: ({ row }) => {
-      
       return (
         <Typography noWrap variant='body2'>
           {row.waybills_od_gone}
@@ -280,7 +266,7 @@ const columns = [
   },
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 200,
     field: 'Waybills fuel start',
     headerName: 'Waybills fuel start',
     renderCell: ({ row }) => {
@@ -294,7 +280,7 @@ const columns = [
 
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 200,
     field: 'Waybills fuel given',
     headerName: 'Waybills fuel given',
     renderCell: ({ row }) => {
@@ -308,7 +294,7 @@ const columns = [
 
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 230,
     field: 'Waybills fuel consumed',
     headerName: 'Waybills fuel consumed',
     renderCell: ({ row }) => {
@@ -322,11 +308,10 @@ const columns = [
 
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 200,
     field: 'Waybills fuel finish',
     headerName: 'Waybills fuel finish',
     renderCell: ({ row }) => {
-     
       return (
         <Typography noWrap variant='body2'>
           {row.waybills_fuel_finish}
@@ -356,19 +341,29 @@ const UserList = ({ apiData }) => {
   const dispatch = useDispatch()
   const { data } = useSelector(state => state.index)
   const { dataWaybills } = useSelector(state => state.CRUD)
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { addDataLoading, waybillCondition } = useSelector(state => state.index1)
 
-  const { updateId } = useSelector(state => state.ShowUpdate)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const { editId } = useSelector(state => state.editWaybills)
   useEffect(() => {
-    dispatch(fetchWaybills())
-    dispatch(fetchData())
-    dispatch(fetchVehicleKindes())
+    setIsLoading(true)
+
+    // Create two promises for fetching kind and dataWaybills
+    const fetchKindPromise = dispatch(fetchVehicleKindes())
+    const fetchDataWaybillsPromise = dispatch(fetchWaybills())
+
+    // Use Promise.all to wait for both promises to resolve
+    Promise.all([fetchKindPromise, fetchDataWaybillsPromise])
+      .then(() => {
+        setIsLoading(false)
+      })
+      .catch(() => {
+        setIsLoading(false)
+      })
   }, [dispatch, addDataLoading])
 
-  console.log(dataWaybills)
-  const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
-    state => state.vehicleDetails
-  )
+  const { vehicleKind } = useSelector(state => state.vehicleDetails)
 
   const memoizedData = useMemo(() => dataWaybills, [dataWaybills])
 
@@ -388,8 +383,8 @@ const UserList = ({ apiData }) => {
     setStatus(e.target.value)
   }, [])
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
-  const [userUpdate, setUserUpdate] = useState(false)
-  const toggleUserUpdate = () => dispatch(closeShowUpdate())
+  const [userEdit, setUserEdit] = useState(false)
+  const toggleUserEdit = () => dispatch(closeShowEdit())
 
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(4)
@@ -405,7 +400,7 @@ const UserList = ({ apiData }) => {
 
   const startIndex = page * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  const displayedRows = memoizedData.slice(startIndex, endIndex)
+  // const displayedRows = memoizedData.slice(startIndex, endIndex)
 
   return (
     <Grid container spacing={6}>
@@ -490,39 +485,52 @@ const UserList = ({ apiData }) => {
             </Grid>
           </CardContent>
           <Divider />
+          {waybillCondition == 'add' ? <Alert severity='success'>Data has added successfully</Alert> : ' '}
+          {waybillCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
+          {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label='sticky table'>
-              <TableHead>
-                <TableRow>
-                  {columns.map(column => (
-                    <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                      {column.headerName}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {displayedRows.map(row => (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <div style={{ display: 'flex', justifyContent: 'center', minWidth: '1300px', minHeight: '400px' }}>
+                    <CircularProgress />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              <Table stickyHeader aria-label='sticky table'>
+                <TableHead>
+                  <TableRow>
                     {columns.map(column => (
-                      <TableCell key={column.field} align={column.align}>
-                        {column.renderCell({
-                          row,
-                          vehicleKind,
-                          data
-                        })}
+                      <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                        {column.headerName}
                       </TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {memoizedData.map(row => (
+                    <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                      {columns.map(column => (
+                        <TableCell key={column.field} align={column.align}>
+                          {column.renderCell({
+                            row,
+                            vehicleKind,
+                            data
+                          })}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </TableContainer>
           <TablePagination
             rowsPerPageOptions={[4]}
             component='div'
-            count={memoizedData.length} // Use the total number of rows in your data array
+            count={memoizedData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -531,8 +539,8 @@ const UserList = ({ apiData }) => {
         </Card>
       </Grid>
 
-      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
-      {updateId ? <UserUpdate open={userUpdate} toggle={toggleUserUpdate} /> : ' '}
+      <AddWaybills open={addUserOpen} toggle={toggleAddUserDrawer} />
+      {editId ? <EditWaybill open={userEdit} toggle={toggleUserEdit} /> : ' '}
     </Grid>
   )
 }

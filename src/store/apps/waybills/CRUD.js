@@ -8,7 +8,7 @@ export const fetchWaybills = createAsyncThunk('waybills/fetchData', async () => 
       throw new Error('HTTP error! Status: ' + response.status)
     }
     const data = await response.json()
-    return data.waybills
+    return data.waybills.data
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)
   }
@@ -16,7 +16,7 @@ export const fetchWaybills = createAsyncThunk('waybills/fetchData', async () => 
 
 export const postWaybills = createAsyncThunk('waybills/postData', async dataToPost => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/vehicles', {
+    const response = await fetch('http://127.0.0.1:8000/api/waybills', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -31,16 +31,15 @@ export const postWaybills = createAsyncThunk('waybills/postData', async dataToPo
     }
 
     const data = await response.json()
-    console.log('Data posted successfully:', data)
     return data
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)
   }
 })
 
-export const putWaybills = createAsyncThunk('/waybills/putData', async ({combinedData, updateId}) => {
+export const putWaybills = createAsyncThunk('/waybills/putData', async ({combinedData, editId}) => {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${updateId}`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/waybills/${editId}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json'
@@ -62,7 +61,7 @@ export const putWaybills = createAsyncThunk('/waybills/putData', async ({combine
 
 export const deleteWaybills = createAsyncThunk('waybills/deleteData', async (idToDelete) => {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/vehicles/${idToDelete}`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/waybills/${idToDelete}`, {
       method: 'DELETE',
     });
 
@@ -91,10 +90,10 @@ const waybillsSlice = createSlice({
         state.dataWaybills = action.payload
       })
       .addCase(postWaybills.fulfilled, (state, action) => {
-        state.dataWaybills = [...state.data, action.payload]
+        state.dataWaybills = [...state.dataWaybills, action.payload]
       })
       .addCase(putWaybills.fulfilled, (state, action) => {
-        const updatedData = state.data.map(item => {
+        const updatedData = state.dataWaybills.map(item => {
           if (item.id === action.payload.id) {
             return action.payload
           }
@@ -103,7 +102,7 @@ const waybillsSlice = createSlice({
         state.dataWaybills = updatedData
       })
       .addCase(deleteWaybills.fulfilled, (state, action) => {
-        state.dataWaybills = state.data.filter(item => item.id !== action.payload);
+        state.dataWaybills = state.dataWaybills.filter(item => item.id !== action.payload);
       })
   }
 })

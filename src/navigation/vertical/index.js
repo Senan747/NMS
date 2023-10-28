@@ -1,30 +1,8 @@
 const navigation = () => {
   return [
     {
-      title: 'Invoice',
-      icon: 'mdi:file-document-outline',
-      children: [
-        {
-          title: 'List',
-          path: '/apps/invoice/list'
-        },
-        {
-          title: 'Preview',
-          path: '/apps/invoice/preview'
-        },
-        {
-          title: 'Edit',
-          path: '/apps/invoice/edit'
-        },
-        {
-          title: 'Add',
-          path: '/apps/invoice/add'
-        }
-      ]
-    },
-    {
       title: 'Vehicle',
-      icon: 'mdi:account-outline',
+      icon: 'tdesign:vehicle',
       children: [
         {
           title: 'List',
@@ -59,7 +37,7 @@ const navigation = () => {
     },
     {
       title: 'Waybills',
-      icon: 'mdi:account-outline',
+      icon: 'mdi:file-document-outline',
       children: [
         {
           title: 'List',

@@ -9,6 +9,7 @@ import ShowUpdate from './apps/ShowUpdate'
 import vehicleDetails from './apps/vehicle/vehicleDetails'
 import details from './apps/vehicle/details'
 import CRUD from './apps/waybills/CRUD'
+import editWaybills from './apps/waybills/editWaybills'
 
 export const store = configureStore({
   reducer: {
@@ -18,7 +19,8 @@ export const store = configureStore({
     ShowUpdate,
     vehicleDetails,
     details, 
-    CRUD
+    CRUD,
+    editWaybills
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

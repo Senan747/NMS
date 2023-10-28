@@ -1,7 +1,4 @@
-// ** React Imports
 import { useEffect, useState, useReducer } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
 
 // ** MUI Imports
 import Drawer from '@mui/material/Drawer'
@@ -17,6 +14,7 @@ import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
+import Alert from '@mui/material/Alert'
 
 // ** Third Party Imports
 import * as yup from 'yup'
@@ -28,10 +26,8 @@ import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-
-// ** Actions Imports
 import { postData, fetchData } from 'src/store/apps/vehicle'
-import { setAddDataLoading } from 'src/store/apps/vehicle/index1'
+import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/index1'
 
 import {
   fetchVehicleEngine,
@@ -65,44 +61,43 @@ const schema = yup.object().shape({
   vehicle_brand: yup.string().required(),
   vehicle_year: yup
     .number()
-    .typeError('Year field is required')
+    .typeError('Vehicle year is required')
     .min(1, obj => showErrors('Year', obj.value, obj.min))
     .required(),
   vehicle_weight: yup
     .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
+    .typeError('Vehicle weight is required')
+    .min(1, obj => showErrors('weight', obj.value, obj.min))
     .required(),
   vehicle_power: yup
     .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
+    .typeError('vehicle power field is required')
+    .min(1, obj => showErrors('power', obj.value, obj.min))
     .required(),
   vehicle_comsumption_mc: yup
     .number()
     .typeError('comsumption mc field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
+    .min(1, obj => showErrors('comsumption mc', obj.value, obj.min))
     .required(),
   vehicle_comsumption_day: yup
     .number()
     .typeError('comsumption day field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
+    .min(1, obj => showErrors('comsumption day', obj.value, obj.min))
     .required(),
   vehicle_comsumption_km: yup
     .number()
-    .typeError('comsumption day field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
+    .typeError('comsumption km field is required')
+    .min(1, obj => showErrors('comsumption km', obj.value, obj.min))
     .required(),
-
   vehicle_milage: yup
     .number()
     .typeError('Mileage field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
+    .min(1, obj => showErrors('Mileage', obj.value, obj.min))
     .required(),
   vehicle_status: yup
     .number()
-    .typeError('Mileage field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
+    .typeError('Status field is required')
+    .min(1, obj => showErrors('Status', obj.value, obj.min))
     .required()
 })
 
@@ -148,15 +143,15 @@ const reducer = (state, action) => {
 }
 
 const SidebarAddUser = props => {
-  // ** Props
   const { open, toggle } = props
-
-  // ** State
-
-  // ** Hooks
-
-  const [state, dispatch1] = useReducer(reducer, initialState)
-
+  const [state, dispatchSelect] = useReducer(reducer, initialState)
+  const data = useSelector(state => state.index)
+  const [showError, setShowError] = useState(false)
+  const { addDataLoading } = useSelector(state => state.index1)
+  const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
+    state => state.vehicleDetails
+  )
+  const [check, setCheck] = useState(false)
   const newStates = {
     id_vehicle_engine: state.id_vehicle_engine,
     id_vehicle_fuel: state.id_vehicle_fuel,
@@ -178,56 +173,47 @@ const SidebarAddUser = props => {
   })
 
   const resetForm = () => {
-    reset(defaultValues) // Reset the form fields
-
-    // Reset newStates to their initial values
-    dispatch1({
+    reset(defaultValues)
+    dispatchSelect({
       type: 'UPDATE_SELECTED_ENGINE',
       payload: initialState.id_vehicle_engine
     })
-
-    dispatch1({
+    dispatchSelect({
       type: 'UPDATE_SELECTED_FUEL',
       payload: initialState.id_vehicle_fuel
     })
-
-    dispatch1({
+    dispatchSelect({
       type: 'UPDATE_SELECTED_TYPE',
       payload: initialState.id_vehicle_type
     })
-
-    dispatch1({
+    dispatchSelect({
       type: 'UPDATE_SELECTED_KIND',
       payload: initialState.id_vehicle_subject
     })
-
-    dispatch1({
+    dispatchSelect({
       type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS',
       payload: initialState.id_vehicle_condition
     })
-
-    dispatch1({
+    dispatchSelect({
       type: 'UPDATE_SELECTED_STACKS',
       payload: initialState.id_vehicle_colon
     })
   }
 
-  const router = useRouter()
-  const data = useSelector(state => state.index)
   const onSubmit = formData => {
     const combinedData = { ...formData, ...newStates }
 
     if (data.data.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
-      console.error('Plate number already exists!')
+      setShowError(true)
     } else {
       dispatch(postData(combinedData))
       dispatch(fetchData())
-
       toggle()
       reset()
       resetForm()
-      // router.reload();
-      dispatch(setAddDataLoading(true))
+      dispatch(setAddDataLoading(!addDataLoading))
+      setShowError(false)
+      dispatch(setAddDataCondition('add'))
     }
   }
 
@@ -235,6 +221,8 @@ const SidebarAddUser = props => {
     toggle()
     reset()
     resetForm()
+    setShowError(false)
+    setCheck(false)
   }
   const dispatch = useDispatch()
   useEffect(() => {
@@ -246,10 +234,6 @@ const SidebarAddUser = props => {
     dispatch(fetchTechnicalConditions())
   }, [dispatch])
 
-  const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
-    state => state.vehicleDetails
-  )
-
   return (
     <Drawer
       open={open}
@@ -260,7 +244,7 @@ const SidebarAddUser = props => {
       sx={{
         '& .MuiDrawer-paper': {
           width: { xs: 200, sm: 800 },
-          maxHeight: '100vh', 
+          maxHeight: '100vh',
           display: 'flex',
           flexDirection: 'column'
         }
@@ -272,33 +256,34 @@ const SidebarAddUser = props => {
           <Icon icon='mdi:close' fontSize={20} />
         </IconButton>
       </Header>
+      {showError ? <Alert severity='error'>Plate number already exists!</Alert> : ' '}
       <Box sx={{ p: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+          <Grid container spacing={4}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_plate_number'
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
-                      value={value}
+                      value={value.toUpperCase()}
                       label='Plate number'
                       onChange={onChange}
-                      placeholder='10 AA 99'
+                      placeholder='10 AA 999'
                       error={Boolean(errors.vehicle_plate_number)}
                     />
                   )}
                 />
-                {errors.vehicle_plate_number && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_plate_number.message}</FormHelperText>
+                {!state.vehicle_plate_number && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle plate number field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_brand'
                   control={control}
@@ -319,8 +304,8 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_year'
                   control={control}
@@ -341,16 +326,16 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='role-select'>Select Role</InputLabel>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <InputLabel id='role-select'>Select engine</InputLabel>
                 <Select
                   fullWidth
                   value={state.id_vehicle_engine}
                   id='select-engine'
                   label='Select Engine'
                   labelId='engine-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_ENGINE', payload: e.target.value })}
+                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_ENGINE', payload: e.target.value })}
                   inputProps={{ placeholder: 'Select Engine' }}
                 >
                   {engineTypes.map(engine => (
@@ -359,14 +344,14 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!state.id_vehicle_engine && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle engine field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='fuel-select'>Select Fuel</InputLabel>
                 <Select
                   fullWidth
@@ -374,7 +359,7 @@ const SidebarAddUser = props => {
                   id='select-fuel'
                   label='Select Fuel'
                   labelId='fuel-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_FUEL', payload: e.target.value })}
+                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_FUEL', payload: e.target.value })}
                   inputProps={{ placeholder: 'Select Fuel' }}
                 >
                   {vehicleFuel.map(fuel => (
@@ -383,14 +368,14 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!state.id_vehicle_fuel && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle fuel field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='type-select'>Select Type</InputLabel>
                 <Select
                   fullWidth
@@ -398,7 +383,7 @@ const SidebarAddUser = props => {
                   id='select-type'
                   label='Select Type'
                   labelId='type-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_TYPE', payload: e.target.value })}
+                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_TYPE', payload: e.target.value })}
                   inputProps={{ placeholder: 'Select Type' }}
                 >
                   {vehicleType.map(type => (
@@ -407,14 +392,14 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!state.id_vehicle_type && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle type field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='kind-select'>Select Kind</InputLabel>
                 <Select
                   fullWidth
@@ -422,7 +407,7 @@ const SidebarAddUser = props => {
                   id='select-kind'
                   label='Select Kind'
                   labelId='kind-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_KIND', payload: e.target.value })}
+                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_KIND', payload: e.target.value })}
                   inputProps={{ placeholder: 'Select Kind' }}
                 >
                   {vehicleKind.map(kind => (
@@ -431,14 +416,14 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!state.id_vehicle_subject && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle subject field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='technical-conditions-select'>Select Technical Conditions</InputLabel>
                 <Select
                   fullWidth
@@ -446,7 +431,9 @@ const SidebarAddUser = props => {
                   id='select-technical-conditions'
                   label='Select Technical Conditions'
                   labelId='technical-conditions-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS', payload: e.target.value })}
+                  onChange={e =>
+                    dispatchSelect({ type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS', payload: e.target.value })
+                  }
                   inputProps={{ placeholder: 'Select Technical Conditions' }}
                 >
                   {technicalConditions.map(condition => (
@@ -455,14 +442,14 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!state.id_vehicle_condition && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle condition field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='stacks-select'>Select Stacks</InputLabel>
                 <Select
                   fullWidth
@@ -470,7 +457,7 @@ const SidebarAddUser = props => {
                   id='select-stacks'
                   label='Select Stacks'
                   labelId='stacks-select'
-                  onChange={e => dispatch1({ type: 'UPDATE_SELECTED_STACKS', payload: e.target.value })}
+                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_STACKS', payload: e.target.value })}
                   inputProps={{ placeholder: 'Select Stacks' }}
                 >
                   {stacks.map(stack => (
@@ -479,14 +466,14 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.vehicle_brand && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!state.id_vehicle_colon && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle colon field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_weight'
                   control={control}
@@ -507,8 +494,8 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_power'
                   control={control}
@@ -529,8 +516,8 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_comsumption_km'
                   control={control}
@@ -551,8 +538,8 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_comsumption_mc'
                   control={control}
@@ -573,8 +560,8 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_comsumption_day'
                   control={control}
@@ -595,8 +582,8 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_milage'
                   control={control}
@@ -616,9 +603,8 @@ const SidebarAddUser = props => {
                 )}
               </FormControl>
             </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_status'
                   control={control}
@@ -626,9 +612,9 @@ const SidebarAddUser = props => {
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
-                      label='vehicle status'
+                      label='status'
                       onChange={onChange}
-                      placeholder='Active'
+                      placeholder='1'
                       error={Boolean(errors.vehicle_status)}
                     />
                   )}
@@ -641,7 +627,7 @@ const SidebarAddUser = props => {
           </Grid>
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
+            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }} onClick={() => setCheck(true)}>
               Submit
             </Button>
             <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>

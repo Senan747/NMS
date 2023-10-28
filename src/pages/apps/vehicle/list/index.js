@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-
-// ** Next Imports
 import Link from 'next/link'
 
 // ** MUI Imports
@@ -19,20 +17,20 @@ import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
-
+import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
-
 import TablePagination from '@mui/material/TablePagination'
-// ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { TableContainer } from '@mui/material'
-import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
+import CircularProgress from '@mui/material/CircularProgress'
+
 // ** Store Imports
+import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Custom Components Imports
@@ -45,7 +43,6 @@ import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
 import { fetchData, deleteData } from 'src/store/apps/vehicle'
-
 import {
   fetchVehicleEngine,
   fetchVehicleFuel,
@@ -55,13 +52,11 @@ import {
   fetchStacks
 } from 'src/store/apps/vehicle/vehicleDetails'
 
-// ** Third Party Components
-import axios from 'axios'
-import { useRouter } from 'next/router'
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
 import UserUpdate from 'src/views/apps/user/list/UserUpdate'
+import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/index1'
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -92,10 +87,7 @@ const renderClient = row => {
 }
 
 const RowOptions = ({ id }) => {
-  // ** Hooks
   const dispatch = useDispatch()
-
-  // ** State
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
 
@@ -107,9 +99,21 @@ const RowOptions = ({ id }) => {
     setAnchorEl(null)
   }
 
-  const handleDelete = () => {
-    dispatch(deleteData(id))
-    handleRowOptionsClose()
+  const { addDataLoading } = useSelector(state => state.index1)
+
+  const handleDelete = async () => {
+    try {
+      const resultAction = await dispatch(deleteData(id))
+      if (deleteData.rejected.match(resultAction)) {
+        dispatch(setAddDataCondition('cantDelete'))
+      } else {
+        handleRowOptionsClose()
+        dispatch(setAddDataCondition('delete'))
+        dispatch(setAddDataLoading(!addDataLoading))
+      }
+    } catch (error) {
+      console.error('An error occurred while deleting:', error)
+    }
   }
 
   const handleEdit = () => {
@@ -117,6 +121,7 @@ const RowOptions = ({ id }) => {
     handleRowOptionsClose()
     dispatch(setUpdateId(id))
   }
+
   return (
     <>
       <IconButton size='small' onClick={handleRowOptionsClick}>
@@ -137,15 +142,6 @@ const RowOptions = ({ id }) => {
         }}
         PaperProps={{ style: { minWidth: '8rem' } }}
       >
-        {/* <MenuItem
-          component={Link}
-          sx={{ '& svg': { mr: 2 } }}
-          onClick={handleRowOptionsClose}
-          href='/apps/user/view/overview/'
-        >
-          <Icon icon='mdi:eye-outline' fontSize={20} />
-          View
-        </MenuItem> */}
         <MenuItem onClick={handleEdit} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
@@ -275,7 +271,7 @@ const columns = [
     renderCell: ({ row, engineTypes }) => (
       <Typography noWrap variant='body2'>
         {engineTypes
-          .filter(type => row.id_vehicle_type === type.id)
+          .filter(type => row.id_vehicle_engine === type.id)
           .map(type => (
             <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
               {type.engine_types_title}
@@ -390,6 +386,7 @@ const columns = [
       </Typography>
     )
   },
+
   {
     flex: 0.1,
     minWidth: 90,
@@ -407,14 +404,25 @@ const UserList = ({ apiData }) => {
   const [status, setStatus] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
+  const [isLoading, setIsLoading] = useState(true)
+  const [showAlert, setShowAlert] = useState(false)
 
   const dispatch = useDispatch()
   const { data } = useSelector(state => state.index)
   const { addDataLoading } = useSelector(state => state.index1)
 
   const { updateId } = useSelector(state => state.ShowUpdate)
+  const { dataCondition } = useSelector(state => state.index1)
   useEffect(() => {
+    setIsLoading(true)
     dispatch(fetchData())
+      .then(() => {
+        setIsLoading(false)
+      })
+      .catch(() => {
+        setIsLoading(false)
+      })
+
     dispatch(fetchVehicleEngine())
     dispatch(fetchVehicleFuel())
     dispatch(fetchVehicleKindes())
@@ -426,12 +434,7 @@ const UserList = ({ apiData }) => {
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
-  const [senan, setSenan] = useState(false)
-  setTimeout(() => {
-    setSenan(true)
-  }, [useEffect])
 
-  console.log(senan)
   const memoizedData = useMemo(() => data, [data])
 
   const handleFilter = useCallback(val => {
@@ -454,20 +457,27 @@ const UserList = ({ apiData }) => {
   const toggleUserUpdate = () => dispatch(closeShowUpdate())
 
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(4)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 4))
+    setRowsPerPage(parseInt(event.target.value, 5))
     setPage(0)
   }
 
   const startIndex = page * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  const displayedRows = memoizedData.slice(startIndex, endIndex)
+  // const displayedRows = memoizedData.slice(startIndex, endIndex)
+
+  const loadingIndicatorStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '400px'
+  }
 
   return (
     <Grid container spacing={6}>
@@ -552,38 +562,59 @@ const UserList = ({ apiData }) => {
             </Grid>
           </CardContent>
           <Divider />
+          {dataCondition == 'add' ? <Alert severity='success'>Data has added successfully</Alert> : ' '}
+          {dataCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
+          {dataCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
+          {dataCondition == 'cantDelete' ? (
+            <Alert severity='warning'>
+              Data didn't delete. Because this vehicle is using at waybills <span>x</span>
+            </Alert>
+          ) : (
+            ' '
+          )}
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
-          <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label='sticky table'>
-              <TableHead>
-                <TableRow>
-                  {columns.map(column => (
-                    <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                      {column.headerName}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {displayedRows.map(row => (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+          <TableContainer component={Paper} sx={{ maxHeight: 540 }}>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <div style={{ display: 'flex', justifyContent: 'center', minWidth: '1300px', minHeight: '400px' }}>
+                    <CircularProgress />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              <Table stickyHeader aria-label='sticky table'>
+                <TableHead>
+                  <TableRow>
                     {columns.map(column => (
-                      <TableCell key={column.field} align={column.align}>
-                        {column.renderCell({
-                          row,
-                          engineTypes,
-                          vehicleFuel,
-                          vehicleType,
-                          vehicleKind,
-                          technicalConditions,
-                          stacks
-                        })}
+                      <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                        {column.headerName}
                       </TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+
+                <TableBody>
+                  {memoizedData.map(row => (
+                    <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                      {columns.map(column => (
+                        <TableCell key={column.field} align={column.align}>
+                          {column.renderCell({
+                            row,
+                            engineTypes,
+                            vehicleFuel,
+                            vehicleType,
+                            vehicleKind,
+                            technicalConditions,
+                            stacks
+                          })}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </TableContainer>
           <TablePagination
             rowsPerPageOptions={[4]}

@@ -1,67 +1,9 @@
 const navigation = () => {
   return [
     {
-      icon: 'mdi:home-outline',
-      title: 'Dashboards',
-      children: [
-        {
-          icon: 'mdi:chart-donut',
-          title: 'CRM',
-          path: '/dashboards/crm'
-        },
-        {
-          icon: 'mdi:chart-timeline-variant',
-          title: 'Analytics',
-          path: '/dashboards/analytics'
-        },
-        {
-          icon: 'mdi:cart-outline',
-          title: 'eCommerce',
-          path: '/dashboards/ecommerce'
-        }
-      ]
-    },
-    {
       icon: 'mdi:apps',
       title: 'Apps',
       children: [
-        {
-          title: 'Email',
-          icon: 'mdi:email-outline',
-          path: '/apps/email'
-        },
-        {
-          title: 'Chat',
-          icon: 'mdi:message-outline',
-          path: '/apps/chat'
-        },
-        {
-          title: 'Calendar',
-          icon: 'mdi:calendar-blank-outline',
-          path: '/apps/calendar'
-        },
-        {
-          title: 'Invoice',
-          icon: 'mdi:file-document-outline',
-          children: [
-            {
-              title: 'List',
-              path: '/apps/invoice/list'
-            },
-            {
-              title: 'Preview',
-              path: '/apps/invoice/preview'
-            },
-            {
-              title: 'Edit',
-              path: '/apps/invoice/edit'
-            },
-            {
-              title: 'Add',
-              path: '/apps/invoice/add'
-            }
-          ]
-        },
         {
           title: 'Vehicle',
           icon: 'mdi:account-outline',
@@ -128,7 +70,6 @@ const navigation = () => {
           icon: 'mdi:google-circles-extended'
         },
         {
-          
           title: 'Cards',
           icon: 'mdi:credit-card-outline',
           children: [
@@ -241,7 +182,7 @@ const navigation = () => {
             {
               title: 'More',
               path: '/components/more'
-            },
+            }
           ]
         }
       ]
@@ -534,7 +475,7 @@ const navigation = () => {
             {
               title: 'Input Mask',
               path: '/forms/form-elements/input-mask'
-            },
+            }
           ]
         },
         {
