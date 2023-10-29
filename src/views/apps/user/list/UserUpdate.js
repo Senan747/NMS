@@ -249,7 +249,7 @@ const SidebarAddUser = props => {
                 <TextField
                   required
                   placeholder='99 AA 100'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   label='Plate number'
                   value={formData.vehicle_plate_number.toLocaleUpperCase()}
                   onChange={e => setFormData({ ...formData, vehicle_plate_number: e.target.value.toLocaleUpperCase() })}
@@ -265,7 +265,7 @@ const SidebarAddUser = props => {
                 <TextField
                   required
                   placeholder='BMW'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   label='Vehicle brand'
                   value={formData.vehicle_brand}
                   onChange={e => setFormData({ ...formData, vehicle_brand: e.target.value })}
@@ -282,7 +282,7 @@ const SidebarAddUser = props => {
                   required
                   label='Year'
                   placeholder='2000'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   value={formData.vehicle_year}
                   onChange={e => setFormData({ ...formData, vehicle_year: e.target.value })}
                 />
@@ -344,7 +344,7 @@ const SidebarAddUser = props => {
                   required
                   label='Weight'
                   placeholder='2000'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   value={formData.vehicle_weight}
                   onChange={e => setFormData({ ...formData, vehicle_weight: e.target.value })}
                 />
@@ -360,7 +360,7 @@ const SidebarAddUser = props => {
                   required
                   label='Power'
                   placeholder='300'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   value={formData.vehicle_power}
                   onChange={e => setFormData({ ...formData, vehicle_power: e.target.value })}
                 />
@@ -421,7 +421,7 @@ const SidebarAddUser = props => {
                 <TextField
                   required
                   placeholder='Placeholder'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   label='vehicle comsuption km'
                   type='text'
                   value={formData.vehicle_comsumption_km}
@@ -438,7 +438,7 @@ const SidebarAddUser = props => {
                 <TextField
                   required
                   placeholder='Placeholder'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   label='vehicle comsuption mc'
                   type='text'
                   value={formData.vehicle_comsumption_mc}
@@ -455,7 +455,7 @@ const SidebarAddUser = props => {
                 <TextField
                   required
                   placeholder='Placeholder'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   label='vehicle comsuption day'
                   type='text'
                   value={formData.vehicle_comsumption_day}
@@ -474,7 +474,7 @@ const SidebarAddUser = props => {
                 <TextField
                   required
                   placeholder='300'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   label='mileage'
                   type='text'
                   value={formData.vehicle_milage}
@@ -539,7 +539,7 @@ const SidebarAddUser = props => {
                 <TextField
                   required
                   placeholder='300'
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: +true }}
                   label='status'
                   type='text'
                   value={formData.vehicle_status}

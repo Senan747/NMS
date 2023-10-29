@@ -70,7 +70,6 @@ export const deleteWaybills = createAsyncThunk('waybills/deleteData', async (idT
       throw new Error('HTTP error! Status: ' + response.status);
     }
 
-
     return idToDelete;
   } catch (error) {
     throw new Error('Fetch error: ' + error.message);

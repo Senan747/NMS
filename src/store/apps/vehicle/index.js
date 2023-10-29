@@ -16,7 +16,7 @@ export const fetchData = createAsyncThunk('appUsers/fetchData', async () => {
 
 export const postData = createAsyncThunk('appUsers/postData', async dataToPost => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/vehicles', {
+    const response = await fetch('http://127.0.0.1:8000/api/vehicles/page=2', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

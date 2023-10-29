@@ -71,41 +71,6 @@ const navigation = () => {
       ]
     },
     {
-      title: 'Cars',
-      icon: 'mdi:account-outline',
-      children: [
-        {
-          title: 'List',
-          path: '/apps/cars/list'
-        },
-        {
-          title: 'View',
-          children: [
-            {
-              title: 'Overview',
-              path: '/apps/cars/view/overview'
-            },
-            {
-              title: 'Security',
-              path: '/apps/cars/view/security'
-            },
-            {
-              title: 'Billing & Plans',
-              path: '/apps/cars/view/billing-plan'
-            },
-            {
-              title: 'Notifications',
-              path: '/apps/cars/view/notification'
-            },
-            {
-              title: 'Connection',
-              path: '/apps/cars/view/connection'
-            }
-          ]
-        }
-      ]
-    },
-    {
       title: 'Pages',
       icon: 'mdi:file-document-outline',
       children: [

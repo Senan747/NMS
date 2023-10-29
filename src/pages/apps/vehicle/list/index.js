@@ -31,6 +31,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 
 // ** Store Imports
 import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
+import { setSortField } from 'src/store/apps/vehicle/sort'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Custom Components Imports
@@ -51,12 +52,12 @@ import {
   fetchVehicleTypes,
   fetchStacks
 } from 'src/store/apps/vehicle/vehicleDetails'
+import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/index1'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
 import UserUpdate from 'src/views/apps/user/list/UserUpdate'
-import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/index1'
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -69,7 +70,6 @@ const LinkStyled = styled(Link)(({ theme }) => ({
   }
 }))
 
-// ** renders client column
 const renderClient = row => {
   if (row.avatar) {
     return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
@@ -128,7 +128,7 @@ const RowOptions = ({ id }) => {
         <Icon icon='mdi:dots-vertical' />
       </IconButton>
       <Menu
-        keepMounted
+        keepMounted={true}
         anchorEl={anchorEl}
         open={rowOptionsOpen}
         onClose={handleRowOptionsClose}
@@ -155,7 +155,7 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = [
+const columns = ({ dispatch, setSortDirection, sortDirection }) => [
   {
     flex: 0.2,
     minWidth: 200,
@@ -177,6 +177,25 @@ const columns = [
     minWidth: 150,
     field: 'Brand',
     headerName: 'Brand',
+    headerName: (
+      <div>
+        <span>Brand</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('brand'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('brand'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
@@ -190,7 +209,25 @@ const columns = [
     flex: 0.2,
     minWidth: 150,
     field: 'Vehicle year',
-    headerName: 'Vehicle year',
+    headerName: (
+      <div>
+        <span>Year</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('year'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('year'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
@@ -209,7 +246,7 @@ const columns = [
         {vehicleType
           .filter(type => row.id_vehicle_type === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
               {type.vehicle_types_title}
             </Typography>
           ))}
@@ -226,7 +263,7 @@ const columns = [
         {vehicleKind
           .filter(kind => row.id_vehicle_subject === kind.id)
           .map(kind => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={kind.id}>
               {kind.vehicle_kindes_title}
             </Typography>
           ))}
@@ -237,7 +274,25 @@ const columns = [
     flex: 0.2,
     field: 'Weight',
     minWidth: 150,
-    headerName: 'Weight',
+    headerName: (
+      <div>
+        <span>Weight</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('weight'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('weight'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     renderCell: ({ row }) => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3 } }}>
@@ -252,8 +307,26 @@ const columns = [
   {
     flex: 0.1,
     minWidth: 150,
-    headerName: 'Power',
     field: 'Power',
+    headerName: (
+      <div>
+        <span>Power</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('power'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('power'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     renderCell: ({ row }) => {
       return (
         <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
@@ -273,14 +346,13 @@ const columns = [
         {engineTypes
           .filter(type => row.id_vehicle_engine === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
               {type.engine_types_title}
             </Typography>
           ))}
       </Typography>
     )
   },
-
   {
     flex: 0.2,
     minWidth: 150,
@@ -291,7 +363,7 @@ const columns = [
         {vehicleFuel
           .filter(fuel => row.id_vehicle_fuel === fuel.id)
           .map(fuel => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={fuel.id}>
               {fuel.fuel_kindes_title}
             </Typography>
           ))}
@@ -300,9 +372,27 @@ const columns = [
   },
   {
     flex: 0.1,
-    minWidth: 150,
-    headerName: 'comsuption km',
-    field: 'comsuption km',
+    minWidth: 200,
+    field: 'comsumption_km',
+    headerName: (
+      <div>
+        <span>comsumption km</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('comsumption_km'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('comsumption_km'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     renderCell: ({ row }) => {
       return (
         <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
@@ -313,8 +403,26 @@ const columns = [
   },
   {
     flex: 0.1,
-    minWidth: 150,
-    headerName: 'Comsuption mc',
+    minWidth: 200,
+    headerName: (
+      <div>
+        <span>comsumption mc</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('comsumption_mc'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('comsumption_mc'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     field: 'Comsuption mc',
     renderCell: ({ row }) => {
       return (
@@ -326,8 +434,26 @@ const columns = [
   },
   {
     flex: 0.1,
-    minWidth: 150,
-    headerName: 'Comsuption day',
+    minWidth: 200,
+    headerName: (
+      <div>
+        <span>comsumption day</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('comsumption_day'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('comsumption_day'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     field: 'Comsuption day',
     renderCell: ({ row }) => {
       return (
@@ -339,8 +465,26 @@ const columns = [
   },
   {
     flex: 0.1,
-    minWidth: 150,
-    headerName: 'mileage',
+    minWidth: 200,
+    headerName: (
+      <div>
+        <span>mileage</span>
+        <IconButton
+          size='small'
+          onClick={() => {
+            if (sortDirection === 'asc') {
+              dispatch(setSortField('milage'))
+              setSortDirection('desc')
+            } else {
+              dispatch(setSortField('milage'))
+              setSortDirection('asc')
+            }
+          }}
+        >
+          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+        </IconButton>
+      </div>
+    ),
     field: 'mileage',
     renderCell: ({ row }) => {
       return (
@@ -361,7 +505,7 @@ const columns = [
         {technicalConditions
           .filter(condition => row.id_vehicle_condition === condition.id)
           .map(condition => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={condition.id}>
               {condition.technical_conditions_title}
             </Typography>
           ))}
@@ -379,7 +523,7 @@ const columns = [
         {stacks
           .filter(stack => row.id_vehicle_colon === stack.id)
           .map(stack => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={stack.id}>
               {stack.stacks_title}
             </Typography>
           ))}
@@ -398,21 +542,23 @@ const columns = [
 ]
 
 const UserList = ({ apiData }) => {
-  const [role, setRole] = useState('')
-  const [plan, setPlan] = useState('')
   const [value, setValue] = useState('')
   const [status, setStatus] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
   const [isLoading, setIsLoading] = useState(true)
-  const [showAlert, setShowAlert] = useState(false)
-
   const dispatch = useDispatch()
   const { data } = useSelector(state => state.index)
   const { addDataLoading } = useSelector(state => state.index1)
-
   const { updateId } = useSelector(state => state.ShowUpdate)
   const { dataCondition } = useSelector(state => state.index1)
+  const { sortField } = useSelector(state => state.sort)
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [sortDirection, setSortDirection] = useState('asc')
+
+  const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection })
+
   useEffect(() => {
     setIsLoading(true)
     dispatch(fetchData())
@@ -422,7 +568,6 @@ const UserList = ({ apiData }) => {
       .catch(() => {
         setIsLoading(false)
       })
-
     dispatch(fetchVehicleEngine())
     dispatch(fetchVehicleFuel())
     dispatch(fetchVehicleKindes())
@@ -434,31 +579,145 @@ const UserList = ({ apiData }) => {
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
+  const memorizedData = useMemo(() => data, [data])
 
-  const memoizedData = useMemo(() => data, [data])
+  useEffect(() => {
+    if (dataCondition) {
+      const timeoutId = setTimeout(() => {
+        dispatch(setAddDataCondition(''))
+      }, 3000)
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [dataCondition])
 
   const handleFilter = useCallback(val => {
     setValue(val)
   }, [])
 
-  const handleRoleChange = useCallback(e => {
-    setRole(e.target.value)
+  const handleEngineChange = useCallback(e => {
+    setSelectedEngine(e.target.value)
   }, [])
 
-  const handlePlanChange = useCallback(e => {
-    setPlan(e.target.value)
+  const handleFuelChange = useCallback(e => {
+    setSelectedFuel(e.target.value)
   }, [])
 
-  const handleStatusChange = useCallback(e => {
-    setStatus(e.target.value)
+  const handleTypeChange = useCallback(e => {
+    setSelectedType(e.target.value)
   }, [])
+
+  const handleKindChange = useCallback(e => {
+    setSelectedKind(e.target.value)
+  }, [])
+
+  const handleConditionChange = useCallback(e => {
+    setSelectedCondition(e.target.value)
+  }, [])
+
+  const handleColonChange = useCallback(e => {
+    setSelectedColon(e.target.value)
+  }, [])
+
+  const [filteredData, setFilteredData] = useState([])
+  const [selectedEngine, setSelectedEngine] = useState('')
+  const [selectedFuel, setSelectedFuel] = useState('')
+  const [selectedType, setSelectedType] = useState('')
+  const [selectedKind, setSelectedKind] = useState('')
+  const [selectedCondition, setSelectedCondition] = useState('')
+  const [selectedColon, setSelectedColon] = useState('')
+
+  useEffect(() => {
+    if (data !== null) {
+      const filteredData = memorizedData.filter(vehicle => {
+        const plateNumber = vehicle.vehicle_plate_number || ''
+        const engineId = vehicle.id_vehicle_engine || ''
+        const fuelId = vehicle.id_vehicle_fuel || ''
+        const typeId = vehicle.id_vehicle_type || ''
+        const kindId = vehicle.id_vehicle_subject || ''
+        const conditionId = vehicle.id_vehicle_condition || ''
+        const colonId = vehicle.id_vehicle_colon || ''
+
+        return (
+          plateNumber.toLowerCase().includes(value.toLowerCase()) &&
+          (selectedEngine === '' || engineId === selectedEngine) &&
+          (selectedFuel === '' || fuelId === selectedFuel) &&
+          (selectedType === '' || typeId === selectedType) &&
+          (selectedKind === '' || kindId === selectedKind) &&
+          (selectedCondition === '' || conditionId === selectedCondition) &&
+          (selectedColon === '' || colonId === selectedColon)
+        )
+      })
+
+      setFilteredData(filteredData)
+    }
+  }, [data, memorizedData, value, selectedEngine, selectedFuel, selectedType, selectedKind, selectedCondition, selectedColon])
+
+  const [sortedData, setSortedData] = useState([])
+  useEffect(() => {
+    if (sortField === 'brand') {
+      if (sortDirection === 'asc') {
+        setSortedData(
+          [...filteredData].sort(
+            (a, b) => a.vehicle_brand?.localeCompare(b.vehicle_brand, undefined, { sensitivity: 'base' }) || 0
+          )
+        )
+      } else if (sortDirection === 'desc') {
+        setSortedData(
+          [...filteredData].sort(
+            (a, b) => b.vehicle_brand?.localeCompare(a.vehicle_brand, undefined, { sensitivity: 'base' }) || 0
+          )
+        )
+      }
+    } else if (sortField === 'year') {
+      if (sortDirection === 'asc') {
+        setSortedData([...filteredData].sort((a, b) => a.vehicle_year - b.vehicle_year)) || 0
+      } else if (sortDirection === 'desc') {
+        setSortedData([...filteredData].sort((a, b) => b.vehicle_year - a.vehicle_year)) || 0
+      }
+    } else if (sortField === 'weight') {
+      if (sortDirection === 'asc') {
+        setSortedData([...filteredData].sort((a, b) => a.vehicle_weight - b.vehicle_weight)) || 0
+      } else if (sortDirection === 'desc') {
+        setSortedData([...filteredData].sort((a, b) => b.vehicle_weight - a.vehicle_weight)) || 0
+      }
+    } else if (sortField === 'power') {
+      if (sortDirection === 'asc') {
+        setSortedData([...filteredData].sort((a, b) => a.vehicle_power - b.vehicle_power)) || 0
+      } else if (sortDirection === 'desc') {
+        setSortedData([...filteredData].sort((a, b) => b.vehicle_power - a.vehicle_power)) || 0
+      }
+    } else if (sortField === 'comsumption_km') {
+      if (sortDirection === 'asc') {
+        setSortedData([...filteredData].sort((a, b) => a.vehicle_comsumption_km - b.vehicle_comsumption_km)) || 0
+      } else if (sortDirection === 'desc') {
+        setSortedData([...filteredData].sort((a, b) => b.vehicle_comsumption_km - a.vehicle_comsumption_km)) || 0
+      }
+    } else if (sortField === 'comsumption_mc') {
+      if (sortDirection === 'asc') {
+        setSortedData([...filteredData].sort((a, b) => a.vehicle_comsumption_mc - b.vehicle_comsumption_mc)) || 0
+      } else if (sortDirection === 'desc') {
+        setSortedData([...filteredData].sort((a, b) => b.vehicle_comsumption_mc - a.vehicle_comsumption_mc)) || 0
+      }
+    } else if (sortField === 'comsumption_day') {
+      if (sortDirection === 'asc') {
+        setSortedData([...filteredData].sort((a, b) => a.vehicle_comsumption_day - b.vehicle_comsumption_day)) || 0
+      } else if (sortDirection === 'desc') {
+        setSortedData([...filteredData].sort((a, b) => b.vehicle_comsumption_day - a.vehicle_comsumption_day)) || 0
+      }
+    } else if (sortField === 'milage') {
+      if (sortDirection === 'asc') {
+        setSortedData([...filteredData].sort((a, b) => a.vehicle_milage - b.vehicle_milage)) || 0
+      } else if (sortDirection === 'desc') {
+        setSortedData([...filteredData].sort((a, b) => b.vehicle_milage - a.vehicle_milage)) || 0
+      }
+    } else {
+      setSortedData([...filteredData])
+    }
+  }, [sortField, filteredData, sortDirection])
+
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
-  const [userUpdate, setUserUpdate] = useState(false)
   const toggleUserUpdate = () => dispatch(closeShowUpdate())
-
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -470,30 +729,10 @@ const UserList = ({ apiData }) => {
 
   const startIndex = page * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  // const displayedRows = memoizedData.slice(startIndex, endIndex)
-
-  const loadingIndicatorStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '400px'
-  }
+  const displayedRows = sortedData.slice(startIndex, endIndex)
 
   return (
     <Grid container spacing={6}>
-      <Grid item xs={12}>
-        {apiData && (
-          <Grid container spacing={6}>
-            {apiData.statsHorizontal.map((item, index) => {
-              return (
-                <Grid item xs={12} md={3} sm={6} key={index}>
-                  <CardStatisticsHorizontal {...item} icon={<Icon icon={item.icon} />} />
-                </Grid>
-              )
-            })}
-          </Grid>
-        )}
-      </Grid>
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Search Filters' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
@@ -501,78 +740,136 @@ const UserList = ({ apiData }) => {
             <Grid container spacing={6}>
               <Grid item sm={4} xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel id='role-select'>Select Role</InputLabel>
+                  <InputLabel id='engine-select'>Select engine</InputLabel>
                   <Select
                     fullWidth
-                    value={role}
-                    id='select-role'
-                    label='Select Role'
-                    labelId='role-select'
-                    onChange={handleRoleChange}
-                    inputProps={{ placeholder: 'Select Role' }}
+                    value={selectedEngine}
+                    id='select-engine'
+                    label='Select engine'
+                    labelId='engine-select'
+                    onChange={handleEngineChange}
+                    inputProps={{ placeholder: 'Select engine' }}
                   >
-                    <MenuItem value=''>Select Role</MenuItem>
-                    <MenuItem value='admin'>Admin</MenuItem>
-                    <MenuItem value='author'>Author</MenuItem>
-                    <MenuItem value='editor'>Editor</MenuItem>
-                    <MenuItem value='maintainer'>Maintainer</MenuItem>
-                    <MenuItem value='subscriber'>Subscriber</MenuItem>
+                    {engineTypes.map(engine => (
+                      <MenuItem key={engine.id} value={engine.id}>
+                        {engine.engine_types_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item sm={4} xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel id='plan-select'>Select Plan</InputLabel>
+                  <InputLabel id='fuel-select'>Select fuel</InputLabel>
                   <Select
                     fullWidth
-                    value={plan}
-                    id='select-plan'
-                    label='Select Plan'
-                    labelId='plan-select'
-                    onChange={handlePlanChange}
-                    inputProps={{ placeholder: 'Select Plan' }}
+                    value={selectedFuel}
+                    id='select-fuel'
+                    label='Select fuel'
+                    labelId='fuel-select'
+                    onChange={handleFuelChange}
+                    inputProps={{ placeholder: 'Select fuel' }}
                   >
-                    <MenuItem value=''>Select Plan</MenuItem>
-                    <MenuItem value='basic'>Basic</MenuItem>
-                    <MenuItem value='company'>Company</MenuItem>
-                    <MenuItem value='enterprise'>Enterprise</MenuItem>
-                    <MenuItem value='team'>Team</MenuItem>
+                    {vehicleFuel.map(fuel => (
+                      <MenuItem key={fuel.id} value={fuel.id}>
+                        {fuel.fuel_kindes_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item sm={4} xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel id='status-select'>Select Status</InputLabel>
+                  <InputLabel id='status-select'>Select type</InputLabel>
                   <Select
                     fullWidth
-                    value={status}
-                    id='select-status'
-                    label='Select Status'
-                    labelId='status-select'
-                    onChange={handleStatusChange}
-                    inputProps={{ placeholder: 'Select Role' }}
+                    value={selectedType}
+                    id='select-type'
+                    label='Select type'
+                    labelId='type-select'
+                    onChange={handleTypeChange}
+                    inputProps={{ placeholder: 'Select Type' }}
                   >
-                    <MenuItem value=''>Select Role</MenuItem>
-                    <MenuItem value='pending'>Pending</MenuItem>
-                    <MenuItem value='active'>Active</MenuItem>
-                    <MenuItem value='inactive'>Inactive</MenuItem>
+                    {vehicleType.map(type => (
+                      <MenuItem key={type.id} value={type.id}>
+                        {type.vehicle_types_title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item sm={4} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='status-select'>Select kind</InputLabel>
+                  <Select
+                    fullWidth
+                    value={selectedKind}
+                    id='select-kind'
+                    label='Select kind'
+                    labelId='kind-select'
+                    onChange={handleKindChange}
+                    inputProps={{ placeholder: 'Select kind' }}
+                  >
+                    {vehicleKind.map(kind => (
+                      <MenuItem key={kind.id} value={kind.id}>
+                        {kind.vehicle_kindes_title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item sm={4} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='technical-condition-select'>Select technical condition</InputLabel>
+                  <Select
+                    fullWidth
+                    value={selectedCondition}
+                    id='select-technical condition'
+                    label='Select technical condition'
+                    labelId='technical-condition-select'
+                    onChange={handleConditionChange}
+                    inputProps={{ placeholder: 'Select technical condition' }}
+                  >
+                    {technicalConditions.map(condition => (
+                      <MenuItem key={condition.id} value={condition.id}>
+                        {condition.technical_conditions_title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item sm={4} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='colon-select'>Select colon</InputLabel>
+                  <Select
+                    fullWidth
+                    value={selectedColon}
+                    id='select-colon'
+                    label='Select colon'
+                    labelId='colon-select'
+                    onChange={handleColonChange}
+                    inputProps={{ placeholder: 'Select colon' }}
+                  >
+                    {stacks.map(stack => (
+                      <MenuItem key={stack.id} value={stack.id}>
+                        {stack.stacks_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
             </Grid>
           </CardContent>
+          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <Divider />
           {dataCondition == 'add' ? <Alert severity='success'>Data has added successfully</Alert> : ' '}
           {dataCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
           {dataCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
           {dataCondition == 'cantDelete' ? (
-            <Alert severity='warning'>
-              Data didn't delete. Because this vehicle is using at waybills <span>x</span>
-            </Alert>
+            <Alert severity='warning'>Data didn't delete. Because this vehicle is using at waybills</Alert>
           ) : (
             ' '
           )}
-          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <TableContainer component={Paper} sx={{ maxHeight: 540 }}>
             {isLoading ? (
               <TableRow>
@@ -586,18 +883,17 @@ const UserList = ({ apiData }) => {
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
                   <TableRow>
-                    {columns.map(column => (
-                      <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                    {columnsDefinition.map(column => (
+                      <TableCell key={column.field} align={column.align} sx={{ minWidth: column.minWidth }}>
                         {column.headerName}
                       </TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
-
                 <TableBody>
-                  {memoizedData.map(row => (
+                  {displayedRows.map(row => (
                     <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
-                      {columns.map(column => (
+                      {columnsDefinition.map(column => (
                         <TableCell key={column.field} align={column.align}>
                           {column.renderCell({
                             row,
@@ -619,7 +915,7 @@ const UserList = ({ apiData }) => {
           <TablePagination
             rowsPerPageOptions={[4]}
             component='div'
-            count={memoizedData.length} // Use the total number of rows in your data array
+            count={sortedData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -627,22 +923,10 @@ const UserList = ({ apiData }) => {
           />
         </Card>
       </Grid>
-
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
-      {updateId ? <UserUpdate open={userUpdate} toggle={toggleUserUpdate} /> : ' '}
+      {updateId ? <UserUpdate toggle={toggleUserUpdate} /> : ' '}
     </Grid>
   )
 }
-
-// export const getStaticProps = async () => {
-//   const res = await axios.get('/cards/statistics')
-//   const apiData = res.data
-
-//   return {
-//     props: {
-//       apiData
-//     }
-//   }
-// }
 
 export default UserList

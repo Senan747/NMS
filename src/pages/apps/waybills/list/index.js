@@ -112,7 +112,7 @@ const RowOptions = ({ id }) => {
         <Icon icon='mdi:dots-vertical' />
       </IconButton>
       <Menu
-        keepMounted
+        keepMounted={true}
         anchorEl={anchorEl}
         open={rowOptionsOpen}
         onClose={handleRowOptionsClose}
@@ -179,7 +179,7 @@ const columns = [
         {data
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}  key={type.id}>
               {type.vehicle_brand}
             </Typography>
           ))}
@@ -199,7 +199,7 @@ const columns = [
             const kind = vehicleKind.find(k => k.id === type.id_vehicle_subject)
 
             return (
-              <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+              <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}  key={type.id}>
                 {kind && kind.vehicle_kindes_title}
               </Typography>
             )
@@ -218,7 +218,7 @@ const columns = [
         {data
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
               {type.vehicle_plate_number}
             </Typography>
           ))}
@@ -337,23 +337,18 @@ const UserList = ({ apiData }) => {
   const [status, setStatus] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
-
   const dispatch = useDispatch()
   const { data } = useSelector(state => state.index)
   const { dataWaybills } = useSelector(state => state.CRUD)
   const { addDataLoading, waybillCondition } = useSelector(state => state.index1)
-
   const [isLoading, setIsLoading] = useState(true)
 
   const { editId } = useSelector(state => state.editWaybills)
   useEffect(() => {
     setIsLoading(true)
 
-    // Create two promises for fetching kind and dataWaybills
     const fetchKindPromise = dispatch(fetchVehicleKindes())
     const fetchDataWaybillsPromise = dispatch(fetchWaybills())
-
-    // Use Promise.all to wait for both promises to resolve
     Promise.all([fetchKindPromise, fetchDataWaybillsPromise])
       .then(() => {
         setIsLoading(false)
@@ -366,6 +361,16 @@ const UserList = ({ apiData }) => {
   const { vehicleKind } = useSelector(state => state.vehicleDetails)
 
   const memoizedData = useMemo(() => dataWaybills, [dataWaybills])
+
+  useEffect(() => {
+    if (waybillCondition) {
+      const timeoutId = setTimeout(() => {
+        dispatch(setAddWaybillCondition(''))
+      }, 3000)
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [waybillCondition])
 
   const handleFilter = useCallback(val => {
     setValue(val)
@@ -419,7 +424,7 @@ const UserList = ({ apiData }) => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Search Filters' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
+          {/* <CardHeader title='Search Filters' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
           <CardContent>
             <Grid container spacing={6}>
               <Grid item sm={4} xs={12}>
@@ -483,7 +488,7 @@ const UserList = ({ apiData }) => {
                 </FormControl>
               </Grid>
             </Grid>
-          </CardContent>
+          </CardContent> */}
           <Divider />
           {waybillCondition == 'add' ? <Alert severity='success'>Data has added successfully</Alert> : ' '}
           {waybillCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
@@ -527,6 +532,7 @@ const UserList = ({ apiData }) => {
               </Table>
             )}
           </TableContainer>
+
           <TablePagination
             rowsPerPageOptions={[4]}
             component='div'

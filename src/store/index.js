@@ -1,4 +1,3 @@
-// ** Toolkit imports
 import { configureStore } from '@reduxjs/toolkit'
 
 // ** Reducers
@@ -10,6 +9,7 @@ import vehicleDetails from './apps/vehicle/vehicleDetails'
 import details from './apps/vehicle/details'
 import CRUD from './apps/waybills/CRUD'
 import editWaybills from './apps/waybills/editWaybills'
+import sort from './apps/vehicle/sort'
 
 export const store = configureStore({
   reducer: {
@@ -20,7 +20,8 @@ export const store = configureStore({
     vehicleDetails,
     details, 
     CRUD,
-    editWaybills
+    editWaybills,
+    sort
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
