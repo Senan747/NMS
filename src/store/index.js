@@ -10,6 +10,7 @@ import details from './apps/vehicle/details'
 import CRUD from './apps/waybills/CRUD'
 import editWaybills from './apps/waybills/editWaybills'
 import sort from './apps/vehicle/sort'
+import sortWaybills from './apps/waybills/sortWaybills'
 
 export const store = configureStore({
   reducer: {
@@ -21,7 +22,8 @@ export const store = configureStore({
     details, 
     CRUD,
     editWaybills,
-    sort
+    sort,
+    sortWaybills
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

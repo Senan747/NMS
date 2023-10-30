@@ -28,6 +28,8 @@ import TablePagination from '@mui/material/TablePagination'
 import Icon from 'src/@core/components/icon'
 import { TableContainer } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
+import ListItemIcon from '@mui/material'
+import listItemIconClasses from '@mui/material'
 
 // ** Store Imports
 import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
@@ -155,7 +157,7 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = ({ dispatch, setSortDirection, sortDirection }) => [
+const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
   {
     flex: 0.2,
     minWidth: 200,
@@ -192,7 +194,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'brand' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -224,7 +230,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'year' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -289,7 +299,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'weight' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -323,7 +337,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'power' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -389,7 +407,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'comsumption_km' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -419,7 +441,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'comsumption_mc' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -450,7 +476,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'comsumption_day' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -481,7 +511,11 @@ const columns = ({ dispatch, setSortDirection, sortDirection }) => [
             }
           }}
         >
-          {sortDirection === 'asc' ? <Icon icon='clarity:arrow-line' /> : <Icon icon='clarity:arrow-line' rotate={2} />}
+          {sortDirection === 'asc' && sortField === 'milage' ? (
+            <Icon icon='clarity:arrow-line' />
+          ) : (
+            <Icon icon='clarity:arrow-line' rotate={2} />
+          )}
         </IconButton>
       </div>
     ),
@@ -557,7 +591,7 @@ const UserList = ({ apiData }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [sortDirection, setSortDirection] = useState('asc')
 
-  const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection })
+  const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection, sortField })
 
   useEffect(() => {
     setIsLoading(true)
@@ -651,7 +685,17 @@ const UserList = ({ apiData }) => {
 
       setFilteredData(filteredData)
     }
-  }, [data, memorizedData, value, selectedEngine, selectedFuel, selectedType, selectedKind, selectedCondition, selectedColon])
+  }, [
+    data,
+    memorizedData,
+    value,
+    selectedEngine,
+    selectedFuel,
+    selectedType,
+    selectedKind,
+    selectedCondition,
+    selectedColon
+  ])
 
   const [sortedData, setSortedData] = useState([])
   useEffect(() => {
@@ -754,7 +798,12 @@ const UserList = ({ apiData }) => {
                       <MenuItem key={engine.id} value={engine.id}>
                         {engine.engine_types_title}
                       </MenuItem>
-                    ))}
+                    ))}{' '}
+                    {selectedEngine !== '' && (
+                      <MenuItem value=''>
+                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedEngine('')} />
+                      </MenuItem>
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -775,6 +824,11 @@ const UserList = ({ apiData }) => {
                         {fuel.fuel_kindes_title}
                       </MenuItem>
                     ))}
+                    {selectedFuel !== '' && (
+                      <MenuItem value=''>
+                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedFuel('')} />
+                      </MenuItem>
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -795,6 +849,11 @@ const UserList = ({ apiData }) => {
                         {type.vehicle_types_title}
                       </MenuItem>
                     ))}
+                    {selectedType !== '' && (
+                      <MenuItem value=''>
+                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedType('')} />
+                      </MenuItem>
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -815,6 +874,11 @@ const UserList = ({ apiData }) => {
                         {kind.vehicle_kindes_title}
                       </MenuItem>
                     ))}
+                    {selectedKind !== '' && (
+                      <MenuItem value=''>
+                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedKind('')} />
+                      </MenuItem>
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -835,6 +899,14 @@ const UserList = ({ apiData }) => {
                         {condition.technical_conditions_title}
                       </MenuItem>
                     ))}
+                    {selectedCondition !== '' && (
+                      <MenuItem value=''>
+                        <Icon
+                          icon='material-symbols:delete-outline'
+                          onClick={() => setSelectedConselectedCondition('')}
+                        />
+                      </MenuItem>
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -855,6 +927,11 @@ const UserList = ({ apiData }) => {
                         {stack.stacks_title}
                       </MenuItem>
                     ))}
+                    {selectedColon !== '' && (
+                      <MenuItem value=''>
+                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedCoselectedColon('')} />
+                      </MenuItem>
+                    )}
                   </Select>
                 </FormControl>
               </Grid>

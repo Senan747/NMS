@@ -25,7 +25,7 @@ const TableHeader = props => {
           size='small'
           value={value}
           sx={{ mr: 6, mb: 2 }}
-          placeholder='Search User'
+          placeholder='Search waybill'
           onChange={e => handleFilter(e.target.value)}
         />
 
