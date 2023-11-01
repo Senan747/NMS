@@ -26,6 +26,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchData, putData, fetchIdData } from 'src/store/apps/vehicle'
 import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/index1'
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
+import { useUpdateVehicleMutation } from 'src/store/apps/vehicle/api'
+import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -112,14 +114,23 @@ const reducer = (state, action) => {
 const SidebarAddUser = props => {
   const { toggle } = props
   const dispatch = useDispatch()
+  const { page } = useSelector(state => state.index1)
   const { updateId } = useSelector(state => state.ShowUpdate)
-  const { data } = useSelector(state => state.index)
+
+  const { data, isLoading } = useGetVehiclesQuery(page + 1)
+  const [dataVehicles, setDataVehicles] = useState([])
   const { ShowUpdate } = useSelector(state => state.ShowUpdate)
   const [check, setCheck] = useState(false)
   const { addDataLoading } = useSelector(state => state.index1)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
+
+  useEffect(() => {
+    if (!isLoading) {
+      setDataVehicles(data.vehicles.data)
+    }
+  }, [page, data])
 
   const [formData, setFormData] = useState({
     vehicle_plate_number: '',
@@ -146,7 +157,9 @@ const SidebarAddUser = props => {
     }
   }, [updateId])
 
-  const vehicle = data.find(vehic => vehic.id === updateId)
+  const vehicle = dataVehicles.find(vehic => vehic.id === updateId)
+
+  const [updateVehicle] = useUpdateVehicleMutation()
 
   useEffect(() => {
     if (vehicle) {
@@ -199,17 +212,15 @@ const SidebarAddUser = props => {
     if (vehicle === combinedData) {
       alert('No changes were made')
     } else {
-      dispatch(putData({ combinedData, updateId }))
-      dispatch(fetchData())
-      toggle()
       dispatch(setAddDataLoading(!addDataLoading))
+      updateVehicle({ updateId, vehicleData: combinedData })
+      toggle()
       dispatch(setAddDataCondition('update'))
     }
   }
 
   const handleClose = () => {
     toggle()
-    dispatch(fetchData())
     dispatch(closeShowUpdate())
     resetForm()
   }

@@ -28,7 +28,7 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch, useSelector } from 'react-redux'
 import { postData, fetchData } from 'src/store/apps/vehicle'
 import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/index1'
-
+import { useCreateVehicleMutation } from 'src/store/apps/vehicle/api'
 import {
   fetchVehicleEngine,
   fetchVehicleFuel,
@@ -145,6 +145,9 @@ const reducer = (state, action) => {
 const SidebarAddUser = props => {
   const { open, toggle } = props
   const [state, dispatchSelect] = useReducer(reducer, initialState)
+
+  const [createVehicle] = useCreateVehicleMutation()
+
   const data = useSelector(state => state.index)
   const [showError, setShowError] = useState(false)
   const { addDataLoading } = useSelector(state => state.index1)
@@ -206,14 +209,14 @@ const SidebarAddUser = props => {
     if (data.data.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
       setShowError(true)
     } else {
-      dispatch(postData(combinedData))
-      dispatch(fetchData())
+      createVehicle(combinedData)
       toggle()
       reset()
       resetForm()
       dispatch(setAddDataLoading(!addDataLoading))
       setShowError(false)
       dispatch(setAddDataCondition('add'))
+      setCheck(false)
     }
   }
 
@@ -298,7 +301,7 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {errors.vehicle_brand && (
+                {errors.vehicle_brand && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
                 )}
               </FormControl>
@@ -320,7 +323,7 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {errors.vehicle_year && (
+                {errors.vehicle_year && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_year.message}</FormHelperText>
                 )}
               </FormControl>
@@ -488,7 +491,7 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {errors.vehicle_weight && (
+                {errors.vehicle_weight && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_weight.message}</FormHelperText>
                 )}
               </FormControl>
@@ -510,7 +513,7 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {errors.vehicle_power && (
+                {errors.vehicle_power && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_power.message}</FormHelperText>
                 )}
               </FormControl>

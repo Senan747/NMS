@@ -11,6 +11,7 @@ import CRUD from './apps/waybills/CRUD'
 import editWaybills from './apps/waybills/editWaybills'
 import sort from './apps/vehicle/sort'
 import sortWaybills from './apps/waybills/sortWaybills'
+import { api } from './apps/vehicle/api'
 
 export const store = configureStore({
   reducer: {
@@ -23,10 +24,13 @@ export const store = configureStore({
     CRUD,
     editWaybills,
     sort,
-    sortWaybills
+    sortWaybills,
+    [api.reducerPath]: api.reducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false
-    })
+    }).concat(api.middleware)
 })
+
+// setupListeners(store.dispatch)

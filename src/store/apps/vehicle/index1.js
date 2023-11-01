@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   addDataLoading: false,
   dataCondition: '',
-  waybillCondition: ''
+  waybillCondition: '',
+  page: 0
 }
 
 const dataSlice = createSlice({
@@ -18,9 +19,12 @@ const dataSlice = createSlice({
     },
     setAddWaybillCondition: (state, action) => {
       state.waybillCondition = action.payload
+    },
+    setPage: (state, action) => {
+      state.page = action.payload
     }
   }
 });
 
-export const { setAddDataLoading, setAddDataCondition, setAddWaybillCondition } = dataSlice.actions;
+export const { setAddDataLoading, setAddDataCondition, setAddWaybillCondition, setPage } = dataSlice.actions;
 export default dataSlice.reducer;
