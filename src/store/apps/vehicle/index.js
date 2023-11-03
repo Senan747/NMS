@@ -32,7 +32,6 @@ export const postData = createAsyncThunk('appUsers/postData', async dataToPost =
 
     const data = await response.json()
 
-    // console.log('Data posted successfully:', data)
     return data
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)

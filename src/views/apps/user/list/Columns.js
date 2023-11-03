@@ -4,7 +4,6 @@ import Link from 'next/link'
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Menu from '@mui/material/Menu'
-
 import { styled } from '@mui/material/styles'
 import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
@@ -68,10 +67,8 @@ const RowOptions = ({ id }) => {
   const { addDataLoading } = useSelector(state => state.index1)
   const [deleteVehicle, { isError }] = useDeleteVehicleMutation()
 
-
   const handleDelete = async () => {
     try {
-      // You can dispatch the deleteData action here
       await deleteVehicle(id)
         .unwrap()
         .then(payload => {
@@ -84,21 +81,6 @@ const RowOptions = ({ id }) => {
         })
     } catch (error) {}
   }
-
-  // const handleDelete = async () => {
-  //   try {
-  //     const resultAction = await dispatch(deleteData(id))
-  //     if (deleteData.rejected.match(resultAction)) {
-  //       dispatch(setAddDataCondition('cantDelete'))
-  //     } else {
-  //       handleRowOptionsClose()
-  //       dispatch(setAddDataCondition('delete'))
-  //       dispatch(setAddDataLoading(!addDataLoading))
-  //     }
-  //   } catch (error) {
-  //     console.error('An error occurred while deleting:', error)
-  //   }
-  // }
 
   const handleEdit = () => {
     dispatch(openShowUpdate())
@@ -147,11 +129,13 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     headerName: 'Plate number',
     renderCell: ({ row }) => {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(row)}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <LinkStyled href='/apps/user/view/overview/'>{row.vehicle_plate_number}</LinkStyled>
-          </Box>
+        <Box>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(row)}
+            <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+              <LinkStyled href='/apps/user/view/overview/'>{row.vehicle_plate_number}</LinkStyled>
+            </div>
+          </div>
         </Box>
       )
     }
@@ -234,15 +218,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     field: 'Type',
     headerName: 'Type',
     renderCell: ({ row, vehicleType }) => (
-      <Typography noWrap variant='body2'>
+      <div variant='body2'>
         {vehicleType
           .filter(type => row.id_vehicle_type === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
               {type.vehicle_types_title}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
   {
@@ -251,15 +235,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     field: 'Subject',
     headerName: 'Subject',
     renderCell: ({ row, vehicleKind }) => (
-      <Typography noWrap variant='body2'>
+      <div variant='body2'>
         {vehicleKind
           .filter(kind => row.id_vehicle_subject === kind.id)
           .map(kind => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={kind.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={kind.id}>
               {kind.vehicle_kindes_title}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
   {
@@ -342,15 +326,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     field: 'Engine',
     headerName: 'Engine',
     renderCell: ({ row, engineTypes }) => (
-      <Typography noWrap variant='body2'>
+      <div variant='body2'>
         {engineTypes
           .filter(type => row.id_vehicle_engine === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
               {type.engine_types_title}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
   {
@@ -359,15 +343,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     field: 'Fuel',
     headerName: 'Fuel',
     renderCell: ({ row, vehicleFuel }) => (
-      <Typography noWrap variant='body2'>
+      <div variant='body2'>
         {vehicleFuel
           .filter(fuel => row.id_vehicle_fuel === fuel.id)
           .map(fuel => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={fuel.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={fuel.id}>
               {fuel.fuel_kindes_title}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
   {
@@ -517,15 +501,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     field: 'Conditions',
     headerName: 'Conditions',
     renderCell: ({ row, technicalConditions }) => (
-      <Typography noWrap variant='body2'>
+      <div variant='body2'>
         {technicalConditions
           .filter(condition => row.id_vehicle_condition === condition.id)
           .map(condition => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={condition.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={condition.id}>
               {condition.technical_conditions_title}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
 
@@ -535,15 +519,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     field: 'Colon',
     headerName: 'Colon',
     renderCell: ({ row, stacks }) => (
-      <Typography noWrap variant='body2'>
+      <div variant='body2'>
         {stacks
           .filter(stack => row.id_vehicle_colon === stack.id)
           .map(stack => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={stack.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={stack.id}>
               {stack.stacks_title}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
 

@@ -188,22 +188,22 @@ const SidebarAddUser = props => {
   const resetForm = () => {
     setFormData({
       ...formData,
-      vehicle_plate_number: '',
-      vehicle_brand: '',
-      vehicle_year: '',
-      vehicle_weight: '',
-      vehicle_power: '',
-      vehicle_comsumption_km: '',
-      vehicle_comsumption_mc: '',
-      vehicle_comsumption_day: '',
-      vehicle_milage: '',
-      vehicle_status: '',
-      id_vehicle_engine: '',
-      id_vehicle_fuel: '',
-      id_vehicle_type: '',
-      id_vehicle_subject: '',
-      id_vehicle_condition: '',
-      id_vehicle_colon: ''
+      vehicle_plate_number: vehicle.vehicle_plate_number,
+      vehicle_brand: vehicle.vehicle_brand,
+      vehicle_year: vehicle.vehicle_year,
+      vehicle_weight: vehicle.vehicle_weight,
+      vehicle_power: vehicle.vehicle_power,
+      vehicle_comsumption_km: vehicle.vehicle_comsumption_km,
+      vehicle_comsumption_mc: vehicle.vehicle_comsumption_mc,
+      vehicle_comsumption_day: vehicle.vehicle_comsumption_day,
+      vehicle_milage: vehicle.vehicle_milage,
+      vehicle_status: vehicle.vehicle_status,
+      id_vehicle_engine: vehicle.id_vehicle_engine,
+      id_vehicle_fuel: vehicle.id_vehicle_fuel,
+      id_vehicle_type: vehicle.id_vehicle_type,
+      id_vehicle_subject: vehicle.id_vehicle_subject,
+      id_vehicle_condition: vehicle.id_vehicle_condition,
+      id_vehicle_colon: vehicle.id_vehicle_colon
     })
   }
 
@@ -255,12 +255,12 @@ const SidebarAddUser = props => {
       <Box sx={{ p: 5 }}>
         <form onSubmit={handleSubmit} key={updateId}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   placeholder='99 AA 100'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   label='Plate number'
                   value={formData.vehicle_plate_number.toLocaleUpperCase()}
                   onChange={e => setFormData({ ...formData, vehicle_plate_number: e.target.value.toLocaleUpperCase() })}
@@ -271,12 +271,12 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   placeholder='BMW'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   label='Vehicle brand'
                   value={formData.vehicle_brand}
                   onChange={e => setFormData({ ...formData, vehicle_brand: e.target.value })}
@@ -287,13 +287,13 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   label='Year'
                   placeholder='2000'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   value={formData.vehicle_year}
                   onChange={e => setFormData({ ...formData, vehicle_year: e.target.value })}
                 />
@@ -303,7 +303,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl required fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='demo-simple-select-required-label'>Type</InputLabel>
                 <Select
@@ -326,7 +326,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl required fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='demo-simple-select-required-label'>Subject</InputLabel>
                 <Select
@@ -349,13 +349,13 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   label='Weight'
                   placeholder='2000'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   value={formData.vehicle_weight}
                   onChange={e => setFormData({ ...formData, vehicle_weight: e.target.value })}
                 />
@@ -365,13 +365,13 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   label='Power'
                   placeholder='300'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   value={formData.vehicle_power}
                   onChange={e => setFormData({ ...formData, vehicle_power: e.target.value })}
                 />
@@ -381,7 +381,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl required fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='demo-simple-select-required-label'>Fuel</InputLabel>
                 <Select
@@ -404,7 +404,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl required fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='demo-simple-select-required-label'>Engine</InputLabel>
                 <Select
@@ -427,12 +427,12 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   placeholder='Placeholder'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   label='vehicle comsuption km'
                   type='text'
                   value={formData.vehicle_comsumption_km}
@@ -444,12 +444,12 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   placeholder='Placeholder'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   label='vehicle comsuption mc'
                   type='text'
                   value={formData.vehicle_comsumption_mc}
@@ -461,12 +461,12 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   placeholder='Placeholder'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   label='vehicle comsuption day'
                   type='text'
                   value={formData.vehicle_comsumption_day}
@@ -480,12 +480,12 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   placeholder='300'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   label='mileage'
                   type='text'
                   value={formData.vehicle_milage}
@@ -497,7 +497,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl required fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='demo-simple-select-required-label'>Condition</InputLabel>
                 <Select
@@ -522,7 +522,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl required fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='demo-simple-select-required-label'>Colon</InputLabel>
                 <Select
@@ -545,18 +545,18 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   required
                   placeholder='300'
-                  InputLabelProps={{ shrink: +true }}
+                  InputLabelProps={{ shrink: true }}
                   label='status'
                   type='text'
                   value={formData.vehicle_status}
                   onChange={e => setFormData({ ...formData, vehicle_status: e.target.value })}
                 />
-                {!formData.vehicle_milage && check && (
+                {!formData.vehicle_status && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle status field is required</FormHelperText>
                 )}
               </FormControl>

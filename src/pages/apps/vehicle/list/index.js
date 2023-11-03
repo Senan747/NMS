@@ -51,27 +51,26 @@ const UserList = () => {
 
   const { page } = useSelector(state => state.index1)
 
-
   const [rowsPerPage, setRowsPerPage] = useState(15)
 
   const [sortDirection, setSortDirection] = useState('asc')
   let page1 = page + 1
   const { data, error, isLoading, isFetching } = useGetVehiclesQuery(page1)
 
-  dispatch(setAddDataLoading(isLoading))
-
+  useEffect(() => {
+    dispatch(setAddDataLoading(isLoading))
+  }, [isLoading])
 
   const [dataVehicles, setDataVehicles] = useState([])
 
   const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField })
 
-  const [count, setCount] = useState('')
+  const [count, setCount] = useState(0)
   useEffect(() => {
     if (!isLoading) {
       setDataVehicles(data.vehicles.data)
       setCount(data.vehicles.total)
     }
-
   }, [addDataLoading, page, data, dataCondition])
 
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
@@ -236,8 +235,6 @@ const UserList = () => {
     setRowsPerPage(parseInt(event.target.value, rowsPerPage))
     dispatch(setPage(0)) // Reset the page to the first page when changing rows per page
   }
-
-  console.log(page)
 
   // const startIndex = page * rowsPerPage
   // const endIndex = startIndex + rowsPerPage
@@ -415,15 +412,11 @@ const UserList = () => {
           ) : (
             ' '
           )}
-          <TableContainer component={Paper} sx={{ maxHeight: 540 }}>
+          <TableContainer component={Paper} sx={{ maxHeight: 740 }}>
             {isFetching || isLoading || addDataLoading ? (
-              <TableRow>
-                <TableCell colSpan={Columns.length}>
-                  <div style={{ display: 'flex', justifyContent: 'center', minWidth: '1300px', minHeight: '400px' }}>
-                    <CircularProgress />
-                  </div>
-                </TableCell>
-              </TableRow>
+              <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '400px' }}>
+                <CircularProgress />
+              </div>
             ) : (
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
@@ -460,13 +453,12 @@ const UserList = () => {
           <TablePagination
             rowsPerPageOptions={[4, 10, 15]} // Add the available rows per page options
             component='div'
-            count={count}
+            count={isLoading ? 0 : count}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
-          {/* <span onClick={() => setPage(page++)}>next</span> */}
         </Card>
       </Grid>
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />

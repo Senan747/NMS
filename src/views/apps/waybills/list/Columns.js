@@ -29,8 +29,6 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import { deleteWaybills } from 'src/store/apps/waybills/CRUD'
 import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
 
-
-
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
   fontSize: '1rem',
@@ -41,7 +39,6 @@ const LinkStyled = styled(Link)(({ theme }) => ({
     color: theme.palette.primary.main
   }
 }))
-
 
 const renderClient = row => {
   if (row.avatar) {
@@ -119,7 +116,7 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill }) => [
+const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, dataVehicle }) => [
   {
     flex: 0.2,
     minWidth: 200,
@@ -149,11 +146,13 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill }
     ),
     renderCell: ({ row }) => {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(row)}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <LinkStyled href='/apps/user/view/overview/'>{row.waybills_date}</LinkStyled>
-          </Box>
+        <Box>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(row)}
+            <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+              <LinkStyled href='/apps/user/view/overview/'>{row.waybills_no}</LinkStyled>
+            </div>
+          </div>
         </Box>
       )
     }
@@ -220,16 +219,16 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill }
         </IconButton>
       </div>
     ),
-    renderCell: ({ row, data }) => (
-      <Typography noWrap variant='body2'>
-        {data
+    renderCell: ({ row, dataVehicle }) => (
+      <div variant='body2'>
+        {dataVehicle
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
               {type.vehicle_brand}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
 
@@ -238,20 +237,20 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill }
     minWidth: 200,
     field: 'Vehicle kind',
     headerName: 'Vehicle kind',
-    renderCell: ({ row, data, vehicleKind }) => (
-      <Typography noWrap variant='body2'>
-        {data
+    renderCell: ({ row, dataVehicle, vehicleKind }) => (
+      <div variant='body2'>
+        {dataVehicle
           .filter(type => row.id_vehicle === type.id)
           .map(type => {
             const kind = vehicleKind.find(k => k.id === type.id_vehicle_subject)
 
             return (
-              <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
+              <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
                 {kind && kind.vehicle_kindes_title}
-              </Typography>
+              </div>
             )
           })}
-      </Typography>
+      </div>
     )
   },
 
@@ -260,16 +259,16 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill }
     minWidth: 200,
     field: 'Vehicle plate number',
     headerName: 'Vehicle plate number',
-    renderCell: ({ row, data }) => (
-      <Typography noWrap variant='body2'>
-        {data
+    renderCell: ({ row, dataVehicle }) => (
+      <div variant='body2'>
+        {dataVehicle
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
-            <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
+            <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
               {type.vehicle_plate_number}
-            </Typography>
+            </div>
           ))}
-      </Typography>
+      </div>
     )
   },
   {

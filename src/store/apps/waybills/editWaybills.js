@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   ShowEdit: false,
-  editId: ''
+  editId: '',
+  page: 0
 };
 
 const ShowEdit = createSlice({
@@ -17,9 +18,12 @@ const ShowEdit = createSlice({
     },
     setEditId: (state, action) => {
       state.editId = action.payload
+    },
+    setPage: (state, action) => {
+      state.page = action.payload
     }
   },
 });
 
-export const { closeShowEdit, openShowEdit, setEditId } = ShowEdit.actions;
+export const { closeShowEdit, openShowEdit, setEditId, setPage } = ShowEdit.actions;
 export default ShowEdit.reducer;

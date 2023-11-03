@@ -183,7 +183,7 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
+              {/* <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='vehicle-select'>Select vehicle</InputLabel>
                 <Select
                   fullWidth
@@ -203,7 +203,7 @@ const SidebarAddUser = props => {
                 {!formData.id_vehicle && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>waybills vehicle field is required</FormHelperText>
                 )}
-              </FormControl>
+              </FormControl> */}
             </Grid>
 
             <Grid item xs={6}>

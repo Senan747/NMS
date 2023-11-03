@@ -58,7 +58,7 @@ const Header = styled(Box)(({ theme }) => ({
 
 const schema = yup.object().shape({
   vehicle_plate_number: yup.string().required(),
-  vehicle_brand: yup.string().required(),
+  vehicle_brand: yup.string().required().typeError('Vehicle brand is required'),
   vehicle_year: yup
     .number()
     .typeError('Vehicle year is required')
@@ -288,7 +288,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle_brand'
+                  name='vehicle brand'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (
@@ -301,8 +301,8 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {errors.vehicle_brand && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
+                {!state.vehicle_brand && check && (
+                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle brand field is required</FormHelperText>
                 )}
               </FormControl>
             </Grid>
@@ -310,7 +310,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle_year'
+                  name='vehicle year'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (
@@ -478,7 +478,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle_weight'
+                  name='vehicle weight'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (
@@ -500,7 +500,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle_power'
+                  name='vehicle power'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (

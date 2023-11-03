@@ -30,12 +30,12 @@ import TablePagination from '@mui/material/TablePagination'
 import { useDispatch, useSelector } from 'react-redux'
 import { closeShowEdit, openShowEdit, setEditId } from 'src/store/apps/waybills/editWaybills'
 import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
-
+// import { setPage } from 'src/store/apps/vehicle/index1'
+import { setPage } from 'src/store/apps/waybills/editWaybills'
 
 // ** Actions Imports
 import { fetchWaybills, deleteWaybills } from 'src/store/apps/waybills/CRUD'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
-
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/waybills/list/TableHeader'
@@ -43,37 +43,44 @@ import AddWaybills from 'src/views/apps/waybills/list/AddWaybill'
 import EditWaybill from 'src/views/apps/waybills/list/EditWaybill'
 import columns from 'src/views/apps/waybills/list/Columns'
 
+import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
+import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
 
 const UserList = () => {
   const [value, setValue] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
   const dispatch = useDispatch()
-  const { data } = useSelector(state => state.index)
-  const { dataWaybills } = useSelector(state => state.CRUD)
+  // const { data } = useSelector(state => state.index)
+  // const { dataWaybills } = useSelector(state => state.CRUD)
+  const { page } = useSelector(state => state.editWaybills)
+  let page1 = page + 1
+  const { data, isLoading: isLoading1 } = useGetVehiclesQuery(page1)
+  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery(page1)
+
+  const [dataWaybills1, setdataWaybills1] = useState([])
+  const [dataVehicle, setDataVehicle] = useState([])
   const { addDataLoading, waybillCondition } = useSelector(state => state.index1)
-  const [isLoading, setIsLoading] = useState(true)
+  // const [isLoading, setIsLoading] = useState(true)
   const { sortFieldWaybill } = useSelector(state => state.sortWaybills)
   const [sortDirection, setSortDirection] = useState('asc')
   const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection, sortFieldWaybill })
   const { editId } = useSelector(state => state.editWaybills)
-
+  const [count, setCount] = useState(0)
   useEffect(() => {
-    setIsLoading(true)
-    const fetchKindPromise = dispatch(fetchVehicleKindes())
-    const fetchDataWaybillsPromise = dispatch(fetchWaybills())
-    Promise.all([fetchKindPromise, fetchDataWaybillsPromise])
-      .then(() => {
-        setIsLoading(false)
-      })
-      .catch(() => {
-        setIsLoading(false)
-      })
-  }, [dispatch, addDataLoading])
+    if (!isLoading) {
+      setdataWaybills1(waybill.waybills.data)
+      setCount(waybill.waybills.total)
+    }
+    if (!isLoading1) {
+      setDataVehicle(data.vehicles.data)
+    }
+    dispatch(fetchVehicleKindes())
+  }, [waybill, data, addDataLoading, isLoading, isLoading1])
 
   const { vehicleKind } = useSelector(state => state.vehicleDetails)
 
-  const memorizedData = useMemo(() => dataWaybills, [dataWaybills])
+  const memorizedData = useMemo(() => dataWaybills1, [dataWaybills1])
 
   useEffect(() => {
     if (waybillCondition) {
@@ -104,7 +111,7 @@ const UserList = () => {
   const [selectedKind, setSelectedKind] = useState('')
 
   useEffect(() => {
-    if (dataWaybills !== null) {
+    if (waybill !== null) {
       const filteredData = memorizedData.filter(waybill => {
         const waybillsNo = String(waybill.waybills_no) || ''
         const vehicleId = waybill.id_vehicle || ''
@@ -119,7 +126,7 @@ const UserList = () => {
 
       setFilteredData(filteredData)
     }
-  }, [dataWaybills, memorizedData, data, value, selectedVehicleId, selectedKind])
+  }, [waybill, memorizedData, value, selectedVehicleId, selectedKind])
 
   const [sortedData, setSortedData] = useState([])
 
@@ -185,16 +192,15 @@ const UserList = () => {
     }
   }, [sortFieldWaybill, filteredData, sortDirection])
 
-  const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(4)
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage)
+    dispatch(setPage(newPage))
   }
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 4))
-    setPage(0)
+    dispatch(setPage(0))
   }
 
   const startIndex = page * rowsPerPage
@@ -220,7 +226,7 @@ const UserList = () => {
                     onChange={handleVehicleChange}
                     inputProps={{ placeholder: 'Select vehicle' }}
                   >
-                    {data.data.map(number => (
+                    {dataVehicle.map(number => (
                       <MenuItem key={number.id} value={number.id}>
                         {number.vehicle_plate_number}
                       </MenuItem>
@@ -267,13 +273,9 @@ const UserList = () => {
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columnsDefinition.length}>
-                  <div style={{ display: 'flex', justifyContent: 'center', minWidth: '1300px', minHeight: '400px' }}>
-                    <CircularProgress />
-                  </div>
-                </TableCell>
-              </TableRow>
+              <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '1300px' }}>
+                <CircularProgress />
+              </div>
             ) : (
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
@@ -293,7 +295,7 @@ const UserList = () => {
                           {column.renderCell({
                             row,
                             vehicleKind,
-                            data
+                            dataVehicle
                           })}
                         </TableCell>
                       ))}
@@ -307,7 +309,7 @@ const UserList = () => {
           <TablePagination
             rowsPerPageOptions={[4]}
             component='div'
-            count={memorizedData.length}
+            count={count}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

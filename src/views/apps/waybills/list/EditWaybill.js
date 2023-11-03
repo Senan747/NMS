@@ -54,8 +54,8 @@ const SidebarAddUser = props => {
   const dispatch = useDispatch()
   const [date, setDate] = useState(new Date())
   const { editId } = useSelector(state => state.editWaybills)
-  const { dataWaybills } = useSelector(state => state.CRUD)
-  const { data } = useSelector(state => state.index)
+  // const { dataWaybills } = useSelector(state => state.CRUD)
+  // const { data } = useSelector(state => state.index)
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'

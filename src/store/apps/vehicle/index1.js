@@ -4,7 +4,7 @@ const initialState = {
   addDataLoading: false,
   dataCondition: '',
   waybillCondition: '',
-  page: 0
+  page: 0,
 }
 
 const dataSlice = createSlice({
