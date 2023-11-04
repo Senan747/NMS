@@ -116,7 +116,7 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, dataVehicle }) => [
+const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, data }) => [
   {
     flex: 0.2,
     minWidth: 200,
@@ -219,9 +219,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
         </IconButton>
       </div>
     ),
-    renderCell: ({ row, dataVehicle }) => (
+    renderCell: ({ row, data }) => (
       <div variant='body2'>
-        {dataVehicle
+        {data
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
@@ -237,9 +237,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     minWidth: 200,
     field: 'Vehicle kind',
     headerName: 'Vehicle kind',
-    renderCell: ({ row, dataVehicle, vehicleKind }) => (
+    renderCell: ({ row, data, vehicleKind }) => (
       <div variant='body2'>
-        {dataVehicle
+        {data
           .filter(type => row.id_vehicle === type.id)
           .map(type => {
             const kind = vehicleKind.find(k => k.id === type.id_vehicle_subject)
@@ -259,9 +259,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     minWidth: 200,
     field: 'Vehicle plate number',
     headerName: 'Vehicle plate number',
-    renderCell: ({ row, dataVehicle }) => (
+    renderCell: ({ row, data }) => (
       <div variant='body2'>
-        {dataVehicle
+        {data
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>

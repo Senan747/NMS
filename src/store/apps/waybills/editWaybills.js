@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   ShowEdit: false,
   editId: '',
-  page: 0
+  pageWaybill: 0
 };
 
 const ShowEdit = createSlice({
@@ -19,7 +19,7 @@ const ShowEdit = createSlice({
     setEditId: (state, action) => {
       state.editId = action.payload
     },
-    setPage: (state, action) => {
+    setPageWaybill: (state, action) => {
       state.page = action.payload
     }
   },

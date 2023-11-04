@@ -16,9 +16,11 @@ import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
-
+import InputAdornment from '@mui/material/InputAdornment'
 import DatePicker from 'react-datepicker'
 import CustomInput from './CustomInput'
+import { List } from '@mui/material'
+import { ListItem } from '@mui/material'
 
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 // ** Icon Imports
@@ -31,6 +33,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchData } from 'src/store/apps/vehicle'
 import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
 import { fetchWaybills, postWaybills } from 'src/store/apps/waybills/CRUD'
+import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
+import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -50,15 +54,20 @@ const Header = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default
 }))
 
-const SidebarAddUser = props => {
+const SidebarAddWaybill = props => {
   const { open, toggle } = props
   const [check, setCheck] = useState(false)
   const [date, setDate] = useState(new Date())
-  const data = useSelector(state => state.index)
+  const   data = useSelector(state => state.index)
+  const { page } = useSelector(state => state.index1)
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
-  const dataWaybills = useSelector(state => state.CRUD)
+  let page1 = page + 1
+  // const dataWaybills = useSelector(state => state.CRUD)
+  const { data: dataWaybills, isLoading, isFetching } = useGetWaybillsQuery(page1)
+
+  const [filteredItems, setFilteredItems] = useState([])
 
   const [formData, setFormData] = useState({
     waybills_no: null,
@@ -86,7 +95,6 @@ const SidebarAddUser = props => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(fetchData())
-    dispatch(fetchData())
   }, [dispatch])
 
   const formatDate = date => {
@@ -97,6 +105,11 @@ const SidebarAddUser = props => {
   }
 
   const newDate = formatDate(date)
+
+  const filterItems = input => {
+    const filtered = data.data.filter(item => item.vehicle_plate_number.toLowerCase().includes(input.toLowerCase()))
+    setFilteredItems(filtered)
+  }
 
   const onSubmit = formData => {
     const combinedData = { ...formData, waybills_date: newDate }
@@ -125,6 +138,7 @@ const SidebarAddUser = props => {
     e.preventDefault()
     onSubmit(formData)
   }
+  console.log(filteredItems)
 
   return (
     <Drawer
@@ -183,27 +197,36 @@ const SidebarAddUser = props => {
             </Grid>
 
             <Grid item xs={6}>
-              {/* <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id='vehicle-select'>Select vehicle</InputLabel>
-                <Select
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <InputLabel id='vehicle-select'></InputLabel>
+                <TextField
                   fullWidth
-                  onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
+                  maxHeight={'250px'}
+                  onChange={e => {
+                    setFormData({ ...formData, id_vehicle: e.target.value })
+                    filterItems(e.target.value)
+                  }}
                   id='select-vehicle'
                   label='Select vehicle'
                   labelId='vehicle-select'
                   inputProps={{ placeholder: 'Select vehicle' }}
-                  defaultValue={""}
-                >
-                  {data.data.map(number => (
-                    <MenuItem key={number.id} value={number.id}>
+                  defaultValue={formData.id_vehicle}
+                ></TextField>{' '}
+                <List className='absolute'>
+                  {filteredItems.map(number => (
+                    <ListItem
+                      key={number.id}
+                      value={number.id}
+                      onClick={e => setFormData({ ...formData, id_vehicle: e.target.value })}
+                    >
                       {number.vehicle_plate_number}
-                    </MenuItem>
+                    </ListItem>
                   ))}
-                </Select>
+                </List>
                 {!formData.id_vehicle && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>waybills vehicle field is required</FormHelperText>
                 )}
-              </FormControl> */}
+              </FormControl>
             </Grid>
 
             <Grid item xs={6}>
@@ -213,6 +236,9 @@ const SidebarAddUser = props => {
                   label='waybill od start'
                   onChange={e => setFormData({ ...formData, waybills_od_start: e.target.value })}
                   placeholder='10'
+                  InputProps={{
+                    startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                  }}
                 />
                 {!formData.waybills_od_start && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>waybills od start field is required</FormHelperText>
@@ -222,7 +248,7 @@ const SidebarAddUser = props => {
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
-                  value={formData.waybills_od_finish  || ''}
+                  value={formData.waybills_od_finish || ''}
                   label='waybill od finish'
                   onChange={e => setFormData({ ...formData, waybills_od_finish: e.target.value })}
                   placeholder='10'
@@ -248,7 +274,7 @@ const SidebarAddUser = props => {
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
-                  value={formData.waybills_fuel_given  || ''}
+                  value={formData.waybills_fuel_given || ''}
                   label='waybill fuel given'
                   onChange={e => setFormData({ ...formData, waybills_fuel_given: e.target.value })}
                   placeholder='10'
@@ -261,7 +287,7 @@ const SidebarAddUser = props => {
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
-                  value={formData.waybills_fuel_consumed  || ''}
+                  value={formData.waybills_fuel_consumed || ''}
                   label='waybill fuel consumed'
                   onChange={e => setFormData({ ...formData, waybills_fuel_consumed: e.target.value })}
                   placeholder='10'
@@ -287,4 +313,4 @@ const SidebarAddUser = props => {
   )
 }
 
-export default SidebarAddUser
+export default SidebarAddWaybill

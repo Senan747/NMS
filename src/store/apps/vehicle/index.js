@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-export const fetchData = createAsyncThunk('appUsers/fetchData', async (page1) => {
+export const fetchData = createAsyncThunk('appUsers/fetchData', async () => {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/vehicles?page=${page1}`)
+    const response = await fetch(`http://127.0.0.1:8000/api/vehicles/index/all`)
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)
     }
     const data = await response.json()
-    return data
+    return data.vehicles
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)
   }

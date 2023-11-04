@@ -34,7 +34,7 @@ import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicl
 import { setPage } from 'src/store/apps/waybills/editWaybills'
 
 // ** Actions Imports
-import { fetchWaybills, deleteWaybills } from 'src/store/apps/waybills/CRUD'
+import { fetchWaybills, deleteWaybills, fetchData } from 'src/store/apps/waybills/CRUD'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 
 // ** Custom Table Components Imports
@@ -44,7 +44,9 @@ import EditWaybill from 'src/views/apps/waybills/list/EditWaybill'
 import columns from 'src/views/apps/waybills/list/Columns'
 
 import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
-import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
+import { useGetAllVehiclesMutation } from 'src/store/apps/vehicle/api'
+// import { fetchData } from 'src/store/apps/vehicle'
+import { useFetchDataQuery } from 'src/store/apps/vehicle/allDatas'
 
 const UserList = () => {
   const [value, setValue] = useState('')
@@ -53,14 +55,19 @@ const UserList = () => {
   const dispatch = useDispatch()
   // const { data } = useSelector(state => state.index)
   // const { dataWaybills } = useSelector(state => state.CRUD)
-  const { page } = useSelector(state => state.editWaybills)
+  const { pageWaybill } = useSelector(state => state.editWaybills)
+  const { page } = useSelector(state => state.index1)
+
   let page1 = page + 1
-  const { data, isLoading: isLoading1 } = useGetVehiclesQuery(page1)
-  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery(page1)
+  let page2 = pageWaybill + 1
+  // const { data: allVehicle, error, isLoading: isLoading1 } = useGetAllVehiclesMutation()
+  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery(page2)
+  const data = useSelector(state => state.CRUD.data)
 
   const [dataWaybills1, setdataWaybills1] = useState([])
   const [dataVehicle, setDataVehicle] = useState([])
-  const { addDataLoading, waybillCondition } = useSelector(state => state.index1)
+  const { addDataLoading } = useSelector(state => state.index1.addDataLoading)
+  const {waybillCondition} = useSelector(state => state.index1.waybillCondition)
   // const [isLoading, setIsLoading] = useState(true)
   const { sortFieldWaybill } = useSelector(state => state.sortWaybills)
   const [sortDirection, setSortDirection] = useState('asc')
@@ -68,15 +75,18 @@ const UserList = () => {
   const { editId } = useSelector(state => state.editWaybills)
   const [count, setCount] = useState(0)
   useEffect(() => {
+    fetchData()
     if (!isLoading) {
       setdataWaybills1(waybill.waybills.data)
       setCount(waybill.waybills.total)
     }
-    if (!isLoading1) {
-      setDataVehicle(data.vehicles.data)
-    }
+    // if (!isLoading1) {
+    //   setDataVehicle(allVehicle)
+    // }
     dispatch(fetchVehicleKindes())
-  }, [waybill, data, addDataLoading, isLoading, isLoading1])
+  }, [waybill, addDataLoading, isLoading])
+
+  console.log(data)
 
   const { vehicleKind } = useSelector(state => state.vehicleDetails)
 
@@ -272,7 +282,7 @@ const UserList = () => {
           {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-            {isLoading ? (
+            {isLoading || waybillCondition || isFetching ? (
               <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '1300px' }}>
                 <CircularProgress />
               </div>
@@ -295,7 +305,7 @@ const UserList = () => {
                           {column.renderCell({
                             row,
                             vehicleKind,
-                            dataVehicle
+                            data
                           })}
                         </TableCell>
                       ))}

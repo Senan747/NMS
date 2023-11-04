@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -7,37 +7,47 @@ export const api = createApi({
   endpoints: builder => ({
     getVehicles: builder.query({
       query: page => `vehicles?page=${page}`,
-      providesTags: ['success']
+      providesTags: ['success'],
     }),
     createVehicle: builder.mutation({
       query: vehicleData => ({
         url: 'vehicles',
         method: 'POST',
-        body: vehicleData
+        body: vehicleData,
       }),
-      invalidatesTags: ['success']
+      invalidatesTags: ['success'],
     }),
     updateVehicle: builder.mutation({
       query: ({ updateId, vehicleData }) => ({
         url: `vehicles/${updateId}`,
         method: 'PUT',
-        body: vehicleData
+        body: vehicleData,
       }),
-      invalidatesTags: ['success']
+      invalidatesTags: ['success'],
     }),
     deleteVehicle: builder.mutation({
       query: id => ({
         url: `vehicles/${id}`,
-        method: 'DELETE'
+        method: 'DELETE',
       }),
       onError: (error, { idToDelete }, context) => {
         if (error.status === 500) {
-          return error
+          return error;
         }
       },
-      invalidatesTags: ['success']
-    })
-  })
-})
+      invalidatesTags: ['success'],
+    }),
+    getAllVehicles: builder.mutation({
+      query: () => 'vehicles/index/all', // Fixed the query URL
+      providesTags: ['success']// Updated the tag to match the expected response
+    }),
+  }),
+});
 
-export const { useGetVehiclesQuery, useCreateVehicleMutation, useUpdateVehicleMutation, useDeleteVehicleMutation } = api
+export const {
+  useGetVehiclesQuery,
+  useCreateVehicleMutation,
+  useUpdateVehicleMutation,
+  useDeleteVehicleMutation,
+  useGetAllVehiclesMutation,
+} = api;

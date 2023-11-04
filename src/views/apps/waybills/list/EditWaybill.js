@@ -30,6 +30,8 @@ import { fetchData } from 'src/store/apps/vehicle'
 import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
 import { fetchWaybills, putWaybills } from 'src/store/apps/waybills/CRUD'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
+import { useUpdateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
+import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -54,21 +56,31 @@ const SidebarAddUser = props => {
   const dispatch = useDispatch()
   const [date, setDate] = useState(new Date())
   const { editId } = useSelector(state => state.editWaybills)
-  // const { dataWaybills } = useSelector(state => state.CRUD)
-  // const { data } = useSelector(state => state.index)
+  const { pageWaybill } = useSelector(state => state.editWaybills.pageWaybill)
+  let page1 = pageWaybill + 1
+  const { data } = useSelector(state => state.index)
+  const { data: dataWaybills, isLoading, isFetching } = useGetWaybillsQuery(page1)
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
   const { addDataLoading } = useSelector(state => state.index1)
   const [check, setCheck] = useState(false)
   const { ShowEdit } = useSelector(state => state.editWaybills)
+  const [updateWaybill] = useUpdateWaybillMutation()
 
   useEffect(() => {
     dispatch(fetchWaybills())
     dispatch(fetchData())
   }, [dispatch])
 
-  const waybill = dataWaybills.find(e => e.id == editId)
+  // console.log("data waybills: ", dataWaybills.waybills)
+
+  const [waybill, setWaybill] = useState([])
+  useEffect(() => {
+    if (!isLoading) {
+      setWaybill(dataWaybills.waybills.data.find(e => e.id == editId))
+    }
+  }, [isLoading, isFetching])
 
   const [formData, setFormData] = useState({
     waybills_no: null,
@@ -98,13 +110,13 @@ const SidebarAddUser = props => {
   const resetForm = () => {
     setFormData({
       ...formData,
-      waybills_no: null,
-      id_vehicle: null,
-      waybills_od_start: null,
-      waybills_od_finish: null,
-      waybills_fuel_start: null,
-      waybills_fuel_given: null,
-      waybills_fuel_consumed: null
+      waybills_no: waybill.waybills_no,
+      id_vehicle: waybill.id_vehicle,
+      waybills_od_start: waybill.waybills_od_start,
+      waybills_od_finish: waybill.waybills_od_finish,
+      waybills_fuel_start: waybill.waybills_fuel_start,
+      waybills_fuel_given: waybill.waybills_fuel_given,
+      waybills_fuel_consumed: waybill.waybills_fuel_consumed
     })
   }
 
@@ -123,8 +135,8 @@ const SidebarAddUser = props => {
     if (JSON.stringify(combinedData) === JSON.stringify(waybill)) {
       console.log('Waybill already exists!')
     } else {
-      dispatch(putWaybills({ combinedData, editId }))
-      dispatch(fetchWaybills())
+      updateWaybill({ editId, waybillData: combinedData })
+
       toggle()
       resetForm()
       dispatch(setAddDataLoading(!addDataLoading))
