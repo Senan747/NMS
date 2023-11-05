@@ -37,10 +37,6 @@ export const api = createApi({
       },
       invalidatesTags: ['success'],
     }),
-    getAllVehicles: builder.mutation({
-      query: () => 'vehicles/index/all', // Fixed the query URL
-      providesTags: ['success']// Updated the tag to match the expected response
-    }),
   }),
 });
 
@@ -49,5 +45,4 @@ export const {
   useCreateVehicleMutation,
   useUpdateVehicleMutation,
   useDeleteVehicleMutation,
-  useGetAllVehiclesMutation,
 } = api;

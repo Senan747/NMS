@@ -8,8 +8,6 @@ import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
-import InputLabel from '@mui/material/InputLabel'
-import InputBase from '@mui/material/InputBase'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
@@ -18,6 +16,7 @@ import Grid from '@mui/system/Unstable_Grid/Grid'
 import { useTheme } from '@mui/material/styles'
 import DatePicker from 'react-datepicker'
 import CustomInput from './CustomInput'
+import InputAdornment from '@mui/material/InputAdornment'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -56,7 +55,7 @@ const SidebarAddUser = props => {
   const dispatch = useDispatch()
   const [date, setDate] = useState(new Date())
   const { editId } = useSelector(state => state.editWaybills)
-  const { pageWaybill } = useSelector(state => state.editWaybills.pageWaybill)
+  const { pageWaybill } = useSelector(state => state.editWaybills)
   let page1 = pageWaybill + 1
   const { data } = useSelector(state => state.index)
   const { data: dataWaybills, isLoading, isFetching } = useGetWaybillsQuery(page1)
@@ -67,20 +66,19 @@ const SidebarAddUser = props => {
   const [check, setCheck] = useState(false)
   const { ShowEdit } = useSelector(state => state.editWaybills)
   const [updateWaybill] = useUpdateWaybillMutation()
+  const { waybillCondition } = useSelector(state => state.index1)
 
   useEffect(() => {
     dispatch(fetchWaybills())
     dispatch(fetchData())
   }, [dispatch])
 
-  // console.log("data waybills: ", dataWaybills.waybills)
-
   const [waybill, setWaybill] = useState([])
   useEffect(() => {
     if (!isLoading) {
       setWaybill(dataWaybills.waybills.data.find(e => e.id == editId))
     }
-  }, [isLoading, isFetching])
+  }, [isLoading, isFetching, editId])
 
   const [formData, setFormData] = useState({
     waybills_no: null,
@@ -136,9 +134,7 @@ const SidebarAddUser = props => {
       console.log('Waybill already exists!')
     } else {
       updateWaybill({ editId, waybillData: combinedData })
-
       toggle()
-      resetForm()
       dispatch(setAddDataLoading(!addDataLoading))
       dispatch(setAddWaybillCondition('update'))
       setDate(new Date())
@@ -147,6 +143,7 @@ const SidebarAddUser = props => {
 
   const handleClose = () => {
     toggle()
+
     resetForm()
     dispatch(fetchWaybills())
     dispatch(fetchData())
@@ -191,7 +188,8 @@ const SidebarAddUser = props => {
                   required
                   onChange={e => setFormData({ ...formData, waybills_no: e.target.value })}
                   placeholder='10'
-                  InputLabelProps={{ shrink: true }}
+                  InputProps={{ readOnly: true }}
+                  id='form-props-read-only-input'
                 />
 
                 {!formData.waybills_no && check && (
@@ -224,7 +222,6 @@ const SidebarAddUser = props => {
                   fullWidth
                   value={formData.id_vehicle || ''}
                   onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
-                  required
                   inputProps={{ 'aria-label': 'Without label' }}
                 >
                   {data.map(number => (
@@ -248,6 +245,9 @@ const SidebarAddUser = props => {
                   required
                   onChange={e => setFormData({ ...formData, waybills_od_start: e.target.value })}
                   placeholder='10'
+                  InputProps={{
+                    startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                  }}
                 />
                 {!formData.waybills_od_start && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>waybills od start field is required</FormHelperText>
@@ -263,6 +263,9 @@ const SidebarAddUser = props => {
                   onChange={e => setFormData({ ...formData, waybills_od_finish: e.target.value })}
                   placeholder='10'
                   InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                  }}
                 />
 
                 {!formData.waybills_od_finish && check && (
@@ -280,6 +283,9 @@ const SidebarAddUser = props => {
                   onChange={e => setFormData({ ...formData, waybills_fuel_start: e.target.value })}
                   placeholder='10'
                   InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                  }}
                 />
               </FormControl>
             </Grid>
@@ -293,6 +299,9 @@ const SidebarAddUser = props => {
                   onChange={e => setFormData({ ...formData, waybills_fuel_given: e.target.value })}
                   placeholder='10'
                   InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                  }}
                 />
                 {!formData.waybills_fuel_given && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>waybills fuel given field is required</FormHelperText>
@@ -308,6 +317,9 @@ const SidebarAddUser = props => {
                   onChange={e => setFormData({ ...formData, waybills_fuel_consumed: e.target.value })}
                   placeholder='10'
                   InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                  }}
                 />
                 {!formData.waybills_fuel_consumed && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>waybills fuel consumed field is required</FormHelperText>

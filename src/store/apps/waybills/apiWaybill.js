@@ -31,9 +31,6 @@ export const apiWaybill = createApi({
         method: 'DELETE'
       }),
       invalidatesTags: ['success']
-    }),
-    getAllWaybills: builder.query({
-      query: () => 'waybills/index/all'
     })
   })
 })
@@ -43,5 +40,4 @@ export const {
   useCreateWaybillMutation,
   useUpdateWaybillMutation,
   useDeleteWaybillMutation,
-  useGetAllWaybillsQuery
 } = apiWaybill

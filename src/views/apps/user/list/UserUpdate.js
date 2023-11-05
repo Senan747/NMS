@@ -264,6 +264,8 @@ const SidebarAddUser = props => {
                   label='Plate number'
                   value={formData.vehicle_plate_number.toLocaleUpperCase()}
                   onChange={e => setFormData({ ...formData, vehicle_plate_number: e.target.value.toLocaleUpperCase() })}
+                  InputProps={{ readOnly: true }}
+                  id='form-props-read-only-input'
                 />
                 {!formData.vehicle_plate_number && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle plate number field is required</FormHelperText>

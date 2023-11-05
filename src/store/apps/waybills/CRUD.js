@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-export const fetchWaybills = createAsyncThunk('waybills/fetchData', async () => {
+export const fetchWaybills = createAsyncThunk('waybills/fetchWaybills', async () => {
   try {
     const response = await fetch('http://127.0.0.1:8000/api/waybills/index/all')
 
@@ -8,7 +8,7 @@ export const fetchWaybills = createAsyncThunk('waybills/fetchData', async () => 
       throw new Error('HTTP error! Status: ' + response.status)
     }
     const data = await response.json()
-    return data.waybills.data
+    return data.waybills
   } catch (error) {
     throw new Error('Fetch error: ' + error.message)
   }

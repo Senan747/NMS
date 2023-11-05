@@ -1,12 +1,9 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, use } from 'react'
 
 // ** MUI Imports
-import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import Menu from '@mui/material/Menu'
 import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
-import { styled } from '@mui/material/styles'
 import MenuItem from '@mui/material/MenuItem'
 import CardHeader from '@mui/material/CardHeader'
 import InputLabel from '@mui/material/InputLabel'
@@ -28,13 +25,10 @@ import TablePagination from '@mui/material/TablePagination'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { closeShowEdit, openShowEdit, setEditId } from 'src/store/apps/waybills/editWaybills'
+import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
 import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
-// import { setPage } from 'src/store/apps/vehicle/index1'
-import { setPage } from 'src/store/apps/waybills/editWaybills'
-
-// ** Actions Imports
-import { fetchWaybills, deleteWaybills, fetchData } from 'src/store/apps/waybills/CRUD'
+import { setPageWaybill } from 'src/store/apps/waybills/editWaybills'
+import { fetchData } from 'src/store/apps/waybills/CRUD'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 
 // ** Custom Table Components Imports
@@ -44,30 +38,30 @@ import EditWaybill from 'src/views/apps/waybills/list/EditWaybill'
 import columns from 'src/views/apps/waybills/list/Columns'
 
 import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
-import { useGetAllVehiclesMutation } from 'src/store/apps/vehicle/api'
-// import { fetchData } from 'src/store/apps/vehicle'
-import { useFetchDataQuery } from 'src/store/apps/vehicle/allDatas'
 
 const UserList = () => {
   const [value, setValue] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
-  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
+  // const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 15 })
+  const [rowsPerPage, setRowsPerPage] = useState(15)
   const dispatch = useDispatch()
-  // const { data } = useSelector(state => state.index)
-  // const { dataWaybills } = useSelector(state => state.CRUD)
   const { pageWaybill } = useSelector(state => state.editWaybills)
   const { page } = useSelector(state => state.index1)
+  const { data } = useSelector(state => state.index)
 
   let page1 = page + 1
   let page2 = pageWaybill + 1
   // const { data: allVehicle, error, isLoading: isLoading1 } = useGetAllVehiclesMutation()
   const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery(page2)
-  const data = useSelector(state => state.CRUD.data)
 
-  const [dataWaybills1, setdataWaybills1] = useState([])
+  console.log(data)
+
+  console.log(page2)
+
+  const [dataWaybills, setdataWaybills] = useState([])
   const [dataVehicle, setDataVehicle] = useState([])
   const { addDataLoading } = useSelector(state => state.index1.addDataLoading)
-  const {waybillCondition} = useSelector(state => state.index1.waybillCondition)
+  const { waybillCondition } = useSelector(state => state.index1)
   // const [isLoading, setIsLoading] = useState(true)
   const { sortFieldWaybill } = useSelector(state => state.sortWaybills)
   const [sortDirection, setSortDirection] = useState('asc')
@@ -75,22 +69,21 @@ const UserList = () => {
   const { editId } = useSelector(state => state.editWaybills)
   const [count, setCount] = useState(0)
   useEffect(() => {
-    fetchData()
+    dispatch(fetchData())
     if (!isLoading) {
-      setdataWaybills1(waybill.waybills.data)
+      setdataWaybills(waybill.waybills.data)
       setCount(waybill.waybills.total)
     }
-    // if (!isLoading1) {
-    //   setDataVehicle(allVehicle)
-    // }
     dispatch(fetchVehicleKindes())
-  }, [waybill, addDataLoading, isLoading])
-
-  console.log(data)
+  }, [waybill, pageWaybill, addDataLoading, waybillCondition])
 
   const { vehicleKind } = useSelector(state => state.vehicleDetails)
 
-  const memorizedData = useMemo(() => dataWaybills1, [dataWaybills1])
+  const memorizedData = useMemo(() => dataWaybills, [dataWaybills])
+
+  useEffect(() => {
+    dispatch(setAddDataLoading(isLoading))
+  }, [isLoading])
 
   useEffect(() => {
     if (waybillCondition) {
@@ -202,20 +195,28 @@ const UserList = () => {
     }
   }, [sortFieldWaybill, filteredData, sortDirection])
 
-  const [rowsPerPage, setRowsPerPage] = useState(4)
-
   const handleChangePage = (event, newPage) => {
-    dispatch(setPage(newPage))
+    dispatch(setPageWaybill(newPage))
   }
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 4))
-    dispatch(setPage(0))
+    setRowsPerPage(parseInt(event.target.value, 15))
+    dispatch(setPageWaybill(0))
   }
 
-  const startIndex = page * rowsPerPage
-  const endIndex = startIndex + rowsPerPage
+  // const startIndex = page * rowsPerPage
+  // const endIndex = startIndex + rowsPerPage
   // const displayedRows = memoizedData.slice(startIndex, endIndex)
+
+  useEffect(() => {
+    if (waybillCondition) {
+      const timeoutId = setTimeout(() => {
+        dispatch(setAddWaybillCondition(''))
+      }, 4000)
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [waybillCondition])
 
   return (
     <Grid container spacing={6}>
@@ -235,8 +236,15 @@ const UserList = () => {
                     labelId='vehicle-select'
                     onChange={handleVehicleChange}
                     inputProps={{ placeholder: 'Select vehicle' }}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: '200px'
+                        }
+                      }
+                    }}
                   >
-                    {dataVehicle.map(number => (
+                    {data.map(number => (
                       <MenuItem key={number.id} value={number.id}>
                         {number.vehicle_plate_number}
                       </MenuItem>
@@ -276,13 +284,14 @@ const UserList = () => {
               </Grid>
             </Grid>
           </CardContent>
+          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <Divider />
           {waybillCondition == 'add' ? <Alert severity='success'>Data has added successfully</Alert> : ' '}
           {waybillCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
           {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
-          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
-          <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-            {isLoading || waybillCondition || isFetching ? (
+
+          <TableContainer component={Paper} sx={{ maxHeight: 740 }}>
+            {isLoading || isFetching || addDataLoading ? (
               <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '1300px' }}>
                 <CircularProgress />
               </div>
@@ -317,13 +326,13 @@ const UserList = () => {
           </TableContainer>
 
           <TablePagination
-            rowsPerPageOptions={[4]}
+            rowsPerPageOptions={[4, 10, 15]}
             component='div'
-            count={count}
+            count={isLoading ? 0 : count}
             rowsPerPage={rowsPerPage}
-            page={page}
+            page={pageWaybill}
             onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         </Card>
       </Grid>

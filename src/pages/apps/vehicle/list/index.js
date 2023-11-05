@@ -28,9 +28,7 @@ import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
 import { setPage } from 'src/store/apps/vehicle/index1'
-import { setAddDataLoading } from 'src/store/apps/vehicle/index1'
-
-import { setAddDataCondition } from 'src/store/apps/vehicle/index1'
+import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/index1'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
@@ -42,7 +40,6 @@ const UserList = () => {
   const [value, setValue] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   // const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
-
   const dispatch = useDispatch()
   const { addDataLoading } = useSelector(state => state.index1)
   const { updateId } = useSelector(state => state.ShowUpdate)
@@ -56,12 +53,10 @@ const UserList = () => {
   const [sortDirection, setSortDirection] = useState('asc')
   let page1 = page + 1
   const { data, error, isLoading, isFetching } = useGetVehiclesQuery(page1)
-
+  const [dataVehicles, setDataVehicles] = useState([])
   useEffect(() => {
     dispatch(setAddDataLoading(isLoading))
   }, [isLoading])
-
-  const [dataVehicles, setDataVehicles] = useState([])
 
   const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField })
 
@@ -413,7 +408,7 @@ const UserList = () => {
             ' '
           )}
           <TableContainer component={Paper} sx={{ maxHeight: 740 }}>
-            {isFetching || isLoading || addDataLoading ? (
+            {isFetching || isLoading ? (
               <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '400px' }}>
                 <CircularProgress />
               </div>

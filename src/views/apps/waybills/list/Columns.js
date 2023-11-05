@@ -28,6 +28,7 @@ import { getInitials } from 'src/@core/utils/get-initials'
 // ** Actions Imports
 import { deleteWaybills } from 'src/store/apps/waybills/CRUD'
 import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
+import { useDeleteWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -70,11 +71,21 @@ const RowOptions = ({ id }) => {
     setAnchorEl(null)
   }
 
-  const handleDelete = () => {
-    dispatch(deleteWaybills(id))
-    handleRowOptionsClose()
-    dispatch(setAddWaybillCondition('delete'))
-    dispatch(setAddDataLoading(!addDataLoading))
+  const [deleteWaybill, { isError }] = useDeleteWaybillMutation()
+
+  const handleDelete = async () => {
+    try {
+      await deleteWaybill(id)
+        .unwrap()
+        .then(payload => {
+          dispatch(setAddWaybillCondition('delete'))
+          dispatch(setAddDataLoading(!addDataLoading))
+          handleRowOptionsClose()
+        })
+        .catch(error => {
+          dispatch(setAddDataCondition('cantDelete'))
+        })
+    } catch (error) {}
   }
 
   const handleEdit = () => {
@@ -150,7 +161,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {renderClient(row)}
             <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-              <LinkStyled href='/apps/user/view/overview/'>{row.waybills_no}</LinkStyled>
+              <LinkStyled href='/apps/user/view/overview/'>{row.waybills_date}</LinkStyled>
             </div>
           </div>
         </Box>

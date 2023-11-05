@@ -20,10 +20,10 @@ const ShowEdit = createSlice({
       state.editId = action.payload
     },
     setPageWaybill: (state, action) => {
-      state.page = action.payload
+      state.pageWaybill = action.payload
     }
   },
 });
 
-export const { closeShowEdit, openShowEdit, setEditId, setPage } = ShowEdit.actions;
+export const { closeShowEdit, openShowEdit, setEditId, setPageWaybill } = ShowEdit.actions;
 export default ShowEdit.reducer;

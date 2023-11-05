@@ -15,7 +15,9 @@ import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
 import Alert from '@mui/material/Alert'
+import InputAdornment from '@mui/material/InputAdornment'
 
+import { useCreateVehicleMutation } from 'src/store/apps/vehicle/api'
 // ** Third Party Imports
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -28,7 +30,7 @@ import Icon from 'src/@core/components/icon'
 import { useDispatch, useSelector } from 'react-redux'
 import { postData, fetchData } from 'src/store/apps/vehicle'
 import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/index1'
-import { useCreateVehicleMutation } from 'src/store/apps/vehicle/api'
+
 import {
   fetchVehicleEngine,
   fetchVehicleFuel,
@@ -39,10 +41,11 @@ import {
 } from 'src/store/apps/vehicle/vehicleDetails'
 
 const showErrors = (field, valueLen, min) => {
+  const fieldNameWithoutUnderscores = field.replace(/_/g, '')
   if (valueLen === 0) {
-    return `${field} field is required`
+    return `${fieldNameWithoutUnderscores} field is  are required`
   } else if (valueLen > 0 && valueLen < min) {
-    return `${field} must be at least ${min} characters`
+    return `${fieldNameWithoutUnderscores} must be at least ${min} characters`
   } else {
     return ''
   }
@@ -57,8 +60,11 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const schema = yup.object().shape({
-  vehicle_plate_number: yup.string().required(),
-  vehicle_brand: yup.string().required().typeError('Vehicle brand is required'),
+  vehicle_plate_number: yup
+    .string()
+    .typeError('Vehicle plate number is required')
+    .required('Vehicle plate number is required'),
+  vehicle_brand: yup.string().required('Vehicle year is required'),
   vehicle_year: yup
     .number()
     .typeError('Vehicle year is required')
@@ -145,15 +151,13 @@ const reducer = (state, action) => {
 const SidebarAddUser = props => {
   const { open, toggle } = props
   const [state, dispatchSelect] = useReducer(reducer, initialState)
-
-  const [createVehicle] = useCreateVehicleMutation()
-
   const data = useSelector(state => state.index)
   const [showError, setShowError] = useState(false)
   const { addDataLoading } = useSelector(state => state.index1)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
+  const [createVehicle] = useCreateVehicleMutation()
   const [check, setCheck] = useState(false)
   const newStates = {
     id_vehicle_engine: state.id_vehicle_engine,
@@ -210,13 +214,13 @@ const SidebarAddUser = props => {
       setShowError(true)
     } else {
       createVehicle(combinedData)
+      // dispatch(fetchData())
       toggle()
       reset()
       resetForm()
       dispatch(setAddDataLoading(!addDataLoading))
       setShowError(false)
       dispatch(setAddDataCondition('add'))
-      setCheck(false)
     }
   }
 
@@ -279,8 +283,8 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {!state.vehicle_plate_number && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle plate number field is required</FormHelperText>
+                {errors.vehicle_plate_number && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_plate_number.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
@@ -288,7 +292,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle brand'
+                  name='vehicle_brand'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (
@@ -301,8 +305,8 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {!state.vehicle_brand && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle brand field is required</FormHelperText>
+                {errors.vehicle_brand && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_brand.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
@@ -310,7 +314,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle year'
+                  name='vehicle_year'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (
@@ -323,7 +327,7 @@ const SidebarAddUser = props => {
                     />
                   )}
                 />
-                {errors.vehicle_year && check && (
+                {errors.vehicle_year && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_year.message}</FormHelperText>
                 )}
               </FormControl>
@@ -364,6 +368,7 @@ const SidebarAddUser = props => {
                   labelId='fuel-select'
                   onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_FUEL', payload: e.target.value })}
                   inputProps={{ placeholder: 'Select Fuel' }}
+                  
                 >
                   {vehicleFuel.map(fuel => (
                     <MenuItem key={fuel.id} value={fuel.id}>
@@ -478,7 +483,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle weight'
+                  name='vehicle_weight'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (
@@ -488,10 +493,13 @@ const SidebarAddUser = props => {
                       onChange={onChange}
                       placeholder='500'
                       error={Boolean(errors.vehicle_weight)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>Ton</InputAdornment>
+                      }}
                     />
                   )}
                 />
-                {errors.vehicle_weight && check && (
+                {errors.vehicle_weight && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_weight.message}</FormHelperText>
                 )}
               </FormControl>
@@ -500,7 +508,7 @@ const SidebarAddUser = props => {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
-                  name='vehicle power'
+                  name='vehicle_power'
                   control={control}
                   rules={{ required: +true }}
                   render={({ field: { value, onChange } }) => (
@@ -510,10 +518,13 @@ const SidebarAddUser = props => {
                       onChange={onChange}
                       placeholder='200'
                       error={Boolean(errors.vehicle_power)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>Mph</InputAdornment>
+                      }}
                     />
                   )}
                 />
-                {errors.vehicle_power && check && (
+                {errors.vehicle_power && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_power.message}</FormHelperText>
                 )}
               </FormControl>
@@ -532,6 +543,9 @@ const SidebarAddUser = props => {
                       onChange={onChange}
                       placeholder='200'
                       error={Boolean(errors.vehicle_comsumption_km)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                      }}
                     />
                   )}
                 />
@@ -554,6 +568,9 @@ const SidebarAddUser = props => {
                       onChange={onChange}
                       placeholder='200'
                       error={Boolean(errors.vehicle_comsumption_mc)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                      }}
                     />
                   )}
                 />
