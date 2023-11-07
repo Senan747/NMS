@@ -14,20 +14,14 @@ import Box from '@mui/material/Box'
 import FormControl, { formControlClasses } from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
-
-// ** Third Party Imports
-import * as yup from 'yup'
-
-// ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchData, putData, fetchIdData } from 'src/store/apps/vehicle'
-import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/index1'
+import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/conditions'
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 import { useUpdateVehicleMutation } from 'src/store/apps/vehicle/api'
-import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
+import { useGetVehiclesIdQuery } from 'src/store/apps/vehicle/api'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -37,101 +31,18 @@ const Header = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default
 }))
 
-const showErrors = (field, valueLen, min) => {
-  if (valueLen === 0) {
-    return `${field} field is required`
-  } else if (valueLen > 0 && valueLen < min) {
-    return `${field} must be at least ${min} characters`
-  } else {
-    return ''
-  }
-}
-const schema = yup.object().shape({
-  vehicle_plate_number: yup.string().required(),
-  vehicle_brand: yup.string().required(),
-  vehicle_year: yup
-    .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_weight: yup
-    .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_power: yup
-    .number()
-    .typeError('Year field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_comsumption_mc: yup
-    .number()
-    .typeError('comsumption mc field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_comsumption_day: yup
-    .number()
-    .typeError('comsumption day field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_comsumption_km: yup
-    .number()
-    .typeError('comsumption day field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-
-  vehicle_milage: yup
-    .number()
-    .typeError('Mileage field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required(),
-  vehicle_status: yup
-    .number()
-    .typeError('Mileage field is required')
-    .min(1, obj => showErrors('Year', obj.value, obj.min))
-    .required()
-})
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'UPDATE_SELECTED_ENGINE':
-      return { ...state, id_vehicle_engine: action.payload }
-    case 'UPDATE_SELECTED_FUEL':
-      return { ...state, id_vehicle_fuel: action.payload }
-    case 'UPDATE_SELECTED_TYPE':
-      return { ...state, id_vehicle_type: action.payload }
-    case 'UPDATE_SELECTED_KIND':
-      return { ...state, id_vehicle_subject: action.payload }
-    case 'UPDATE_SELECTED_TECHNICAL_CONDITIONS':
-      return { ...state, id_vehicle_condition: action.payload }
-    case 'UPDATE_SELECTED_STACKS':
-      return { ...state, id_vehicle_colon: action.payload }
-    default:
-      return state
-  }
-}
-
 const SidebarAddUser = props => {
   const { toggle } = props
   const dispatch = useDispatch()
-  const { page } = useSelector(state => state.index1)
   const { updateId } = useSelector(state => state.ShowUpdate)
-
-  const { data, isLoading } = useGetVehiclesQuery(page + 1)
-  const [dataVehicles, setDataVehicles] = useState([])
   const { ShowUpdate } = useSelector(state => state.ShowUpdate)
   const [check, setCheck] = useState(false)
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { addDataLoading } = useSelector(state => state.conditions)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
-
-  useEffect(() => {
-    if (!isLoading) {
-      setDataVehicles(data.vehicles.data)
-    }
-  }, [page, data])
-
+  const { data, isLoading } = useGetVehiclesIdQuery(updateId)
+  const [updateVehicle] = useUpdateVehicleMutation()
   const [formData, setFormData] = useState({
     vehicle_plate_number: '',
     vehicle_brand: '',
@@ -152,64 +63,54 @@ const SidebarAddUser = props => {
   })
 
   useEffect(() => {
-    if (updateId) {
-      dispatch(fetchIdData(updateId))
-    }
-  }, [updateId])
-
-  const vehicle = dataVehicles.find(vehic => vehic.id === updateId)
-
-  const [updateVehicle] = useUpdateVehicleMutation()
-
-  useEffect(() => {
-    if (vehicle) {
+    if (data) {
       setFormData({
         ...formData,
-        vehicle_plate_number: vehicle.vehicle_plate_number,
-        vehicle_brand: vehicle.vehicle_brand,
-        vehicle_year: vehicle.vehicle_year,
-        vehicle_weight: vehicle.vehicle_weight,
-        vehicle_power: vehicle.vehicle_power,
-        vehicle_comsumption_km: vehicle.vehicle_comsumption_km,
-        vehicle_comsumption_mc: vehicle.vehicle_comsumption_mc,
-        vehicle_comsumption_day: vehicle.vehicle_comsumption_day,
-        vehicle_milage: vehicle.vehicle_milage,
-        vehicle_status: vehicle.vehicle_status,
-        id_vehicle_engine: vehicle.id_vehicle_engine,
-        id_vehicle_fuel: vehicle.id_vehicle_fuel,
-        id_vehicle_type: vehicle.id_vehicle_type,
-        id_vehicle_subject: vehicle.id_vehicle_subject,
-        id_vehicle_condition: vehicle.id_vehicle_condition,
-        id_vehicle_colon: vehicle.id_vehicle_colon
+        vehicle_plate_number: data.vehicle_plate_number,
+        vehicle_brand: data.vehicle_brand,
+        vehicle_year: data.vehicle_year,
+        vehicle_weight: data.vehicle_weight,
+        vehicle_power: data.vehicle_power,
+        vehicle_comsumption_km: data.vehicle_comsumption_km,
+        vehicle_comsumption_mc: data.vehicle_comsumption_mc,
+        vehicle_comsumption_day: data.vehicle_comsumption_day,
+        vehicle_milage: data.vehicle_milage,
+        vehicle_status: data.vehicle_status,
+        id_vehicle_engine: data.id_vehicle_engine,
+        id_vehicle_fuel: data.id_vehicle_fuel,
+        id_vehicle_type: data.id_vehicle_type,
+        id_vehicle_subject: data.id_vehicle_subject,
+        id_vehicle_condition: data.id_vehicle_condition,
+        id_vehicle_colon: data.id_vehicle_colon
       })
     }
-  }, [vehicle])
+  }, [data])
 
   const resetForm = () => {
     setFormData({
       ...formData,
-      vehicle_plate_number: vehicle.vehicle_plate_number,
-      vehicle_brand: vehicle.vehicle_brand,
-      vehicle_year: vehicle.vehicle_year,
-      vehicle_weight: vehicle.vehicle_weight,
-      vehicle_power: vehicle.vehicle_power,
-      vehicle_comsumption_km: vehicle.vehicle_comsumption_km,
-      vehicle_comsumption_mc: vehicle.vehicle_comsumption_mc,
-      vehicle_comsumption_day: vehicle.vehicle_comsumption_day,
-      vehicle_milage: vehicle.vehicle_milage,
-      vehicle_status: vehicle.vehicle_status,
-      id_vehicle_engine: vehicle.id_vehicle_engine,
-      id_vehicle_fuel: vehicle.id_vehicle_fuel,
-      id_vehicle_type: vehicle.id_vehicle_type,
-      id_vehicle_subject: vehicle.id_vehicle_subject,
-      id_vehicle_condition: vehicle.id_vehicle_condition,
-      id_vehicle_colon: vehicle.id_vehicle_colon
+      vehicle_plate_number: data.vehicle_plate_number,
+      vehicle_brand: data.vehicle_brand,
+      vehicle_year: data.vehicle_year,
+      vehicle_weight: data.vehicle_weight,
+      vehicle_power: data.vehicle_power,
+      vehicle_comsumption_km: data.vehicle_comsumption_km,
+      vehicle_comsumption_mc: data.vehicle_comsumption_mc,
+      vehicle_comsumption_day: data.vehicle_comsumption_day,
+      vehicle_milage: data.vehicle_milage,
+      vehicle_status: data.vehicle_status,
+      id_vehicle_engine: data.id_vehicle_engine,
+      id_vehicle_fuel: data.id_vehicle_fuel,
+      id_vehicle_type: data.id_vehicle_type,
+      id_vehicle_subject: data.id_vehicle_subject,
+      id_vehicle_condition: data.id_vehicle_condition,
+      id_vehicle_colon: data.id_vehicle_colon
     })
   }
 
-  const onSubmit = data => {
-    const combinedData = data
-    if (vehicle === combinedData) {
+  const onSubmit = formData => {
+    const combinedData = formData
+    if (data === combinedData) {
       alert('No changes were made')
     } else {
       dispatch(setAddDataLoading(!addDataLoading))
@@ -267,9 +168,7 @@ const SidebarAddUser = props => {
                   InputProps={{ readOnly: true }}
                   id='form-props-read-only-input'
                 />
-                {!formData.vehicle_plate_number && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle plate number field is required</FormHelperText>
-                )}
+                <FormHelperText sx={{ color: 'blue' }}>read only</FormHelperText>
               </FormControl>
             </Grid>
 

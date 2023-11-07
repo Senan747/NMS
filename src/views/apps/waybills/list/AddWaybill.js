@@ -27,23 +27,11 @@ import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-
-// ** Actions Imports
 import { fetchData } from 'src/store/apps/vehicle'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
-import { fetchWaybills, postWaybills } from 'src/store/apps/waybills/CRUD'
+import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
+import { fetchWaybills } from 'src/store/apps/allData'
 import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
-import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 
-const showErrors = (field, valueLen, min) => {
-  if (valueLen === 0) {
-    return `${field} field is required`
-  } else if (valueLen > 0 && valueLen < min) {
-    return `${field} must be at least ${min} characters`
-  } else {
-    return ''
-  }
-}
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -58,19 +46,14 @@ const SidebarAddWaybill = props => {
   const [check, setCheck] = useState(false)
   const [date, setDate] = useState(new Date())
   const data = useSelector(state => state.index)
-  const { page } = useSelector(state => state.index1)
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
-  let page1 = page + 1
-  // const dataWaybills = useSelector(state => state.CRUD)
-  // const { data: pageData, isLoading, isFetching } = useGetWaybillsQuery(page1)
   const [createWaybill] = useCreateWaybillMutation()
   const [showError, setShowError] = useState(false)
-
   const [filteredItems, setFilteredItems] = useState([])
-  const { dataWaybills } = useSelector(state => state.CRUD)
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { dataWaybills } = useSelector(state => state.allDatas)
+  const { addDataLoading } = useSelector(state => state.conditions)
 
   const [formData, setFormData] = useState({
     waybills_no: '',
@@ -145,14 +128,13 @@ const SidebarAddWaybill = props => {
   }
 
   useEffect(() => {
-    if(showError == true){
+    if (showError == true) {
       const timeout = setTimeout(() => {
-        setShowError(false);
+        setShowError(false)
       }, 4000)
       return () => clearTimeout(timeout)
     }
   }, [showError])
-
 
   return (
     <Drawer

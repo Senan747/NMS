@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const api = createApi({
   reducerPath: 'api',
@@ -6,43 +6,51 @@ export const api = createApi({
   tagTypes: ['success'],
   endpoints: builder => ({
     getVehicles: builder.query({
-      query: page => `vehicles?page=${page}`,
-      providesTags: ['success'],
+      query: ({ page1, value }) => {
+        let query = `vehicles?page=${page1}`
+        if (value) {
+          query += `&vehicle_plate_number=${value}`
+        }
+        return query;
+      },
+      providesTags: ['success']
+    }),
+    getVehiclesId: builder.query({
+      query: (updateId) => {
+        let query = `vehicles/${updateId}`
+        return query;
+      },
+      providesTags: ['success']
     }),
     createVehicle: builder.mutation({
       query: vehicleData => ({
         url: 'vehicles',
         method: 'POST',
-        body: vehicleData,
+        body: vehicleData
       }),
-      invalidatesTags: ['success'],
+      invalidatesTags: ['success']
     }),
     updateVehicle: builder.mutation({
       query: ({ updateId, vehicleData }) => ({
         url: `vehicles/${updateId}`,
         method: 'PUT',
-        body: vehicleData,
+        body: vehicleData
       }),
-      invalidatesTags: ['success'],
+      invalidatesTags: ['success']
     }),
     deleteVehicle: builder.mutation({
       query: id => ({
         url: `vehicles/${id}`,
-        method: 'DELETE',
+        method: 'DELETE'
       }),
       onError: (error, { idToDelete }, context) => {
         if (error.status === 500) {
-          return error;
+          return error
         }
       },
-      invalidatesTags: ['success'],
-    }),
-  }),
-});
+      invalidatesTags: ['success']
+    })
+  })
+})
 
-export const {
-  useGetVehiclesQuery,
-  useCreateVehicleMutation,
-  useUpdateVehicleMutation,
-  useDeleteVehicleMutation,
-} = api;
+export const { useGetVehiclesQuery, useGetVehiclesIdQuery, useCreateVehicleMutation, useUpdateVehicleMutation, useDeleteVehicleMutation } = api

@@ -18,29 +18,16 @@ import DatePicker from 'react-datepicker'
 import CustomInput from './CustomInput'
 import InputAdornment from '@mui/material/InputAdornment'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
-// ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-
-// ** Actions Imports
 import { fetchData } from 'src/store/apps/vehicle'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
-import { fetchWaybills, putWaybills } from 'src/store/apps/waybills/CRUD'
+import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
+import { fetchWaybills, putWaybills } from 'src/store/apps/allData'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
 import { useUpdateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
-import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
-
-const showErrors = (field, valueLen, min) => {
-  if (valueLen === 0) {
-    return `${field} field is required`
-  } else if (valueLen > 0 && valueLen < min) {
-    return `${field} must be at least ${min} characters`
-  } else {
-    return ''
-  }
-}
+import { useGetWaybillsIdQuery } from 'src/store/apps/waybills/apiWaybill'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -55,30 +42,22 @@ const SidebarAddUser = props => {
   const dispatch = useDispatch()
   const [date, setDate] = useState(new Date())
   const { editId } = useSelector(state => state.editWaybills)
-  const { pageWaybill } = useSelector(state => state.editWaybills)
-  let page1 = pageWaybill + 1
+
   const { data } = useSelector(state => state.index)
-  const { data: dataWaybills, isLoading, isFetching } = useGetWaybillsQuery(page1)
+
+  const { data: idData } = useGetWaybillsIdQuery(editId)
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { addDataLoading } = useSelector(state => state.conditions)
   const [check, setCheck] = useState(false)
   const { ShowEdit } = useSelector(state => state.editWaybills)
   const [updateWaybill] = useUpdateWaybillMutation()
-  const { waybillCondition } = useSelector(state => state.index1)
 
   useEffect(() => {
     dispatch(fetchWaybills())
     dispatch(fetchData())
   }, [dispatch])
-
-  const [waybill, setWaybill] = useState([])
-  useEffect(() => {
-    if (!isLoading) {
-      setWaybill(dataWaybills.waybills.data.find(e => e.id == editId))
-    }
-  }, [isLoading, isFetching, editId])
 
   const [formData, setFormData] = useState({
     waybills_no: null,
@@ -91,30 +70,30 @@ const SidebarAddUser = props => {
   })
 
   useEffect(() => {
-    if (waybill) {
+    if (idData) {
       setFormData({
         ...formData,
-        waybills_no: waybill.waybills_no,
-        id_vehicle: waybill.id_vehicle,
-        waybills_od_start: waybill.waybills_od_start,
-        waybills_od_finish: waybill.waybills_od_finish,
-        waybills_fuel_start: waybill.waybills_fuel_start,
-        waybills_fuel_given: waybill.waybills_fuel_given,
-        waybills_fuel_consumed: waybill.waybills_fuel_consumed
+        waybills_no: idData.waybills_no,
+        id_vehicle: idData.id_vehicle,
+        waybills_od_start: idData.waybills_od_start,
+        waybills_od_finish: idData.waybills_od_finish,
+        waybills_fuel_start: idData.waybills_fuel_start,
+        waybills_fuel_given: idData.waybills_fuel_given,
+        waybills_fuel_consumed: idData.waybills_fuel_consumed
       })
     }
-  }, [waybill])
+  }, [idData])
 
   const resetForm = () => {
     setFormData({
       ...formData,
-      waybills_no: waybill.waybills_no,
-      id_vehicle: waybill.id_vehicle,
-      waybills_od_start: waybill.waybills_od_start,
-      waybills_od_finish: waybill.waybills_od_finish,
-      waybills_fuel_start: waybill.waybills_fuel_start,
-      waybills_fuel_given: waybill.waybills_fuel_given,
-      waybills_fuel_consumed: waybill.waybills_fuel_consumed
+      waybills_no: idData.waybills_no,
+      id_vehicle: idData.id_vehicle,
+      waybills_od_start: idData.waybills_od_start,
+      waybills_od_finish: idData.waybills_od_finish,
+      waybills_fuel_start: idData.waybills_fuel_start,
+      waybills_fuel_given: idData.waybills_fuel_given,
+      waybills_fuel_consumed: idData.waybills_fuel_consumed
     })
   }
 
@@ -130,7 +109,7 @@ const SidebarAddUser = props => {
   const onSubmit = formData => {
     const combinedData = { id: editId, ...formData, waybills_date: newDate }
 
-    if (JSON.stringify(combinedData) === JSON.stringify(waybill)) {
+    if (JSON.stringify(combinedData) === JSON.stringify(idData)) {
       console.log('Waybill already exists!')
     } else {
       updateWaybill({ editId, waybillData: combinedData })
@@ -143,7 +122,6 @@ const SidebarAddUser = props => {
 
   const handleClose = () => {
     toggle()
-
     resetForm()
     dispatch(fetchWaybills())
     dispatch(fetchData())
@@ -191,10 +169,7 @@ const SidebarAddUser = props => {
                   InputProps={{ readOnly: true }}
                   id='form-props-read-only-input'
                 />
-
-                {!formData.waybills_no && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills no field is required</FormHelperText>
-                )}
+                <FormHelperText sx={{ color: 'blue' }}>Read only</FormHelperText>
               </FormControl>
             </Grid>
 

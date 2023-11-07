@@ -9,7 +9,6 @@ import CardHeader from '@mui/material/CardHeader'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
-import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
@@ -26,10 +25,11 @@ import TablePagination from '@mui/material/TablePagination'
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
+import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { setPageWaybill } from 'src/store/apps/waybills/editWaybills'
-import { fetchData } from 'src/store/apps/waybills/CRUD'
+import { fetchData } from 'src/store/apps/allData'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
+import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/waybills/list/TableHeader'
@@ -37,37 +37,26 @@ import AddWaybills from 'src/views/apps/waybills/list/AddWaybill'
 import EditWaybill from 'src/views/apps/waybills/list/EditWaybill'
 import columns from 'src/views/apps/waybills/list/Columns'
 
-import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
-
 const UserList = () => {
   const [value, setValue] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
-  // const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 15 })
   const [rowsPerPage, setRowsPerPage] = useState(15)
   const dispatch = useDispatch()
   const { pageWaybill } = useSelector(state => state.editWaybills)
-  const { page } = useSelector(state => state.index1)
+  const { page } = useSelector(state => state.conditions)
   const { data } = useSelector(state => state.index)
 
-  let page1 = page + 1
-  let page2 = pageWaybill + 1
-  // const { data: allVehicle, error, isLoading: isLoading1 } = useGetAllVehiclesMutation()
-  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery(page2)
-
-  console.log(data)
-
-  console.log(page2)
-
+  let page1 = pageWaybill + 1
+  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery({ page1, value })
   const [dataWaybills, setdataWaybills] = useState([])
-  const [dataVehicle, setDataVehicle] = useState([])
-  const { addDataLoading } = useSelector(state => state.index1.addDataLoading)
-  const { waybillCondition } = useSelector(state => state.index1)
-  // const [isLoading, setIsLoading] = useState(true)
+  const { addDataLoading } = useSelector(state => state.conditions.addDataLoading)
+  const { waybillCondition } = useSelector(state => state.conditions)
   const { sortFieldWaybill } = useSelector(state => state.sortWaybills)
   const [sortDirection, setSortDirection] = useState('asc')
   const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection, sortFieldWaybill })
   const { editId } = useSelector(state => state.editWaybills)
   const [count, setCount] = useState(0)
+
   useEffect(() => {
     dispatch(fetchData())
     if (!isLoading) {
@@ -75,7 +64,7 @@ const UserList = () => {
       setCount(waybill.waybills.total)
     }
     dispatch(fetchVehicleKindes())
-  }, [waybill, pageWaybill, addDataLoading, waybillCondition])
+  }, [waybill, pageWaybill, value, addDataLoading, waybillCondition])
 
   const { vehicleKind } = useSelector(state => state.vehicleDetails)
 
@@ -116,12 +105,10 @@ const UserList = () => {
   useEffect(() => {
     if (waybill !== null) {
       const filteredData = memorizedData.filter(waybill => {
-        const waybillsNo = String(waybill.waybills_no) || ''
         const vehicleId = waybill.id_vehicle || ''
         const kindId = waybill.id_vehicle_subject || ''
 
         return (
-          waybillsNo.includes(value) &&
           (selectedVehicleId === '' || vehicleId === selectedVehicleId) &&
           (selectedKind === '' || kindId === selectedKind)
         )
@@ -204,9 +191,6 @@ const UserList = () => {
     dispatch(setPageWaybill(0))
   }
 
-  // const startIndex = page * rowsPerPage
-  // const endIndex = startIndex + rowsPerPage
-  // const displayedRows = memoizedData.slice(startIndex, endIndex)
 
   useEffect(() => {
     if (waybillCondition) {
@@ -244,16 +228,16 @@ const UserList = () => {
                       }
                     }}
                   >
-                    {data.map(number => (
-                      <MenuItem key={number.id} value={number.id}>
-                        {number.vehicle_plate_number}
-                      </MenuItem>
-                    ))}
                     {selectedVehicleId !== '' && (
                       <MenuItem value=''>
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedVehicleId('')} />
                       </MenuItem>
                     )}
+                    {data.map(number => (
+                      <MenuItem key={number.id} value={number.id}>
+                        {number.vehicle_plate_number}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -269,16 +253,16 @@ const UserList = () => {
                     onChange={handleKindChange}
                     inputProps={{ placeholder: 'Select kind' }}
                   >
-                    {vehicleKind.map(number => (
-                      <MenuItem key={number.id} value={number.id}>
-                        {number.vehicle_kindes_title}
-                      </MenuItem>
-                    ))}
                     {selectedKind !== '' && (
                       <MenuItem value=''>
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedKind('')} />
                       </MenuItem>
                     )}
+                    {vehicleKind.map(number => (
+                      <MenuItem key={number.id} value={number.id}>
+                        {number.vehicle_kindes_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -326,13 +310,13 @@ const UserList = () => {
           </TableContainer>
 
           <TablePagination
-            rowsPerPageOptions={[4, 10, 15]}
+            rowsPerPageOptions={[15]}
             component='div'
             count={isLoading ? 0 : count}
             rowsPerPage={rowsPerPage}
             page={pageWaybill}
             onPageChange={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
       </Grid>

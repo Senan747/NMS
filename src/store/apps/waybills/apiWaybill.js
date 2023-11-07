@@ -6,7 +6,20 @@ export const apiWaybill = createApi({
   tagTypes: ['success'],
   endpoints: builder => ({
     getWaybills: builder.query({
-      query: page => `waybills?page=${page}`,
+      query: ({page1, value}) => {
+        let query = `waybills?page=${page1}`
+        if(value){
+          query += `&waybills_no=${value}`
+        }
+        return query;
+      },
+      providesTags: ['success']
+    }),
+    getWaybillsId: builder.query({
+      query: (editId) => {
+        let query = `waybills/${editId}`
+        return query;
+      },
       providesTags: ['success']
     }),
     createWaybill: builder.mutation({
@@ -37,6 +50,7 @@ export const apiWaybill = createApi({
 
 export const {
   useGetWaybillsQuery,
+  useGetWaybillsIdQuery,
   useCreateWaybillMutation,
   useUpdateWaybillMutation,
   useDeleteWaybillMutation,

@@ -16,20 +16,17 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
 import Alert from '@mui/material/Alert'
 import InputAdornment from '@mui/material/InputAdornment'
-
+import Icon from 'src/@core/components/icon'
 import { useCreateVehicleMutation } from 'src/store/apps/vehicle/api'
+
 // ** Third Party Imports
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
 
-// ** Icon Imports
-import Icon from 'src/@core/components/icon'
-
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { postData, fetchData } from 'src/store/apps/vehicle'
-import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/index1'
+import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 
 import {
   fetchVehicleEngine,
@@ -153,7 +150,7 @@ const SidebarAddUser = props => {
   const [state, dispatchSelect] = useReducer(reducer, initialState)
   const data = useSelector(state => state.index)
   const [showError, setShowError] = useState(false)
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { addDataLoading } = useSelector(state => state.conditions)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
@@ -214,13 +211,13 @@ const SidebarAddUser = props => {
       setShowError(true)
     } else {
       createVehicle(combinedData)
-      // dispatch(fetchData())
       toggle()
       reset()
       resetForm()
       dispatch(setAddDataLoading(!addDataLoading))
       setShowError(false)
       dispatch(setAddDataCondition('add'))
+      setCheck(false)
     }
   }
 
@@ -232,6 +229,7 @@ const SidebarAddUser = props => {
     setCheck(false)
   }
   const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch(fetchVehicleEngine())
     dispatch(fetchVehicleFuel())
@@ -368,7 +366,6 @@ const SidebarAddUser = props => {
                   labelId='fuel-select'
                   onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_FUEL', payload: e.target.value })}
                   inputProps={{ placeholder: 'Select Fuel' }}
-                  
                 >
                   {vehicleFuel.map(fuel => (
                     <MenuItem key={fuel.id} value={fuel.id}>

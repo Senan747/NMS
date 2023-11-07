@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
 // ** MUI Imports
@@ -9,17 +9,14 @@ import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Icon from 'src/@core/components/icon'
+import CustomAvatar from 'src/@core/components/mui/avatar'
 
 // ** Store Imports
-import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
+import { openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
 import { setSortField } from 'src/store/apps/vehicle/sort'
 import { useDispatch, useSelector } from 'react-redux'
-import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
 import { useDeleteVehicleMutation } from 'src/store/apps/vehicle/api'
-import { fetchData, deleteData } from 'src/store/apps/vehicle'
-import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/index1'
-
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/conditions'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
@@ -64,7 +61,7 @@ const RowOptions = ({ id }) => {
     setAnchorEl(null)
   }
 
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { addDataLoading } = useSelector(state => state.conditions)
   const [deleteVehicle, { isError }] = useDeleteVehicleMutation()
 
   const handleDelete = async () => {

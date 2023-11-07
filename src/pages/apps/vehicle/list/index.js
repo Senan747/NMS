@@ -9,7 +9,6 @@ import CardHeader from '@mui/material/CardHeader'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
-import { DataGrid } from '@mui/x-data-grid'
 import Select from '@mui/material/Select'
 import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
@@ -27,8 +26,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
-import { setPage } from 'src/store/apps/vehicle/index1'
-import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/index1'
+import { setPage } from 'src/store/apps/vehicle/conditions'
+import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
@@ -39,20 +38,16 @@ import Columns from 'src/views/apps/user/list/Columns'
 const UserList = () => {
   const [value, setValue] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
-  // const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
   const dispatch = useDispatch()
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { addDataLoading } = useSelector(state => state.conditions)
   const { updateId } = useSelector(state => state.ShowUpdate)
-  const { dataCondition } = useSelector(state => state.index1)
+  const { dataCondition } = useSelector(state => state.conditions)
   const { sortField } = useSelector(state => state.sort)
-
-  const { page } = useSelector(state => state.index1)
-
+  const { page } = useSelector(state => state.conditions)
   const [rowsPerPage, setRowsPerPage] = useState(15)
-
   const [sortDirection, setSortDirection] = useState('asc')
   let page1 = page + 1
-  const { data, error, isLoading, isFetching } = useGetVehiclesQuery(page1)
+  const { data, error, isLoading, isFetching } = useGetVehiclesQuery({ page1, value })
   const [dataVehicles, setDataVehicles] = useState([])
   useEffect(() => {
     dispatch(setAddDataLoading(isLoading))
@@ -66,7 +61,7 @@ const UserList = () => {
       setDataVehicles(data.vehicles.data)
       setCount(data.vehicles.total)
     }
-  }, [addDataLoading, page, data, dataCondition])
+  }, [addDataLoading, page, data, dataCondition, value])
 
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
@@ -122,7 +117,6 @@ const UserList = () => {
   useEffect(() => {
     if (data !== null) {
       const filteredData = memorizedData.filter(vehicle => {
-        const plateNumber = vehicle.vehicle_plate_number || ''
         const engineId = vehicle.id_vehicle_engine || ''
         const fuelId = vehicle.id_vehicle_fuel || ''
         const typeId = vehicle.id_vehicle_type || ''
@@ -131,7 +125,6 @@ const UserList = () => {
         const colonId = vehicle.id_vehicle_colon || ''
 
         return (
-          plateNumber.toLowerCase().includes(value.toLowerCase()) &&
           (selectedEngine === '' || engineId === selectedEngine) &&
           (selectedFuel === '' || fuelId === selectedFuel) &&
           (selectedType === '' || typeId === selectedType) &&
@@ -228,12 +221,9 @@ const UserList = () => {
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, rowsPerPage))
-    dispatch(setPage(0)) // Reset the page to the first page when changing rows per page
+    dispatch(setPage(0)) 
   }
 
-  // const startIndex = page * rowsPerPage
-  // const endIndex = startIndex + rowsPerPage
-  // const displayedRows = sortedData.slice(startIndex, endIndex)
 
   return (
     <Grid container spacing={6}>
@@ -254,16 +244,16 @@ const UserList = () => {
                     onChange={handleEngineChange}
                     inputProps={{ placeholder: 'Select engine' }}
                   >
-                    {engineTypes.map(engine => (
-                      <MenuItem key={engine.id} value={engine.id}>
-                        {engine.engine_types_title}
-                      </MenuItem>
-                    ))}{' '}
                     {selectedEngine !== '' && (
                       <MenuItem value=''>
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedEngine('')} />
                       </MenuItem>
                     )}
+                    {engineTypes.map(engine => (
+                      <MenuItem key={engine.id} value={engine.id}>
+                        {engine.engine_types_title}
+                      </MenuItem>
+                    ))}{' '}
                   </Select>
                 </FormControl>
               </Grid>
@@ -279,16 +269,16 @@ const UserList = () => {
                     onChange={handleFuelChange}
                     inputProps={{ placeholder: 'Select fuel' }}
                   >
-                    {vehicleFuel.map(fuel => (
-                      <MenuItem key={fuel.id} value={fuel.id}>
-                        {fuel.fuel_kindes_title}
-                      </MenuItem>
-                    ))}
                     {selectedFuel !== '' && (
                       <MenuItem value=''>
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedFuel('')} />
                       </MenuItem>
                     )}
+                    {vehicleFuel.map(fuel => (
+                      <MenuItem key={fuel.id} value={fuel.id}>
+                        {fuel.fuel_kindes_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -304,16 +294,16 @@ const UserList = () => {
                     onChange={handleTypeChange}
                     inputProps={{ placeholder: 'Select Type' }}
                   >
-                    {vehicleType.map(type => (
-                      <MenuItem key={type.id} value={type.id}>
-                        {type.vehicle_types_title}
-                      </MenuItem>
-                    ))}
                     {selectedType !== '' && (
                       <MenuItem value=''>
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedType('')} />
                       </MenuItem>
                     )}
+                    {vehicleType.map(type => (
+                      <MenuItem key={type.id} value={type.id}>
+                        {type.vehicle_types_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -329,16 +319,16 @@ const UserList = () => {
                     onChange={handleKindChange}
                     inputProps={{ placeholder: 'Select kind' }}
                   >
-                    {vehicleKind.map(kind => (
-                      <MenuItem key={kind.id} value={kind.id}>
-                        {kind.vehicle_kindes_title}
-                      </MenuItem>
-                    ))}
                     {selectedKind !== '' && (
                       <MenuItem value=''>
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedKind('')} />
                       </MenuItem>
                     )}
+                    {vehicleKind.map(kind => (
+                      <MenuItem key={kind.id} value={kind.id}>
+                        {kind.vehicle_kindes_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -354,11 +344,6 @@ const UserList = () => {
                     onChange={handleConditionChange}
                     inputProps={{ placeholder: 'Select technical condition' }}
                   >
-                    {technicalConditions.map(condition => (
-                      <MenuItem key={condition.id} value={condition.id}>
-                        {condition.technical_conditions_title}
-                      </MenuItem>
-                    ))}
                     {selectedCondition !== '' && (
                       <MenuItem value=''>
                         <Icon
@@ -367,6 +352,11 @@ const UserList = () => {
                         />
                       </MenuItem>
                     )}
+                    {technicalConditions.map(condition => (
+                      <MenuItem key={condition.id} value={condition.id}>
+                        {condition.technical_conditions_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -382,16 +372,16 @@ const UserList = () => {
                     onChange={handleColonChange}
                     inputProps={{ placeholder: 'Select colon' }}
                   >
-                    {stacks.map(stack => (
-                      <MenuItem key={stack.id} value={stack.id}>
-                        {stack.stacks_title}
-                      </MenuItem>
-                    ))}
                     {selectedColon !== '' && (
                       <MenuItem value=''>
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedCoselectedColon('')} />
                       </MenuItem>
                     )}
+                    {stacks.map(stack => (
+                      <MenuItem key={stack.id} value={stack.id}>
+                        {stack.stacks_title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -446,13 +436,13 @@ const UserList = () => {
             )}
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[4, 10, 15]} // Add the available rows per page options
+            rowsPerPageOptions={[15]} // Add the available rows per page options
             component='div'
             count={isLoading ? 0 : count}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
       </Grid>

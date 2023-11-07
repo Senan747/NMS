@@ -20,13 +20,13 @@ import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { openShowEdit, setEditId } from 'src/store/apps/waybills/editWaybills'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/index1'
+import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { deleteWaybills } from 'src/store/apps/waybills/CRUD'
+import { deleteWaybills } from 'src/store/apps/allData'
 import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
 import { useDeleteWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 
@@ -61,7 +61,7 @@ const RowOptions = ({ id }) => {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
-  const { addDataLoading } = useSelector(state => state.index1)
+  const { addDataLoading } = useSelector(state => state.conditions)
 
   const handleRowOptionsClick = event => {
     setAnchorEl(event.currentTarget)
