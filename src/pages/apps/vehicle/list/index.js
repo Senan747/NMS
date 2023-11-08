@@ -28,6 +28,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
 import { setPage } from 'src/store/apps/vehicle/conditions'
 import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/conditions'
+import { fetchData } from 'src/store/apps/vehicle'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
@@ -57,6 +58,7 @@ const UserList = () => {
 
   const [count, setCount] = useState(0)
   useEffect(() => {
+    dispatch(fetchData())
     if (!isLoading) {
       setDataVehicles(data.vehicles.data)
       setCount(data.vehicles.total)
