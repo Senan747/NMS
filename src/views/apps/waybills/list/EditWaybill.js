@@ -22,12 +22,11 @@ import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchData } from 'src/store/apps/vehicle'
 import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
-import { fetchWaybills, putWaybills } from 'src/store/apps/allData'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
 import { useUpdateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetWaybillsIdQuery } from 'src/store/apps/waybills/apiWaybill'
+import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -43,7 +42,7 @@ const SidebarAddUser = props => {
   const [date, setDate] = useState(new Date())
   const { editId } = useSelector(state => state.editWaybills)
 
-  const { data } = useSelector(state => state.index)
+  const { data } = useGetAllVehiclesQuery()
 
   const { data: idData } = useGetWaybillsIdQuery(editId)
   const theme = useTheme()
@@ -53,11 +52,6 @@ const SidebarAddUser = props => {
   const [check, setCheck] = useState(false)
   const { ShowEdit } = useSelector(state => state.editWaybills)
   const [updateWaybill] = useUpdateWaybillMutation()
-
-  useEffect(() => {
-    dispatch(fetchWaybills())
-    dispatch(fetchData())
-  }, [dispatch])
 
   const [formData, setFormData] = useState({
     waybills_no: null,
@@ -123,8 +117,6 @@ const SidebarAddUser = props => {
   const handleClose = () => {
     toggle()
     resetForm()
-    dispatch(fetchWaybills())
-    dispatch(fetchData())
     dispatch(closeShowEdit())
   }
 

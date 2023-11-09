@@ -26,9 +26,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
-import { setPage } from 'src/store/apps/vehicle/conditions'
-import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/conditions'
-import { fetchData } from 'src/store/apps/vehicle'
+import { setPage, setAddDataLoading, setAddDataCondition} from 'src/store/apps/vehicle/conditions'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
@@ -47,9 +45,10 @@ const UserList = () => {
   const { page } = useSelector(state => state.conditions)
   const [rowsPerPage, setRowsPerPage] = useState(15)
   const [sortDirection, setSortDirection] = useState('asc')
-  let page1 = page + 1
-  const { data, error, isLoading, isFetching } = useGetVehiclesQuery({ page1, value })
+  let pageVehicle = page + 1
+  const { data, error, isLoading, isFetching } = useGetVehiclesQuery({ pageVehicle, value })
   const [dataVehicles, setDataVehicles] = useState([])
+
   useEffect(() => {
     dispatch(setAddDataLoading(isLoading))
   }, [isLoading])
@@ -58,7 +57,6 @@ const UserList = () => {
 
   const [count, setCount] = useState(0)
   useEffect(() => {
-    dispatch(fetchData())
     if (!isLoading) {
       setDataVehicles(data.vehicles.data)
       setCount(data.vehicles.total)
@@ -223,9 +221,8 @@ const UserList = () => {
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, rowsPerPage))
-    dispatch(setPage(0)) 
+    dispatch(setPage(0))
   }
-
 
   return (
     <Grid container spacing={6}>
@@ -399,7 +396,7 @@ const UserList = () => {
           ) : (
             ' '
           )}
-          <TableContainer component={Paper} sx={{ maxHeight: 740 }}>
+          <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
             {isFetching || isLoading ? (
               <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '400px' }}>
                 <CircularProgress />

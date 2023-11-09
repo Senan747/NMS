@@ -27,11 +27,10 @@ import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchData } from 'src/store/apps/vehicle'
 import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
-import { fetchWaybills } from 'src/store/apps/allData'
 import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
-
+import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
+import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -45,14 +44,15 @@ const SidebarAddWaybill = props => {
   const { open, toggle } = props
   const [check, setCheck] = useState(false)
   const [date, setDate] = useState(new Date())
-  const data = useSelector(state => state.index)
+
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
   const [createWaybill] = useCreateWaybillMutation()
   const [showError, setShowError] = useState(false)
   const [filteredItems, setFilteredItems] = useState([])
-  const { dataWaybills } = useSelector(state => state.allDatas)
+  const { data: dataWaybills } = useGetAllWaybillsQuery()
+  const { data, isLoading } = useGetAllVehiclesQuery()
   const { addDataLoading } = useSelector(state => state.conditions)
 
   const [formData, setFormData] = useState({
@@ -79,10 +79,6 @@ const SidebarAddWaybill = props => {
   }
 
   const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(fetchData())
-    dispatch(fetchWaybills())
-  }, [dispatch])
 
   const formatDate = date => {
     const year = date.getFullYear()
@@ -94,18 +90,17 @@ const SidebarAddWaybill = props => {
   const newDate = formatDate(date)
 
   const filterItems = input => {
-    const filtered = data.data.filter(item => item.vehicle_plate_number.toLowerCase().includes(input.toLowerCase()))
+    const filtered = data.vehicles.filter(item => item.vehicle_plate_number.toLowerCase().includes(input.toLowerCase()))
     setFilteredItems(filtered)
   }
 
   const onSubmit = formData => {
     const combinedData = { ...formData, waybills_date: newDate }
 
-    if (dataWaybills.some(waybill => waybill.waybills_no == formData.waybills_no)) {
+    if (dataWaybills.waybills.some(waybill => waybill.waybills_no == formData.waybills_no)) {
       setShowError(true)
     } else {
       createWaybill(combinedData)
-      dispatch(fetchWaybills())
       toggle()
       resetForm()
       dispatch(setAddDataLoading(!addDataLoading))
@@ -214,7 +209,7 @@ const SidebarAddWaybill = props => {
                     }
                   }}
                 >
-                  {data.data.map(number => (
+                  {isLoading ? " " : data.vehicles.map(number => (
                     <MenuItem key={number.id} value={number.id}>
                       {number.vehicle_plate_number}
                     </MenuItem>

@@ -6,13 +6,17 @@ export const api = createApi({
   tagTypes: ['success'],
   endpoints: builder => ({
     getVehicles: builder.query({
-      query: ({ page1, value }) => {
-        let query = `vehicles?page=${page1}`
+      query: ({ pageVehicle, value }) => {
+        let query = `vehicles?page=${pageVehicle}`
         if (value) {
           query += `&vehicle_plate_number=${value}`
         }
         return query;
       },
+      providesTags: ['success']
+    }),
+    getAllVehicles: builder.query({
+      query: () => '/vehicles/index/all',
       providesTags: ['success']
     }),
     getVehiclesId: builder.query({
@@ -53,4 +57,4 @@ export const api = createApi({
   })
 })
 
-export const { useGetVehiclesQuery, useGetVehiclesIdQuery, useCreateVehicleMutation, useUpdateVehicleMutation, useDeleteVehicleMutation } = api
+export const { useGetVehiclesQuery, useGetAllVehiclesQuery, useGetVehiclesIdQuery, useCreateVehicleMutation, useUpdateVehicleMutation, useDeleteVehicleMutation } = api

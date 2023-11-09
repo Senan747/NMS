@@ -27,9 +27,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
 import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { setPageWaybill } from 'src/store/apps/waybills/editWaybills'
-import { fetchData } from 'src/store/apps/allData'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
+import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
+import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/waybills/list/TableHeader'
@@ -43,11 +44,9 @@ const UserList = () => {
   const [rowsPerPage, setRowsPerPage] = useState(15)
   const dispatch = useDispatch()
   const { pageWaybill } = useSelector(state => state.editWaybills)
-  const { page } = useSelector(state => state.conditions)
-  const { data } = useSelector(state => state.index)
-
-  let page1 = pageWaybill + 1
-  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery({ page1, value })
+  const { data, isLoading: loading } = useGetAllVehiclesQuery()
+  let page = pageWaybill + 1
+  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery({ page, value })
   const [dataWaybills, setdataWaybills] = useState([])
   const { addDataLoading } = useSelector(state => state.conditions.addDataLoading)
   const { waybillCondition } = useSelector(state => state.conditions)
@@ -58,7 +57,6 @@ const UserList = () => {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    dispatch(fetchData())
     if (!isLoading) {
       setdataWaybills(waybill.waybills.data)
       setCount(waybill.waybills.total)
@@ -191,7 +189,6 @@ const UserList = () => {
     dispatch(setPageWaybill(0))
   }
 
-
   useEffect(() => {
     if (waybillCondition) {
       const timeoutId = setTimeout(() => {
@@ -233,11 +230,13 @@ const UserList = () => {
                         <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedVehicleId('')} />
                       </MenuItem>
                     )}
-                    {data.map(number => (
-                      <MenuItem key={number.id} value={number.id}>
-                        {number.vehicle_plate_number}
-                      </MenuItem>
-                    ))}
+                    {loading
+                      ? ' '
+                      : data.vehicles.map(number => (
+                          <MenuItem key={number.id} value={number.id}>
+                            {number.vehicle_plate_number}
+                          </MenuItem>
+                        ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -274,7 +273,7 @@ const UserList = () => {
           {waybillCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
           {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
 
-          <TableContainer component={Paper} sx={{ maxHeight: 740 }}>
+          <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
             {isLoading || isFetching || addDataLoading ? (
               <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '1300px' }}>
                 <CircularProgress />

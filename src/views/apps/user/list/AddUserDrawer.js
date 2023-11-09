@@ -27,8 +27,7 @@ import { useForm, Controller } from 'react-hook-form'
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/conditions'
-import { fetchData } from 'src/store/apps/vehicle'
-
+import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
 import {
   fetchVehicleEngine,
   fetchVehicleFuel,
@@ -149,7 +148,7 @@ const reducer = (state, action) => {
 const SidebarAddUser = props => {
   const { open, toggle } = props
   const [state, dispatchSelect] = useReducer(reducer, initialState)
-  const data = useSelector(state => state.index)
+  const { data } = useGetAllVehiclesQuery()
   const [showError, setShowError] = useState(false)
   const { addDataLoading } = useSelector(state => state.conditions)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
@@ -209,7 +208,7 @@ const SidebarAddUser = props => {
   const onSubmit = formData => {
     const combinedData = { ...formData, ...newStates }
 
-    if (data.data.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
+    if (data.vehicles.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
       setShowError(true)
     } else {
       createVehicle(combinedData)

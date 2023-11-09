@@ -26,7 +26,6 @@ import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicl
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Actions Imports
-import { deleteWaybills } from 'src/store/apps/allData'
 import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
 import { useDeleteWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 
@@ -232,7 +231,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     ),
     renderCell: ({ row, data }) => (
       <div variant='body2'>
-        {data
+        {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
@@ -250,7 +249,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     headerName: 'Vehicle kind',
     renderCell: ({ row, data, vehicleKind }) => (
       <div variant='body2'>
-        {data
+        {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => {
             const kind = vehicleKind.find(k => k.id === type.id_vehicle_subject)
@@ -272,7 +271,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     headerName: 'Vehicle plate number',
     renderCell: ({ row, data }) => (
       <div variant='body2'>
-        {data
+        {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
