@@ -18,7 +18,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/conditions'
+import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 import { useUpdateVehicleMutation } from 'src/store/apps/vehicle/api'
 import { useGetVehiclesIdQuery } from 'src/store/apps/vehicle/api'
@@ -37,7 +37,6 @@ const SidebarAddUser = props => {
   const { updateId } = useSelector(state => state.ShowUpdate)
   const { ShowUpdate } = useSelector(state => state.ShowUpdate)
   const [check, setCheck] = useState(false)
-  const { addDataLoading } = useSelector(state => state.conditions)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
@@ -113,7 +112,6 @@ const SidebarAddUser = props => {
     if (data === combinedData) {
       alert('No changes were made')
     } else {
-      dispatch(setAddDataLoading(!addDataLoading))
       updateVehicle({ updateId, vehicleData: combinedData })
       toggle()
       dispatch(setAddDataCondition('update'))

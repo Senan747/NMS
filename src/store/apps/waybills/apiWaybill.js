@@ -6,8 +6,8 @@ export const apiWaybill = createApi({
   tagTypes: ['success'],
   endpoints: builder => ({
     getWaybills: builder.query({
-      query: ({page, value}) => {
-        let query = `waybills?page=${page}`
+      query: ({pageWaybill, value}) => {
+        let query = `waybills?page=${pageWaybill}`
         if(value){
           query += `&waybills_no=${value}`
         }

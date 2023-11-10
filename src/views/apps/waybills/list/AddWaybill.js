@@ -27,7 +27,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
+import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
@@ -53,7 +53,6 @@ const SidebarAddWaybill = props => {
   const [filteredItems, setFilteredItems] = useState([])
   const { data: dataWaybills } = useGetAllWaybillsQuery()
   const { data, isLoading } = useGetAllVehiclesQuery()
-  const { addDataLoading } = useSelector(state => state.conditions)
 
   const [formData, setFormData] = useState({
     waybills_no: '',
@@ -103,7 +102,6 @@ const SidebarAddWaybill = props => {
       createWaybill(combinedData)
       toggle()
       resetForm()
-      dispatch(setAddDataLoading(!addDataLoading))
       setDate(new Date())
       dispatch(setAddWaybillCondition('add'))
       setCheck(false)

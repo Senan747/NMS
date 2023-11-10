@@ -4,23 +4,17 @@ import Link from 'next/link'
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Menu from '@mui/material/Menu'
-
 import { styled } from '@mui/material/styles'
 import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-
-import Icon from 'src/@core/components/icon'
-
-// ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
-import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-stats-horizontal'
+import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { openShowEdit, setEditId } from 'src/store/apps/waybills/editWaybills'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
+import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
@@ -60,7 +54,6 @@ const RowOptions = ({ id }) => {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
-  const { addDataLoading } = useSelector(state => state.conditions)
 
   const handleRowOptionsClick = event => {
     setAnchorEl(event.currentTarget)
@@ -78,11 +71,7 @@ const RowOptions = ({ id }) => {
         .unwrap()
         .then(payload => {
           dispatch(setAddWaybillCondition('delete'))
-          dispatch(setAddDataLoading(!addDataLoading))
           handleRowOptionsClose()
-        })
-        .catch(error => {
-          dispatch(setAddDataCondition('cantDelete'))
         })
     } catch (error) {}
   }

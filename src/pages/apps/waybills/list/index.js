@@ -25,12 +25,10 @@ import TablePagination from '@mui/material/TablePagination'
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
-import { setPageWaybill } from 'src/store/apps/waybills/editWaybills'
+import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
-import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/waybills/list/TableHeader'
@@ -43,12 +41,11 @@ const UserList = () => {
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(15)
   const dispatch = useDispatch()
-  const { pageWaybill } = useSelector(state => state.editWaybills)
+  const [page, setPage] = useState(0)
   const { data, isLoading: loading } = useGetAllVehiclesQuery()
-  let page = pageWaybill + 1
-  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery({ page, value })
+  let pageWaybill = page + 1
+  const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery({ pageWaybill, value })
   const [dataWaybills, setdataWaybills] = useState([])
-  const { addDataLoading } = useSelector(state => state.conditions.addDataLoading)
   const { waybillCondition } = useSelector(state => state.conditions)
   const { sortFieldWaybill } = useSelector(state => state.sortWaybills)
   const [sortDirection, setSortDirection] = useState('asc')
@@ -62,15 +59,9 @@ const UserList = () => {
       setCount(waybill.waybills.total)
     }
     dispatch(fetchVehicleKindes())
-  }, [waybill, pageWaybill, value, addDataLoading, waybillCondition])
+  }, [waybill, page, value, waybillCondition])
 
   const { vehicleKind } = useSelector(state => state.vehicleDetails)
-
-  const memorizedData = useMemo(() => dataWaybills, [dataWaybills])
-
-  useEffect(() => {
-    dispatch(setAddDataLoading(isLoading))
-  }, [isLoading])
 
   useEffect(() => {
     if (waybillCondition) {
@@ -102,7 +93,7 @@ const UserList = () => {
 
   useEffect(() => {
     if (waybill !== null) {
-      const filteredData = memorizedData.filter(waybill => {
+      const filteredData = dataWaybills.filter(waybill => {
         const vehicleId = waybill.id_vehicle || ''
         const kindId = waybill.id_vehicle_subject || ''
 
@@ -114,7 +105,7 @@ const UserList = () => {
 
       setFilteredData(filteredData)
     }
-  }, [waybill, memorizedData, value, selectedVehicleId, selectedKind])
+  }, [waybill, dataWaybills, value, selectedVehicleId, selectedKind])
 
   const [sortedData, setSortedData] = useState([])
 
@@ -181,12 +172,12 @@ const UserList = () => {
   }, [sortFieldWaybill, filteredData, sortDirection])
 
   const handleChangePage = (event, newPage) => {
-    dispatch(setPageWaybill(newPage))
+    setPage(newPage)
   }
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 15))
-    dispatch(setPageWaybill(0))
+    setPage(0)
   }
 
   useEffect(() => {
@@ -274,7 +265,7 @@ const UserList = () => {
           {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
 
           <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
-            {isLoading || isFetching || addDataLoading ? (
+            {isLoading || isFetching ? (
               <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '1300px' }}>
                 <CircularProgress />
               </div>
@@ -313,7 +304,7 @@ const UserList = () => {
             component='div'
             count={isLoading ? 0 : count}
             rowsPerPage={rowsPerPage}
-            page={pageWaybill}
+            page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />

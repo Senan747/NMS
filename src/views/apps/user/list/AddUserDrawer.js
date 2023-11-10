@@ -26,7 +26,7 @@ import { useForm, Controller } from 'react-hook-form'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { setAddDataLoading, setAddDataCondition } from 'src/store/apps/vehicle/conditions'
+import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
 import {
   fetchVehicleEngine,
@@ -150,7 +150,6 @@ const SidebarAddUser = props => {
   const [state, dispatchSelect] = useReducer(reducer, initialState)
   const { data } = useGetAllVehiclesQuery()
   const [showError, setShowError] = useState(false)
-  const { addDataLoading } = useSelector(state => state.conditions)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
@@ -215,7 +214,6 @@ const SidebarAddUser = props => {
       toggle()
       reset()
       resetForm()
-      dispatch(setAddDataLoading(!addDataLoading))
       setShowError(false)
       dispatch(setAddDataCondition('add'))
       setCheck(false)

@@ -22,7 +22,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { setAddDataLoading, setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
+import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
 import { useUpdateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetWaybillsIdQuery } from 'src/store/apps/waybills/apiWaybill'
@@ -48,7 +48,6 @@ const SidebarAddUser = props => {
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
-  const { addDataLoading } = useSelector(state => state.conditions)
   const [check, setCheck] = useState(false)
   const { ShowEdit } = useSelector(state => state.editWaybills)
   const [updateWaybill] = useUpdateWaybillMutation()
@@ -108,7 +107,6 @@ const SidebarAddUser = props => {
     } else {
       updateWaybill({ editId, waybillData: combinedData })
       toggle()
-      dispatch(setAddDataLoading(!addDataLoading))
       dispatch(setAddWaybillCondition('update'))
       setDate(new Date())
     }

@@ -26,7 +26,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
-import { setPage, setAddDataLoading, setAddDataCondition} from 'src/store/apps/vehicle/conditions'
+import { setAddDataCondition} from 'src/store/apps/vehicle/conditions'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'
@@ -38,21 +38,15 @@ const UserList = () => {
   const [value, setValue] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   const dispatch = useDispatch()
-  const { addDataLoading } = useSelector(state => state.conditions)
   const { updateId } = useSelector(state => state.ShowUpdate)
   const { dataCondition } = useSelector(state => state.conditions)
   const { sortField } = useSelector(state => state.sort)
-  const { page } = useSelector(state => state.conditions)
+  const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(15)
   const [sortDirection, setSortDirection] = useState('asc')
   let pageVehicle = page + 1
   const { data, error, isLoading, isFetching } = useGetVehiclesQuery({ pageVehicle, value })
   const [dataVehicles, setDataVehicles] = useState([])
-
-  useEffect(() => {
-    dispatch(setAddDataLoading(isLoading))
-  }, [isLoading])
-
   const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField })
 
   const [count, setCount] = useState(0)
@@ -61,12 +55,11 @@ const UserList = () => {
       setDataVehicles(data.vehicles.data)
       setCount(data.vehicles.total)
     }
-  }, [addDataLoading, page, data, dataCondition, value])
+  }, [page, data, dataCondition, value])
 
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
-  const memorizedData = useMemo(() => dataVehicles, [dataVehicles])
 
   useEffect(() => {
     if (dataCondition) {
@@ -116,7 +109,7 @@ const UserList = () => {
 
   useEffect(() => {
     if (data !== null) {
-      const filteredData = memorizedData.filter(vehicle => {
+      const filteredData = dataVehicles.filter(vehicle => {
         const engineId = vehicle.id_vehicle_engine || ''
         const fuelId = vehicle.id_vehicle_fuel || ''
         const typeId = vehicle.id_vehicle_type || ''
@@ -138,7 +131,7 @@ const UserList = () => {
     }
   }, [
     dataVehicles,
-    memorizedData,
+    dataVehicles,
     value,
     selectedEngine,
     selectedFuel,
@@ -216,12 +209,12 @@ const UserList = () => {
   const toggleUserUpdate = () => dispatch(closeShowUpdate())
 
   const handleChangePage = (event, newPage) => {
-    dispatch(setPage(newPage))
+    setPage(newPage)
   }
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, rowsPerPage))
-    dispatch(setPage(0))
+    setPage(0)
   }
 
   return (

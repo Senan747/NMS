@@ -16,7 +16,7 @@ import { openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
 import { setSortField } from 'src/store/apps/vehicle/sort'
 import { useDispatch, useSelector } from 'react-redux'
 import { useDeleteVehicleMutation } from 'src/store/apps/vehicle/api'
-import { setAddDataCondition, setAddDataLoading } from 'src/store/apps/vehicle/conditions'
+import { setAddDataCondition} from 'src/store/apps/vehicle/conditions'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
@@ -61,7 +61,7 @@ const RowOptions = ({ id }) => {
     setAnchorEl(null)
   }
 
-  const { addDataLoading } = useSelector(state => state.conditions)
+ 
   const [deleteVehicle, { isError }] = useDeleteVehicleMutation()
 
   const handleDelete = async () => {
@@ -70,7 +70,6 @@ const RowOptions = ({ id }) => {
         .unwrap()
         .then(payload => {
           dispatch(setAddDataCondition('delete'))
-          dispatch(setAddDataLoading(!addDataLoading))
           handleRowOptionsClose()
         })
         .catch(error => {
