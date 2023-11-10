@@ -189,7 +189,7 @@ const SidebarAddUser = props => {
                   onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
                   inputProps={{ 'aria-label': 'Without label' }}
                 >
-                  {data.map(number => (
+                  {data.vehicles.map(number => (
                     <MenuItem key={number.id} value={number.id}>
                       {number.vehicle_plate_number}
                     </MenuItem>
