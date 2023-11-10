@@ -23,10 +23,10 @@ import { TableContainer } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 
 // ** Store Imports
-import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
+import { closeShowUpdate } from 'src/store/apps/vehicle/ShowUpdate'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGetVehiclesQuery } from 'src/store/apps/vehicle/api'
-import { setAddDataCondition} from 'src/store/apps/vehicle/conditions'
+import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/user/list/TableHeader'

@@ -19,7 +19,7 @@ import Icon from 'src/@core/components/icon'
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
-import { closeShowUpdate } from 'src/store/apps/ShowUpdate'
+import { closeShowUpdate } from 'src/store/apps/vehicle/ShowUpdate'
 import { useUpdateVehicleMutation } from 'src/store/apps/vehicle/api'
 import { useGetVehiclesIdQuery } from 'src/store/apps/vehicle/api'
 

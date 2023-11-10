@@ -3,14 +3,13 @@ import { configureStore } from '@reduxjs/toolkit'
 
 // ** Reducers
 import conditions from 'src/store/apps/vehicle/conditions'
-import ShowUpdate from './apps/ShowUpdate'
+import ShowUpdate from './apps/vehicle/ShowUpdate'
 import vehicleDetails from './apps/vehicle/vehicleDetails'
 import editWaybills from './apps/waybills/editWaybills'
 import sort from './apps/vehicle/sort'
 import sortWaybills from './apps/waybills/sortWaybills'
 import { api } from './apps/vehicle/api'
 import { apiWaybill } from './apps/waybills/apiWaybill'
-
 
 export const store = configureStore({
   reducer: {
@@ -21,7 +20,7 @@ export const store = configureStore({
     sort,
     sortWaybills,
     [api.reducerPath]: api.reducer,
-    [apiWaybill.reducerPath]: apiWaybill.reducer,
+    [apiWaybill.reducerPath]: apiWaybill.reducer
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

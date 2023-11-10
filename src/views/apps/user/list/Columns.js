@@ -12,11 +12,11 @@ import Icon from 'src/@core/components/icon'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 
 // ** Store Imports
-import { openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
+import { openShowUpdate, setUpdateId } from 'src/store/apps/vehicle/ShowUpdate'
 import { setSortField } from 'src/store/apps/vehicle/sort'
 import { useDispatch, useSelector } from 'react-redux'
 import { useDeleteVehicleMutation } from 'src/store/apps/vehicle/api'
-import { setAddDataCondition} from 'src/store/apps/vehicle/conditions'
+import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
@@ -61,7 +61,6 @@ const RowOptions = ({ id }) => {
     setAnchorEl(null)
   }
 
- 
   const [deleteVehicle, { isError }] = useDeleteVehicleMutation()
 
   const handleDelete = async () => {

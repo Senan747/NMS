@@ -31,7 +31,7 @@ import TablePagination from '@mui/material/TablePagination'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { TableContainer } from '@mui/material'
-import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/ShowUpdate'
+import { closeShowUpdate, openShowUpdate, setUpdateId } from 'src/store/apps/vehicle/ShowUpdate'
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 

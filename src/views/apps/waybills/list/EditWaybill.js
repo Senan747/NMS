@@ -188,6 +188,13 @@ const SidebarAddUser = props => {
                   value={formData.id_vehicle || ''}
                   onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
                   inputProps={{ 'aria-label': 'Without label' }}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: '200px'
+                      }
+                    }
+                  }}
                 >
                   {data.vehicles.map(number => (
                     <MenuItem key={number.id} value={number.id}>
