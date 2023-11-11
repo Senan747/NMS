@@ -19,12 +19,13 @@ import CustomInput from './CustomInput'
 import InputAdornment from '@mui/material/InputAdornment'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import Icon from 'src/@core/components/icon'
+import { Alert } from '@mui/material'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
-import { useUpdateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
+import { useGetAllWaybillsQuery, useUpdateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetWaybillsIdQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
 
@@ -41,10 +42,11 @@ const SidebarAddUser = props => {
   const dispatch = useDispatch()
   const [date, setDate] = useState(new Date())
   const { editId } = useSelector(state => state.editWaybills)
-
+  const [showError, setShowError] = useState(false)
   const { data } = useGetAllVehiclesQuery()
+  const { data: dataWaybills } = useGetAllWaybillsQuery()
 
-  const { data: idData } = useGetWaybillsIdQuery(editId)
+  const { data: idData, isLoading, isFetching } = useGetWaybillsIdQuery(editId)
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
@@ -102,13 +104,22 @@ const SidebarAddUser = props => {
   const onSubmit = formData => {
     const combinedData = { id: editId, ...formData, waybills_date: newDate }
 
-    if (JSON.stringify(combinedData) === JSON.stringify(idData)) {
-      console.log('Waybill already exists!')
-    } else {
+    if (formData.waybills_no == idData.waybills_no) {
       updateWaybill({ editId, waybillData: combinedData })
       toggle()
       dispatch(setAddWaybillCondition('update'))
       setDate(new Date())
+      setShowError(false)
+    } else {
+      if (dataWaybills.waybills.some(waybill => waybill.waybills_no == formData.waybills_no)) {
+        setShowError(true)
+      } else {
+        updateWaybill({ editId, waybillData: combinedData })
+        toggle()
+        dispatch(setAddWaybillCondition('update'))
+        setDate(new Date())
+        setShowError(false)
+      }
     }
   }
 
@@ -116,12 +127,22 @@ const SidebarAddUser = props => {
     toggle()
     resetForm()
     dispatch(closeShowEdit())
+    setShowError(false)
   }
 
   const handleSubmit = e => {
     e.preventDefault()
     onSubmit(formData)
   }
+
+  useEffect(() => {
+    if (showError == true) {
+      const timeout = setTimeout(() => {
+        setShowError(false)
+      }, 4000)
+      return () => clearTimeout(timeout)
+    }
+  }, [showError])
 
   return (
     <Drawer
@@ -145,171 +166,179 @@ const SidebarAddUser = props => {
           <Icon icon='mdi:close' fontSize={20} />
         </IconButton>
       </Header>
-      <Box sx={{ p: 3 }}>
-        <form onSubmit={handleSubmit} key={editId}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_no || ''}
-                  label='waybill no'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_no: e.target.value })}
-                  placeholder='10'
-                  InputProps={{ readOnly: true }}
-                  id='form-props-read-only-input'
-                />
-                <FormHelperText sx={{ color: 'blue' }}>Read only</FormHelperText>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <DatePickerWrapper>
-                  <DatePicker
-                    selected={date}
+      {showError ? <Alert severity='error'>New waybill no already exists!</Alert> : ' '}
+      {isLoading || isFetching ? (
+        <p>Loading...</p>
+      ) : (
+        <Box sx={{ p: 3 }}>
+          <form onSubmit={handleSubmit} key={editId}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <TextField
+                    value={formData.waybills_no || ''}
+                    label='waybill no'
                     required
-                    id='basic-input'
-                    value={date}
-                    popperPlacement={popperPlacement}
-                    onChange={date => setDate(date)}
-                    placeholderText='Click to select a date'
-                    customInput={<CustomInput label='Basic' />}
+                    onChange={e => setFormData({ ...formData, waybills_no: e.target.value })}
+                    placeholder='10'
                     InputLabelProps={{ shrink: true }}
                   />
-                </DatePickerWrapper>
-              </FormControl>
-            </Grid>
+                  {!formData.waybills_no && check && (
+                    <FormHelperText sx={{ color: 'error.main' }}>waybills no is required</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <Select
-                  fullWidth
-                  value={formData.id_vehicle || ''}
-                  onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
-                  inputProps={{ 'aria-label': 'Without label' }}
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        maxHeight: '200px'
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <DatePickerWrapper>
+                    <DatePicker
+                      selected={date}
+                      required
+                      id='basic-input'
+                      value={date}
+                      popperPlacement={popperPlacement}
+                      onChange={date => setDate(date)}
+                      placeholderText='Click to select a date'
+                      customInput={<CustomInput label='Basic' />}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </DatePickerWrapper>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <Select
+                    fullWidth
+                    value={formData.id_vehicle || ''}
+                    onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
+                    inputProps={{ 'aria-label': 'Without label' }}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: '200px'
+                        }
                       }
-                    }
-                  }}
-                >
-                  {data.vehicles.map(number => (
-                    <MenuItem key={number.id} value={number.id}>
-                      {number.vehicle_plate_number}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {!formData.id_vehicle && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills vehicle field is required</FormHelperText>
-                )}
-              </FormControl>
+                    }}
+                  >
+                    {data.vehicles.map(number => (
+                      <MenuItem key={number.id} value={number.id}>
+                        {number.vehicle_plate_number}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {!formData.id_vehicle && check && (
+                    <FormHelperText sx={{ color: 'error.main' }}>waybills vehicle field is required</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <TextField
+                    value={formData.waybills_od_start || ''}
+                    InputLabelProps={{ shrink: true }}
+                    label='waybill od start'
+                    required
+                    onChange={e => setFormData({ ...formData, waybills_od_start: e.target.value })}
+                    placeholder='10'
+                    InputProps={{
+                      startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                    }}
+                  />
+                  {!formData.waybills_od_start && check && (
+                    <FormHelperText sx={{ color: 'error.main' }}>waybills od start field is required</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <TextField
+                    value={formData.waybills_od_finish || ''}
+                    label='waybill od finish'
+                    required
+                    onChange={e => setFormData({ ...formData, waybills_od_finish: e.target.value })}
+                    placeholder='10'
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                    }}
+                  />
+
+                  {!formData.waybills_od_finish && check && (
+                    <FormHelperText sx={{ color: 'error.main' }}>waybills od finish field is required</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <TextField
+                    required
+                    value={formData.waybills_fuel_start || ''}
+                    label='waybill fuel start'
+                    onChange={e => setFormData({ ...formData, waybills_fuel_start: e.target.value })}
+                    placeholder='10'
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <TextField
+                    required
+                    value={formData.waybills_fuel_given || ''}
+                    label='waybill fuel given'
+                    onChange={e => setFormData({ ...formData, waybills_fuel_given: e.target.value })}
+                    placeholder='10'
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                    }}
+                  />
+                  {!formData.waybills_fuel_given && check && (
+                    <FormHelperText sx={{ color: 'error.main' }}>waybills fuel given field is required</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <TextField
+                    required
+                    value={formData.waybills_fuel_consumed || ''}
+                    label='waybill fuel consumed'
+                    onChange={e => setFormData({ ...formData, waybills_fuel_consumed: e.target.value })}
+                    placeholder='10'
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                    }}
+                  />
+                  {!formData.waybills_fuel_consumed && check && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      waybills fuel consumed field is required
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
             </Grid>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_od_start || ''}
-                  InputLabelProps={{ shrink: true }}
-                  label='waybill od start'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_od_start: e.target.value })}
-                  placeholder='10'
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>Km</InputAdornment>
-                  }}
-                />
-                {!formData.waybills_od_start && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills od start field is required</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_od_finish || ''}
-                  label='waybill od finish'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_od_finish: e.target.value })}
-                  placeholder='10'
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>Km</InputAdornment>
-                  }}
-                />
-
-                {!formData.waybills_od_finish && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills od finish field is required</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  required
-                  value={formData.waybills_fuel_start || ''}
-                  label='waybill fuel start'
-                  onChange={e => setFormData({ ...formData, waybills_fuel_start: e.target.value })}
-                  placeholder='10'
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
-                  }}
-                />
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  required
-                  value={formData.waybills_fuel_given || ''}
-                  label='waybill fuel given'
-                  onChange={e => setFormData({ ...formData, waybills_fuel_given: e.target.value })}
-                  placeholder='10'
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
-                  }}
-                />
-                {!formData.waybills_fuel_given && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills fuel given field is required</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  required
-                  value={formData.waybills_fuel_consumed || ''}
-                  label='waybill fuel consumed'
-                  onChange={e => setFormData({ ...formData, waybills_fuel_consumed: e.target.value })}
-                  placeholder='10'
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
-                  }}
-                />
-                {!formData.waybills_fuel_consumed && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills fuel consumed field is required</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-          </Grid>
-
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }} onClick={() => setCheck(true)}>
-              Submit
-            </Button>
-            <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>
-              Cancel
-            </Button>
-          </Box>
-        </form>
-      </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }} onClick={() => setCheck(true)}>
+                Submit
+              </Button>
+              <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>
+                Cancel
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      )}
     </Drawer>
   )
 }
