@@ -2,7 +2,7 @@
 import { useEffect, useState, useReducer } from 'react'
 import { useTheme } from '@mui/material/styles'
 
-// ** MUI Imports
+// ** UI Imports
 import Drawer from '@mui/material/Drawer'
 import Select from '@mui/material/Select'
 import Button from '@mui/material/Button'
@@ -22,6 +22,8 @@ import CustomInput from './CustomInput'
 import { Alert } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import Icon from 'src/@core/components/icon'
+import { yupResolver } from '@hookform/resolvers/yup'
+import {useForm, Controller} from 'react-hook-form'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
@@ -29,6 +31,7 @@ import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
+
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -85,11 +88,6 @@ const SidebarAddWaybill = props => {
   }
 
   const newDate = formatDate(date)
-
-  const filterItems = input => {
-    const filtered = data.vehicles.filter(item => item.vehicle_plate_number.toLowerCase().includes(input.toLowerCase()))
-    setFilteredItems(filtered)
-  }
 
   const onSubmit = formData => {
     const combinedData = { ...formData, waybills_date: newDate }

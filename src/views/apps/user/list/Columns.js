@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 // ** MUI Imports
@@ -10,9 +10,17 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Icon from 'src/@core/components/icon'
 import CustomAvatar from 'src/@core/components/mui/avatar'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
 
 // ** Store Imports
-import { openShowUpdate, setUpdateId } from 'src/store/apps/vehicle/ShowUpdate'
+import {
+  openShowUpdate,
+  setUpdateId,
+  setCheckId,
+  deleteCheckId,
+  removeCheckId
+} from 'src/store/apps/vehicle/ShowUpdate'
 import { setSortField } from 'src/store/apps/vehicle/sort'
 import { useDispatch, useSelector } from 'react-redux'
 import { useDeleteVehicleMutation } from 'src/store/apps/vehicle/api'
@@ -48,6 +56,30 @@ const renderClient = row => {
   }
 }
 
+const CheckboxHeader = ({ dataVehicles, dispatch, setCheckId, removeCheckId }) => {
+  const [checked, setChecked] = useState(false)
+
+  const handleChange = event => {
+    setChecked(event.target.checked)
+  }
+
+  const id = dataVehicles.map(data => data.id)
+
+  useEffect(() => {
+    if (checked) {
+      dispatch(setCheckId(id))
+    } else {
+      dispatch(removeCheckId())
+    }
+  }, [checked])
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} name='controlled' />} />
+    </div>
+  )
+}
+
 const RowOptions = ({ id }) => {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
@@ -61,7 +93,7 @@ const RowOptions = ({ id }) => {
     setAnchorEl(null)
   }
 
-  const [deleteVehicle, { isError }] = useDeleteVehicleMutation()
+  const [deleteVehicle] = useDeleteVehicleMutation()
 
   const handleDelete = async () => {
     try {
@@ -116,12 +148,44 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
+const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId }) => [
+  {
+    flex: 0.05,
+    minWidth: 50,
+    field: 'Checkbox',
+    headerName: dataVehicles => (
+      <CheckboxHeader
+        dataVehicles={dataVehicles}
+        dispatch={dispatch}
+        setCheckId={setCheckId}
+        removeCheckId={removeCheckId}
+      />
+    ),
+    renderCell: ({ row }) => {
+      const isChecked = checkId.includes(row.id)
+
+      const handleCheckboxChange = () => {
+        if (isChecked) {
+          dispatch(deleteCheckId(row.id))
+        } else {
+          dispatch(setCheckId(row.id))
+        }
+      }
+
+      return (
+        <Box>
+          <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
+        </Box>
+      )
+    }
+  },
   {
     flex: 0.2,
     minWidth: 200,
     field: 'Plate number',
-    headerName: 'Plate number',
+    headerName: () => {
+      return <Box>Plate number</Box>
+    },
     renderCell: ({ row }) => {
       return (
         <Box>
@@ -139,8 +203,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Brand',
-    headerName: 'Brand',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Brand</span>
         <IconButton
@@ -176,7 +239,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Vehicle year',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Year</span>
         <IconButton
@@ -211,7 +274,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Type',
-    headerName: 'Type',
+    headerName: () => {
+      return <Box>Type</Box>
+    },
     renderCell: ({ row, vehicleType }) => (
       <div variant='body2'>
         {vehicleType
@@ -228,7 +293,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Subject',
-    headerName: 'Subject',
+    headerName: () => {
+      return <Box>Subject</Box>
+    },
     renderCell: ({ row, vehicleKind }) => (
       <div variant='body2'>
         {vehicleKind
@@ -245,7 +312,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     field: 'Weight',
     minWidth: 150,
-    headerName: (
+    headerName: () => (
       <div>
         <span>Weight</span>
         <IconButton
@@ -283,7 +350,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.1,
     minWidth: 150,
     field: 'Power',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Power</span>
         <IconButton
@@ -319,7 +386,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Engine',
-    headerName: 'Engine',
+    headerName: () => {
+      return <Box>Engine</Box>
+    },
     renderCell: ({ row, engineTypes }) => (
       <div variant='body2'>
         {engineTypes
@@ -336,7 +405,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Fuel',
-    headerName: 'Fuel',
+    headerName: () => {
+      return <Box>Fuel</Box>
+    },
     renderCell: ({ row, vehicleFuel }) => (
       <div variant='body2'>
         {vehicleFuel
@@ -353,7 +424,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.1,
     minWidth: 200,
     field: 'comsumption_km',
-    headerName: (
+    headerName: () => (
       <div>
         <span>comsumption km</span>
         <IconButton
@@ -387,7 +458,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
   {
     flex: 0.1,
     minWidth: 200,
-    headerName: (
+    headerName: () => (
       <div>
         <span>comsumption mc</span>
         <IconButton
@@ -422,7 +493,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
   {
     flex: 0.1,
     minWidth: 200,
-    headerName: (
+    headerName: () => (
       <div>
         <span>comsumption day</span>
         <IconButton
@@ -457,7 +528,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
   {
     flex: 0.1,
     minWidth: 200,
-    headerName: (
+    headerName: () => (
       <div>
         <span>mileage</span>
         <IconButton
@@ -494,7 +565,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Conditions',
-    headerName: 'Conditions',
+    headerName: () => {
+      return <Box>Conditions</Box>
+    },
     renderCell: ({ row, technicalConditions }) => (
       <div variant='body2'>
         {technicalConditions
@@ -512,7 +585,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     flex: 0.2,
     minWidth: 150,
     field: 'Colon',
-    headerName: 'Colon',
+    headerName: () => {
+      return <Box>Colon</Box>
+    },
     renderCell: ({ row, stacks }) => (
       <div variant='body2'>
         {stacks
@@ -531,7 +606,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField }) => [
     minWidth: 90,
     sortable: false,
     field: 'actions',
-    headerName: 'Actions',
+    headerName: () => {
+      return <Box>Actions</Box>
+    },
     renderCell: ({ row }) => <RowOptions id={row.id} />
   }
 ]

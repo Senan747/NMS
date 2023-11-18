@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
@@ -46,8 +46,9 @@ const UserList = () => {
   const [sortDirection, setSortDirection] = useState('asc')
   let pageVehicle = page + 1
   const { data, error, isLoading, isFetching } = useGetVehiclesQuery({ pageVehicle, value })
-  const [dataVehicles, setDataVehicles] = useState([])
-  const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField })
+  const [dataVehicles, setDataVehicles] = useState([])  
+  const { checkId } = useSelector(state => state.ShowUpdate)
+  const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField, checkId })
 
   const [count, setCount] = useState(0)
   useEffect(() => {
@@ -400,16 +401,24 @@ const UserList = () => {
                   <TableRow>
                     {columnsDefinition.map(column => (
                       <TableCell key={column.field} align={column.align} sx={{ minWidth: column.minWidth }}>
-                        {column.headerName}
+                        {column.headerName(dataVehicles)}
                       </TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {sortedData.map(row => (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                    <TableRow
+                      hover
+                      role='checkbox'
+                      tabIndex={-1}
+                      key={row.id}
+                      style={{
+                        backgroundColor: checkId.some(id => id == row.id) ? '#CFECF7' : '' 
+                      }}
+                    >
                       {columnsDefinition.map(column => (
-                        <TableCell key={column.field} align={column.align}>
+                        <TableCell key={column.field} align={column.align} className=''>
                           {column.renderCell({
                             row,
                             engineTypes,
