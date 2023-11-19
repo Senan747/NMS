@@ -49,7 +49,8 @@ const UserList = () => {
   const { waybillCondition } = useSelector(state => state.conditions)
   const { sortFieldWaybill } = useSelector(state => state.sortWaybills)
   const [sortDirection, setSortDirection] = useState('asc')
-  const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection, sortFieldWaybill })
+  const { checkWaybillId } = useSelector(state => state.editWaybills)
+  const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, checkWaybillId })
   const { editId } = useSelector(state => state.editWaybills)
   const [count, setCount] = useState(0)
 
@@ -275,14 +276,22 @@ const UserList = () => {
                   <TableRow>
                     {columnsDefinition.map(column => (
                       <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                        {column.headerName}
+                        {column.headerName(dataWaybills)}
                       </TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {sortedData.map(row => (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                    <TableRow
+                      hover
+                      role='checkbox'
+                      tabIndex={-1}
+                      key={row.id}
+                      style={{
+                        backgroundColor: checkWaybillId.some(id => id == row.id) ? '#CFECF7' : ''
+                      }}
+                    >
                       {columnsDefinition.map(column => (
                         <TableCell key={column.field} align={column.align}>
                           {column.renderCell({

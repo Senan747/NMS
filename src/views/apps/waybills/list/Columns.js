@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 // ** MUI Imports
@@ -10,18 +10,20 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import Icon from 'src/@core/components/icon'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { openShowEdit, setEditId } from 'src/store/apps/waybills/editWaybills'
+import { openShowEdit, setEditId, setCheckWaybillId, deleteCheckWaybillId, removeCheckWaybillId } from 'src/store/apps/waybills/editWaybills'
 import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
+import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
+import { useDeleteWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 
-// ** Actions Imports
-import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
-import { useDeleteWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -33,6 +35,33 @@ const LinkStyled = styled(Link)(({ theme }) => ({
     color: theme.palette.primary.main
   }
 }))
+
+const CheckboxHeader = ({ dataWaybills, dispatch, setCheckWaybillId, removeCheckWaybillId }) => {
+  const [checked, setChecked] = useState(false)
+
+  const handleChange = event => {
+    setChecked(event.target.checked)
+  }
+  const [allId, setAllId] = useState([])
+
+  useEffect(() => {
+    setAllId(dataWaybills.map(data => data.id))
+  }, [dataWaybills])
+
+  useEffect(() => {
+    if (checked) {
+      dispatch(setCheckWaybillId(allId))
+    } else {
+      dispatch(removeCheckWaybillId())
+    }
+  }, [checked, allId])
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} name='controlled' />} />
+    </div>
+  )
+}
 
 const renderClient = row => {
   if (row.avatar) {
@@ -115,12 +144,42 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, data }) => [
+const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, checkWaybillId }) => [
+  {
+    flex: 0.05,
+    minWidth: 50,
+    field: 'Checkbox',
+    headerName: dataWaybills => (
+      <CheckboxHeader
+        dataWaybills={dataWaybills}
+        dispatch={dispatch}
+        setCheckWaybillId={setCheckWaybillId}
+        removeCheckWaybillId={removeCheckWaybillId}
+      />
+    ),
+    renderCell: ({ row }) => {
+      const isChecked = checkWaybillId.includes(row.id)
+
+      const handleCheckboxChange = () => {
+        if (isChecked) {
+          dispatch(deleteCheckWaybillId(row.id))
+        } else {
+          dispatch(setCheckWaybillId(row.id))
+        }
+      }
+
+      return (
+        <Box>
+          <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
+        </Box>
+      )
+    }
+  },
   {
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills date',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill date</span>
         <IconButton
@@ -160,7 +219,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills no',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill no</span>
         <IconButton
@@ -195,7 +254,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Vehicle brand',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Vehicle brand</span>
         <IconButton
@@ -235,7 +294,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Vehicle kind',
-    headerName: 'Vehicle kind',
+    headerName: () => {
+      return <Box>Vehicle kind</Box>
+    },
     renderCell: ({ row, data, vehicleKind }) => (
       <div variant='body2'>
         {data.vehicles
@@ -257,7 +318,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Vehicle plate number',
-    headerName: 'Vehicle plate number',
+    headerName: () => {
+      return <Box>Vehicle Plate number</Box>
+    },
     renderCell: ({ row, data }) => (
       <div variant='body2'>
         {data.vehicles
@@ -274,7 +337,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills od start',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill od start</span>
         <IconButton
@@ -309,7 +372,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills od finish',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill od finish</span>
         <IconButton
@@ -344,7 +407,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills od gone',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill od gone</span>
         <IconButton
@@ -379,7 +442,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills fuel start',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill fuel start</span>
         <IconButton
@@ -415,7 +478,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills fuel given',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill fuel given</span>
         <IconButton
@@ -451,7 +514,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 230,
     field: 'Waybills fuel consumed',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill fuel consumed</span>
         <IconButton
@@ -487,7 +550,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.2,
     minWidth: 200,
     field: 'Waybills fuel finish',
-    headerName: (
+    headerName: () => (
       <div>
         <span>Waybill fuel finish</span>
         <IconButton
@@ -524,7 +587,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     minWidth: 90,
     sortable: false,
     field: 'actions',
-    headerName: 'Actions',
+    headerName: () => {
+      return <Box>Actions</Box>
+    },
     renderCell: ({ row }) => <RowOptions id={row.id} />
   }
 ]
