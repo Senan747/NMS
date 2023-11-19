@@ -36,7 +36,7 @@ const LinkStyled = styled(Link)(({ theme }) => ({
   }
 }))
 
-const CheckboxHeader = ({ dataWaybills, dispatch, setCheckWaybillId, removeCheckWaybillId }) => {
+const CheckboxHeader = ({ allDataWaybill, allDataLoading, dispatch, setCheckWaybillId, removeCheckWaybillId }) => {
   const [checked, setChecked] = useState(false)
 
   const handleChange = event => {
@@ -44,9 +44,13 @@ const CheckboxHeader = ({ dataWaybills, dispatch, setCheckWaybillId, removeCheck
   }
   const [allId, setAllId] = useState([])
 
+
   useEffect(() => {
-    setAllId(dataWaybills.map(data => data.id))
-  }, [dataWaybills])
+    if(!allDataLoading){
+        setAllId(allDataWaybill.waybills.map(data => data.id))
+    }
+  
+  }, [allDataWaybill, allDataLoading])
 
   useEffect(() => {
     if (checked) {
@@ -149,9 +153,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.05,
     minWidth: 50,
     field: 'Checkbox',
-    headerName: dataWaybills => (
+    headerName: ({allDataWaybill, allDataLoading}) => (
       <CheckboxHeader
-        dataWaybills={dataWaybills}
+        allDataWaybill={allDataWaybill}
+        allDataLoading={allDataLoading}
         dispatch={dispatch}
         setCheckWaybillId={setCheckWaybillId}
         removeCheckWaybillId={removeCheckWaybillId}
@@ -278,7 +283,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
       </div>
     ),
     renderCell: ({ row, data }) => (
-      <div variant='body2'>
+      <div variant='body2'> 
         {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (

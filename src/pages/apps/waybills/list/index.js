@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
 import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
-import { useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
+import { useGetAllWaybillsQuery, useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
 
 // ** Custom Table Components Imports
@@ -43,6 +43,7 @@ const UserList = () => {
   const dispatch = useDispatch()
   const [page, setPage] = useState(0)
   const { data, isLoading: loading } = useGetAllVehiclesQuery()
+  const { data: allDataWaybill, isLoading: allDataLoading } = useGetAllWaybillsQuery()
   let pageWaybill = page + 1
   const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery({ pageWaybill, value })
   const [dataWaybills, setdataWaybills] = useState([])
@@ -53,6 +54,7 @@ const UserList = () => {
   const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, checkWaybillId })
   const { editId } = useSelector(state => state.editWaybills)
   const [count, setCount] = useState(0)
+
 
   useEffect(() => {
     if (!isLoading) {
@@ -266,21 +268,25 @@ const UserList = () => {
           {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
 
           <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
-            {isLoading || isFetching ? (
-              <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '1300px' }}>
-                <CircularProgress />
-              </div>
-            ) : (
-              <Table stickyHeader aria-label='sticky table'>
-                <TableHead>
-                  <TableRow>
-                    {columnsDefinition.map(column => (
-                      <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                        {column.headerName(dataWaybills)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
+            <Table stickyHeader aria-label='sticky table'>
+              <TableHead>
+                <TableRow>
+                  {columnsDefinition.map(column => (
+                    <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                      {column.headerName({ allDataLoading, allDataWaybill })}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              {isLoading || isFetching ? (
+                <TableRow>
+                  <TableCell colSpan={9} align='center'>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                      <CircularProgress />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
                 <TableBody>
                   {sortedData.map(row => (
                     <TableRow
@@ -304,8 +310,8 @@ const UserList = () => {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
-            )}
+              )}
+            </Table>
           </TableContainer>
 
           <TablePagination

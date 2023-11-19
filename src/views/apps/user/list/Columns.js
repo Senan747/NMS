@@ -56,7 +56,7 @@ const renderClient = row => {
   }
 }
 
-const CheckboxHeader = ({ allDataVehicle, dispatch, setCheckId, removeCheckId }) => {
+const CheckboxHeader = ({ allDataVehicle, isAllLoading, dispatch, setCheckId, removeCheckId }) => {
   const [checked, setChecked] = useState(false)
 
   const handleChange = event => {
@@ -65,8 +65,10 @@ const CheckboxHeader = ({ allDataVehicle, dispatch, setCheckId, removeCheckId })
   const [allId, setAllId] = useState([])
 
   useEffect(() => {
-    setAllId(allDataVehicle.map(data => data.id))
-  }, [allDataVehicle])
+    if(!isAllLoading){
+        setAllId(allDataVehicle.vehicles.map(data => data.id))
+    }
+  }, [allDataVehicle, isAllLoading])
 
   useEffect(() => {
     if (checked) {
@@ -156,9 +158,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
     flex: 0.05,
     minWidth: 50,
     field: 'Checkbox',
-    headerName: allDataVehicle => (
+    headerName: ({allDataVehicle, isAllLoading}) => (
       <CheckboxHeader
         allDataVehicle={allDataVehicle}
+        isAllLoading={isAllLoading}
         dispatch={dispatch}
         setCheckId={setCheckId}
         removeCheckId={removeCheckId}

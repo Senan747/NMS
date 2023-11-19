@@ -46,11 +46,10 @@ const UserList = () => {
   const [sortDirection, setSortDirection] = useState('asc')
   let pageVehicle = page + 1
   const { data, error, isLoading, isFetching } = useGetVehiclesQuery({ pageVehicle, value })
-  const [dataVehicles, setDataVehicles] = useState([])  
+  const [dataVehicles, setDataVehicles] = useState([])
   const { checkId } = useSelector(state => state.ShowUpdate)
   const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField, checkId })
-  const { data: allDataVehicle} = useGetAllVehiclesQuery()
-
+  const { data: allDataVehicle, isLoading: isAllLoading } = useGetAllVehiclesQuery()
 
   const [count, setCount] = useState(0)
   useEffect(() => {
@@ -132,17 +131,7 @@ const UserList = () => {
 
       setFilteredData(filteredData)
     }
-  }, [
-    dataVehicles,
-    dataVehicles,
-    value,
-    selectedEngine,
-    selectedFuel,
-    selectedType,
-    selectedKind,
-    selectedCondition,
-    selectedColon
-  ])
+  }, [dataVehicles, value, selectedEngine, selectedFuel, selectedType, selectedKind, selectedCondition, selectedColon])
 
   const [sortedData, setSortedData] = useState([])
 
@@ -219,8 +208,6 @@ const UserList = () => {
     setRowsPerPage(parseInt(event.target.value, rowsPerPage))
     setPage(0)
   }
-
-  console.log(checkId)
 
   return (
     <Grid container spacing={6}>
@@ -395,21 +382,25 @@ const UserList = () => {
             ' '
           )}
           <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
-            {isFetching || isLoading ? (
-              <div style={{ display: 'flex', justifyContent: 'center', minWidth: 'full', minHeight: '400px' }}>
-                <CircularProgress />
-              </div>
-            ) : (
-              <Table stickyHeader aria-label='sticky table'>
-                <TableHead>
-                  <TableRow>
-                    {columnsDefinition.map(column => (
-                      <TableCell key={column.field} align={column.align} sx={{ minWidth: column.minWidth }}>
-                        {column.headerName(allDataVehicle.vehicles)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
+            <Table stickyHeader aria-label='sticky table'>
+              <TableHead>
+                <TableRow>
+                  {columnsDefinition.map(column => (
+                    <TableCell key={column.field} align={column.align} sx={{ minWidth: column.minWidth }}>
+                      {column.headerName({ isAllLoading, allDataVehicle })}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              {isFetching || isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={9} align='center'>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                      <CircularProgress />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
                 <TableBody>
                   {sortedData.map(row => (
                     <TableRow
@@ -418,7 +409,7 @@ const UserList = () => {
                       tabIndex={-1}
                       key={row.id}
                       style={{
-                        backgroundColor: checkId.some(id => id == row.id) ? '#CFECF7' : '' 
+                        backgroundColor: checkId.some(id => id == row.id) ? '#CFECF7' : ''
                       }}
                     >
                       {columnsDefinition.map(column => (
@@ -437,8 +428,8 @@ const UserList = () => {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
-            )}
+              )}
+            </Table>
           </TableContainer>
           <TablePagination
             rowsPerPageOptions={[15]} // Add the available rows per page options
