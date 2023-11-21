@@ -269,7 +269,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_plate_number'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value.toUpperCase()}
@@ -291,7 +291,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_brand'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -313,7 +313,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_year'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -481,7 +481,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_weight'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -506,7 +506,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_power'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -531,7 +531,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_comsumption_km'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -556,7 +556,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_comsumption_mc'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -581,7 +581,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_comsumption_day'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -603,7 +603,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_milage'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}
@@ -624,7 +624,7 @@ const SidebarAddUser = props => {
                 <Controller
                   name='vehicle_status'
                   control={control}
-                  rules={{ required: +true }}
+                  rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       value={value}

@@ -393,13 +393,23 @@ const UserList = () => {
                 </TableRow>
               </TableHead>
               {isFetching || isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={9} align='center'>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-                      <CircularProgress />
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={5} align='center'>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          height: '400px',
+                          width: '100%'
+                        }}
+                      >
+                        <CircularProgress />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               ) : (
                 <TableBody>
                   {sortedData.map(row => (
@@ -409,11 +419,11 @@ const UserList = () => {
                       tabIndex={-1}
                       key={row.id}
                       style={{
-                        backgroundColor: checkId.some(id => id == row.id) ? '#CFECF7' : ''
+                        backgroundColor: checkId.some(id => id == row.id) ? '#F3F3FF' : ''
                       }}
                     >
                       {columnsDefinition.map(column => (
-                        <TableCell key={column.field} align={column.align} className=''>
+                        <TableCell key={column.field} align={column.align}>
                           {column.renderCell({
                             row,
                             engineTypes,
@@ -432,7 +442,7 @@ const UserList = () => {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[15]} // Add the available rows per page options
+            rowsPerPageOptions={[15]}
             component='div'
             count={isLoading ? 0 : count}
             rowsPerPage={rowsPerPage}

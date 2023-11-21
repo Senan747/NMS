@@ -56,31 +56,38 @@ const renderClient = row => {
   }
 }
 
-const CheckboxHeader = ({ allDataVehicle, isAllLoading, dispatch, setCheckId, removeCheckId }) => {
+const CheckboxHeader = ({ allDataVehicle, isAllLoading, dispatch, setCheckId, removeCheckId, checkId }) => {
   const [checked, setChecked] = useState(false)
-
-  const handleChange = event => {
-    setChecked(event.target.checked)
-  }
   const [allId, setAllId] = useState([])
 
   useEffect(() => {
-    if(!isAllLoading){
-        setAllId(allDataVehicle.vehicles.map(data => data.id))
+    if (!isAllLoading) {
+      setAllId(allDataVehicle.vehicles.map(data => data.id))
     }
   }, [allDataVehicle, isAllLoading])
 
-  useEffect(() => {
-    if (checked) {
-      dispatch(setCheckId(allId))
-    } else {
+  const handleClick = () => {
+    if (checkId.length > 0) {
       dispatch(removeCheckId())
+      setChecked(false)
+    } else if (checkId.length == 0) {
+      dispatch(setCheckId(allId))
+      setChecked(true)
     }
-  }, [checked, allId])
+  }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} name='controlled' />} />
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '10px' }}>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={checked}
+            onClick={handleClick}
+            name='controlled'
+            indeterminate={checkId.length > 0 && !checked ? true : false}
+          />
+        }
+      />
     </div>
   )
 }
@@ -155,16 +162,17 @@ const RowOptions = ({ id }) => {
 
 const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId }) => [
   {
-    flex: 0.05,
+    flex: 0.2,
     minWidth: 50,
     field: 'Checkbox',
-    headerName: ({allDataVehicle, isAllLoading}) => (
+    headerName: ({ allDataVehicle, isAllLoading }) => (
       <CheckboxHeader
         allDataVehicle={allDataVehicle}
         isAllLoading={isAllLoading}
         dispatch={dispatch}
         setCheckId={setCheckId}
         removeCheckId={removeCheckId}
+        checkId={checkId}
       />
     ),
     renderCell: ({ row }) => {
@@ -179,9 +187,9 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
       }
 
       return (
-        <Box>
+        <Typography>
           <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
-        </Box>
+        </Typography>
       )
     }
   },

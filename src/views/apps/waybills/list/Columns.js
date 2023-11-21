@@ -283,7 +283,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
       </div>
     ),
     renderCell: ({ row, data }) => (
-      <div variant='body2'> 
+      <div variant='body2' key={row.id}> 
         {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
@@ -303,7 +303,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
       return <Box>Vehicle kind</Box>
     },
     renderCell: ({ row, data, vehicleKind }) => (
-      <div variant='body2'>
+      <div variant='body2' key={row.id}>
         {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => {
@@ -327,7 +327,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
       return <Box>Vehicle Plate number</Box>
     },
     renderCell: ({ row, data }) => (
-      <div variant='body2'>
+      <div variant='body2' key={row.id}>
         {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (

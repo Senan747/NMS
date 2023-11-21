@@ -55,7 +55,6 @@ const UserList = () => {
   const { editId } = useSelector(state => state.editWaybills)
   const [count, setCount] = useState(0)
 
-
   useEffect(() => {
     if (!isLoading) {
       setdataWaybills(waybill.waybills.data)
@@ -272,20 +271,22 @@ const UserList = () => {
               <TableHead>
                 <TableRow>
                   {columnsDefinition.map(column => (
-                    <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                    <TableCell key={column.field} align={column.align} sx={{ minWidth: column.minWidth }}>
                       {column.headerName({ allDataLoading, allDataWaybill })}
                     </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               {isLoading || isFetching ? (
-                <TableRow>
-                  <TableCell colSpan={9} align='center'>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-                      <CircularProgress />
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={9} align='center'>
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                        <CircularProgress />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               ) : (
                 <TableBody>
                   {sortedData.map(row => (
@@ -295,7 +296,7 @@ const UserList = () => {
                       tabIndex={-1}
                       key={row.id}
                       style={{
-                        backgroundColor: checkWaybillId.some(id => id == row.id) ? '#CFECF7' : ''
+                        backgroundColor: checkWaybillId.some(id => id == row.id) ? '#F3F3FF' : ''
                       }}
                     >
                       {columnsDefinition.map(column => (
