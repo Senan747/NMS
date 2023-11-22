@@ -89,7 +89,8 @@ module.exports = {
         "gega-bg": "#FBF6EE",
         "gega-green": "#908951",
         "gega-navbar": "#DDCAB9",
-        "gega-dark-red": "#9B3727"
+        "gega-dark-red": "#9B3727",
+        "bc": '#D8D8DD'
       },
     },
   },

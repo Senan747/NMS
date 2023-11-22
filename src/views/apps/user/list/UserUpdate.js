@@ -16,6 +16,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
 import Icon from 'src/@core/components/icon'
 import { Alert } from '@mui/material'
+import Cleave from 'cleave.js/react'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
@@ -149,6 +150,7 @@ const SidebarAddUser = props => {
     }
   }, [showError])
 
+  const [isPlateNumberFocused, setIsPlateNumberFocused] = useState(false)
   return (
     <Drawer
       open={ShowUpdate}
@@ -180,15 +182,18 @@ const SidebarAddUser = props => {
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
-                  <TextField
+                  <Cleave
                     required
-                    placeholder='99 AA 100'
+                    placeholder={isPlateNumberFocused ? '10 AA 999' : 'Plate number'}
                     label='Plate number'
                     value={formData.vehicle_plate_number.toLocaleUpperCase()}
                     onChange={e =>
                       setFormData({ ...formData, vehicle_plate_number: e.target.value.toLocaleUpperCase() })
                     }
-                    InputLabelProps={{ shrink: true }}
+                    onFocus={() => setIsPlateNumberFocused(true)}
+                    onBlur={() => setIsPlateNumberFocused(false)}
+                    options={{ blocks: [2, 2, 3], delimiter: ' ', uppercase: true }}
+                    className='w-full p-[15px] rounded-[8px] border-bc text-base box-border transition duration-150 ease-in-out outline-none border-1 focus:shadow-outline-blue focus:border-blue-700'
                   />
                   {!formData.vehicle_plate_number && check && (
                     <FormHelperText sx={{ color: 'error.main' }}>Vehicle plate number is required</FormHelperText>

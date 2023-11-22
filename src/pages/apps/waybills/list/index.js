@@ -280,7 +280,7 @@ const UserList = () => {
               {isLoading || isFetching ? (
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={9} align='center'>
+                    <TableCell colSpan={7} align='center'>
                       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
                         <CircularProgress />
                       </div>

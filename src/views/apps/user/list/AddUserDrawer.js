@@ -23,6 +23,7 @@ import { useCreateVehicleMutation } from 'src/store/apps/vehicle/api'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
+import Cleave from 'cleave.js/react'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
@@ -203,7 +204,6 @@ const SidebarAddUser = props => {
     })
   }
 
-
   const onSubmit = formData => {
     const combinedData = { ...formData, ...newStates }
 
@@ -238,6 +238,8 @@ const SidebarAddUser = props => {
     dispatch(fetchTechnicalConditions())
   }, [dispatch])
 
+  const [isPlateNumberFocused, setIsPlateNumberFocused] = useState(false)
+
   return (
     <Drawer
       open={open}
@@ -271,12 +273,16 @@ const SidebarAddUser = props => {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
-                    <TextField
+                    <Cleave
+                      required
                       value={value.toUpperCase()}
-                      label='Plate number'
+                      options={{ blocks: [2, 2, 3], delimiter: ' ', uppercase: true }}
                       onChange={onChange}
-                      placeholder='10 AA 999'
-                      error={Boolean(errors.vehicle_plate_number)}
+                      onFocus={() => setIsPlateNumberFocused(true)}
+                      onBlur={() => setIsPlateNumberFocused(false)}
+                      label='Vehicle plate number'
+                      placeholder={isPlateNumberFocused ? '10 AA 999' : 'Plate number'}
+                      className='w-full p-[15px] rounded-[8px] border-bc text-base box-border transition duration-150 ease-in-out outline-none border-1 focus:shadow-outline-blue focus:border-blue-700'
                     />
                   )}
                 />

@@ -13,17 +13,21 @@ import Icon from 'src/@core/components/icon'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 
-
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { openShowEdit, setEditId, setCheckWaybillId, deleteCheckWaybillId, removeCheckWaybillId } from 'src/store/apps/waybills/editWaybills'
+import {
+  openShowEdit,
+  setEditId,
+  setCheckWaybillId,
+  deleteCheckWaybillId,
+  removeCheckWaybillId
+} from 'src/store/apps/waybills/editWaybills'
 import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
 import { useDeleteWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
-
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -36,33 +40,45 @@ const LinkStyled = styled(Link)(({ theme }) => ({
   }
 }))
 
-const CheckboxHeader = ({ allDataWaybill, allDataLoading, dispatch, setCheckWaybillId, removeCheckWaybillId }) => {
+const CheckboxHeader = ({
+  allDataWaybill,
+  allDataLoading,
+  dispatch,
+  setCheckWaybillId,
+  removeCheckWaybillId,
+  checkWaybillId
+}) => {
   const [checked, setChecked] = useState(false)
-
-  const handleChange = event => {
-    setChecked(event.target.checked)
-  }
   const [allId, setAllId] = useState([])
 
-
   useEffect(() => {
-    if(!allDataLoading){
-        setAllId(allDataWaybill.waybills.map(data => data.id))
+    if (!allDataLoading) {
+      setAllId(allDataWaybill.waybills.map(data => data.id))
     }
-  
   }, [allDataWaybill, allDataLoading])
 
-  useEffect(() => {
-    if (checked) {
-      dispatch(setCheckWaybillId(allId))
-    } else {
+  const handleClick = () => {
+    if (checkWaybillId.length > 0) {
       dispatch(removeCheckWaybillId())
+      setChecked(false)
+    } else if (checkWaybillId.length == 0) {
+      dispatch(setCheckWaybillId(allId))
+      setChecked(true)
     }
-  }, [checked, allId])
+  }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} name='controlled' />} />
+    <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '10px' }}>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={checked}
+            onClick={handleClick}
+            name='controlled'
+            indeterminate={checkWaybillId.length > 0 && !checked ? true : false}
+          />
+        }
+      />
     </div>
   )
 }
@@ -153,13 +169,14 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     flex: 0.05,
     minWidth: 50,
     field: 'Checkbox',
-    headerName: ({allDataWaybill, allDataLoading}) => (
+    headerName: ({ allDataWaybill, allDataLoading }) => (
       <CheckboxHeader
         allDataWaybill={allDataWaybill}
         allDataLoading={allDataLoading}
         dispatch={dispatch}
         setCheckWaybillId={setCheckWaybillId}
         removeCheckWaybillId={removeCheckWaybillId}
+        checkWaybillId={checkWaybillId}
       />
     ),
     renderCell: ({ row }) => {
@@ -283,7 +300,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
       </div>
     ),
     renderCell: ({ row, data }) => (
-      <div variant='body2' key={row.id}> 
+      <div variant='body2' key={row.id}>
         {data.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (

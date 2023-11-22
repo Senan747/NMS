@@ -395,7 +395,7 @@ const UserList = () => {
               {isFetching || isLoading ? (
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={5} align='center'>
+                    <TableCell colSpan={9} align='center'>
                       <div
                         style={{
                           display: 'flex',
