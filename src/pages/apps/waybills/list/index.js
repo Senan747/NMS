@@ -82,6 +82,7 @@ const UserList = () => {
   const handleVehicleChange = useCallback(e => {
     setSelectedVehicleId(e.target.value)
   }, [])
+
   const handleKindChange = useCallback(e => {
     setSelectedKind(e.target.value)
   }, [])
@@ -266,7 +267,7 @@ const UserList = () => {
           {waybillCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
           {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
 
-          <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
+          <TableContainer component={Paper} sx={{ maxHeight: 550 }}>
             <Table stickyHeader aria-label='sticky table'>
               <TableHead>
                 <TableRow>

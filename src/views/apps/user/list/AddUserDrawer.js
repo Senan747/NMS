@@ -118,52 +118,64 @@ const defaultValues = {
   vehicle_status: ''
 }
 
-const initialState = {
-  id_vehicle_engine: '',
-  id_vehicle_fuel: '',
-  id_vehicle_type: '',
-  id_vehicle_subject: '',
-  id_vehicle_condition: '',
-  id_vehicle_colon: ''
-}
+// const initialState = {
+//   id_vehicle_engine: '',
+//   id_vehicle_fuel: '',
+//   id_vehicle_type: '',
+//   id_vehicle_subject: '',
+//   id_vehicle_condition: '',
+//   id_vehicle_colon: ''
+// }
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'UPDATE_SELECTED_ENGINE':
-      return { ...state, id_vehicle_engine: action.payload }
-    case 'UPDATE_SELECTED_FUEL':
-      return { ...state, id_vehicle_fuel: action.payload }
-    case 'UPDATE_SELECTED_TYPE':
-      return { ...state, id_vehicle_type: action.payload }
-    case 'UPDATE_SELECTED_KIND':
-      return { ...state, id_vehicle_subject: action.payload }
-    case 'UPDATE_SELECTED_TECHNICAL_CONDITIONS':
-      return { ...state, id_vehicle_condition: action.payload }
-    case 'UPDATE_SELECTED_STACKS':
-      return { ...state, id_vehicle_colon: action.payload }
-    default:
-      return state
-  }
-}
+// const reducer = (state, action) => {
+//   switch (action.type) {
+//     case 'UPDATE_SELECTED_ENGINE':
+//       return { ...state, id_vehicle_engine: action.payload }
+//     case 'UPDATE_SELECTED_FUEL':
+//       return { ...state, id_vehicle_fuel: action.payload }
+//     case 'UPDATE_SELECTED_TYPE':
+//       return { ...state, id_vehicle_type: action.payload }
+//     case 'UPDATE_SELECTED_KIND':
+//       return { ...state, id_vehicle_subject: action.payload }
+//     case 'UPDATE_SELECTED_TECHNICAL_CONDITIONS':
+//       return { ...state, id_vehicle_condition: action.payload }
+//     case 'UPDATE_SELECTED_STACKS':
+//       return { ...state, id_vehicle_colon: action.payload }
+//     default:
+//       return state
+//   }
+// }
 
 const SidebarAddUser = props => {
   const { open, toggle } = props
-  const [state, dispatchSelect] = useReducer(reducer, initialState)
+
+  // const [state, dispatchSelect] = useReducer(reducer, initialState)
   const { data } = useGetAllVehiclesQuery()
   const [showError, setShowError] = useState(false)
+
+  const [initialState, setInitialState] = useState({
+    id_vehicle_engine: '',
+    id_vehicle_fuel: '',
+    id_vehicle_type: '',
+    id_vehicle_subject: '',
+    id_vehicle_condition: '',
+    id_vehicle_colon: ''
+  })
+
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
   const [createVehicle] = useCreateVehicleMutation()
   const [check, setCheck] = useState(false)
-  const newStates = {
-    id_vehicle_engine: state.id_vehicle_engine,
-    id_vehicle_fuel: state.id_vehicle_fuel,
-    id_vehicle_type: state.id_vehicle_type,
-    id_vehicle_subject: state.id_vehicle_subject,
-    id_vehicle_condition: state.id_vehicle_condition,
-    id_vehicle_colon: state.id_vehicle_colon
-  }
+
+  // const newStates = {
+  //   id_vehicle_engine: initialState.id_vehicle_engine,
+  //   id_vehicle_fuel: initialState.id_vehicle_fuel,
+  //   id_vehicle_type: state.id_vehicle_type,
+  //   id_vehicle_subject: state.id_vehicle_subject,
+  //   id_vehicle_condition: state.id_vehicle_condition,
+  //   id_vehicle_colon: state.id_vehicle_colon
+  // }
 
   const {
     reset,
@@ -178,34 +190,45 @@ const SidebarAddUser = props => {
 
   const resetForm = () => {
     reset(defaultValues)
-    dispatchSelect({
-      type: 'UPDATE_SELECTED_ENGINE',
-      payload: initialState.id_vehicle_engine
+
+    setInitialState({
+      ...initialState,
+      id_vehicle_engine: '',
+      id_vehicle_fuel: '',
+      id_vehicle_type: '',
+      id_vehicle_subject: '',
+      id_vehicle_condition: '',
+      id_vehicle_colon: ''
     })
-    dispatchSelect({
-      type: 'UPDATE_SELECTED_FUEL',
-      payload: initialState.id_vehicle_fuel
-    })
-    dispatchSelect({
-      type: 'UPDATE_SELECTED_TYPE',
-      payload: initialState.id_vehicle_type
-    })
-    dispatchSelect({
-      type: 'UPDATE_SELECTED_KIND',
-      payload: initialState.id_vehicle_subject
-    })
-    dispatchSelect({
-      type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS',
-      payload: initialState.id_vehicle_condition
-    })
-    dispatchSelect({
-      type: 'UPDATE_SELECTED_STACKS',
-      payload: initialState.id_vehicle_colon
-    })
+
+    // dispatchSelect({
+    //   type: 'UPDATE_SELECTED_ENGINE',
+    //   payload: initialState.id_vehicle_engine
+    // })
+    // dispatchSelect({
+    //   type: 'UPDATE_SELECTED_FUEL',
+    //   payload: initialState.id_vehicle_fuel
+    // })
+    // dispatchSelect({
+    //   type: 'UPDATE_SELECTED_TYPE',
+    //   payload: initialState.id_vehicle_type
+    // })
+    // dispatchSelect({
+    //   type: 'UPDATE_SELECTED_KIND',
+    //   payload: initialState.id_vehicle_subject
+    // })
+    // dispatchSelect({
+    //   type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS',
+    //   payload: initialState.id_vehicle_condition
+    // })
+    // dispatchSelect({
+    //   type: 'UPDATE_SELECTED_STACKS',
+    //   payload: initialState.id_vehicle_colon
+    // })
   }
 
   const onSubmit = formData => {
-    const combinedData = { ...formData, ...newStates }
+    const combinedData = { ...formData, ...initialState }
 
     if (data.vehicles.some(vehicle => vehicle.vehicle_plate_number === formData.vehicle_plate_number)) {
       setShowError(true)
@@ -341,11 +364,11 @@ const SidebarAddUser = props => {
                 <InputLabel id='role-select'>Select engine</InputLabel>
                 <Select
                   fullWidth
-                  value={state.id_vehicle_engine}
+                  value={initialState.id_vehicle_engine}
                   id='select-engine'
                   label='Select Engine'
                   labelId='engine-select'
-                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_ENGINE', payload: e.target.value })}
+                  onChange={e => setInitialState({ ...initialState, id_vehicle_engine: e.target.value })}
                   inputProps={{ placeholder: 'Select Engine' }}
                 >
                   {engineTypes.map(engine => (
@@ -354,7 +377,7 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!state.id_vehicle_engine && check && (
+                {!initialState.id_vehicle_engine && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle engine field is required</FormHelperText>
                 )}
               </FormControl>
@@ -365,11 +388,11 @@ const SidebarAddUser = props => {
                 <InputLabel id='fuel-select'>Select Fuel</InputLabel>
                 <Select
                   fullWidth
-                  value={state.id_vehicle_fuel}
+                  value={initialState.id_vehicle_fuel}
                   id='select-fuel'
                   label='Select Fuel'
                   labelId='fuel-select'
-                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_FUEL', payload: e.target.value })}
+                  onChange={e => setInitialState({ ...initialState, id_vehicle_fuel: e.target.value })}
                   inputProps={{ placeholder: 'Select Fuel' }}
                 >
                   {vehicleFuel.map(fuel => (
@@ -378,7 +401,7 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!state.id_vehicle_fuel && check && (
+                {!initialState.id_vehicle_fuel && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle fuel field is required</FormHelperText>
                 )}
               </FormControl>
@@ -389,11 +412,11 @@ const SidebarAddUser = props => {
                 <InputLabel id='type-select'>Select Type</InputLabel>
                 <Select
                   fullWidth
-                  value={state.id_vehicle_type}
+                  value={initialState.id_vehicle_type}
                   id='select-type'
                   label='Select Type'
                   labelId='type-select'
-                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_TYPE', payload: e.target.value })}
+                  onChange={e => setInitialState({ ...initialState, id_vehicle_type: e.target.value })}
                   inputProps={{ placeholder: 'Select Type' }}
                 >
                   {vehicleType.map(type => (
@@ -402,7 +425,7 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!state.id_vehicle_type && check && (
+                {!initialState.id_vehicle_type && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle type field is required</FormHelperText>
                 )}
               </FormControl>
@@ -413,11 +436,11 @@ const SidebarAddUser = props => {
                 <InputLabel id='kind-select'>Select Kind</InputLabel>
                 <Select
                   fullWidth
-                  value={state.id_vehicle_subject}
+                  value={initialState.id_vehicle_subject}
                   id='select-kind'
                   label='Select Kind'
                   labelId='kind-select'
-                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_KIND', payload: e.target.value })}
+                  onChange={e => setInitialState({ ...initialState, id_vehicle_subject: e.target.value })}
                   inputProps={{ placeholder: 'Select Kind' }}
                 >
                   {vehicleKind.map(kind => (
@@ -426,7 +449,7 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!state.id_vehicle_subject && check && (
+                {!initialState.id_vehicle_subject && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle subject field is required</FormHelperText>
                 )}
               </FormControl>
@@ -437,13 +460,11 @@ const SidebarAddUser = props => {
                 <InputLabel id='technical-conditions-select'>Select Technical Conditions</InputLabel>
                 <Select
                   fullWidth
-                  value={state.id_vehicle_condition}
+                  value={initialState.id_vehicle_condition}
                   id='select-technical-conditions'
                   label='Select Technical Conditions'
                   labelId='technical-conditions-select'
-                  onChange={e =>
-                    dispatchSelect({ type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS', payload: e.target.value })
-                  }
+                  onChange={e => setInitialState({ ...initialState, id_vehicle_condition: e.target.value })}
                   inputProps={{ placeholder: 'Select Technical Conditions' }}
                 >
                   {technicalConditions.map(condition => (
@@ -452,7 +473,7 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!state.id_vehicle_condition && check && (
+                {!initialState.id_vehicle_condition && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle condition field is required</FormHelperText>
                 )}
               </FormControl>
@@ -463,11 +484,11 @@ const SidebarAddUser = props => {
                 <InputLabel id='stacks-select'>Select Stacks</InputLabel>
                 <Select
                   fullWidth
-                  value={state.id_vehicle_colon}
+                  value={initialState.id_vehicle_colon}
                   id='select-stacks'
                   label='Select Stacks'
                   labelId='stacks-select'
-                  onChange={e => dispatchSelect({ type: 'UPDATE_SELECTED_STACKS', payload: e.target.value })}
+                  onChange={e => setInitialState({ ...initialState, id_vehicle_colon: e.target.value })}
                   inputProps={{ placeholder: 'Select Stacks' }}
                 >
                   {stacks.map(stack => (
@@ -476,7 +497,7 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!state.id_vehicle_colon && check && (
+                {!initialState.id_vehicle_colon && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>Vehicle colon field is required</FormHelperText>
                 )}
               </FormControl>

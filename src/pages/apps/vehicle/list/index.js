@@ -381,7 +381,7 @@ const UserList = () => {
           ) : (
             ' '
           )}
-          <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
+          <TableContainer component={Paper} sx={{ maxHeight: 550 }}>
             <Table stickyHeader aria-label='sticky table'>
               <TableHead>
                 <TableRow>

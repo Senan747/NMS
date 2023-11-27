@@ -39,6 +39,7 @@ const SidebarAddUser = props => {
   const { updateId } = useSelector(state => state.ShowUpdate)
   const { ShowUpdate } = useSelector(state => state.ShowUpdate)
   const [check, setCheck] = useState(false)
+
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
   )
@@ -46,6 +47,7 @@ const SidebarAddUser = props => {
   const { data: dataVehicle } = useGetAllVehiclesQuery()
   const { data, isLoading, isFetching } = useGetVehiclesIdQuery(updateId)
   const [updateVehicle] = useUpdateVehicleMutation()
+
   const [formData, setFormData] = useState({
     vehicle_plate_number: '',
     vehicle_brand: '',
@@ -146,11 +148,13 @@ const SidebarAddUser = props => {
       const timeout = setTimeout(() => {
         setShowError(false)
       }, 4000)
+
       return () => clearTimeout(timeout)
     }
   }, [showError])
 
   const [isPlateNumberFocused, setIsPlateNumberFocused] = useState(false)
+
   return (
     <Drawer
       open={ShowUpdate}

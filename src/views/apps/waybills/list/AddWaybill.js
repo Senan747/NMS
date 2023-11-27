@@ -23,7 +23,7 @@ import { Alert } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import Icon from 'src/@core/components/icon'
 import { yupResolver } from '@hookform/resolvers/yup'
-import {useForm, Controller} from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
@@ -31,7 +31,6 @@ import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
-
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -84,6 +83,7 @@ const SidebarAddWaybill = props => {
     const year = date.getFullYear()
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
     const day = date.getDate().toString().padStart(2, '0')
+
     return `${year}-${month}-${day}`
   }
 
@@ -121,6 +121,7 @@ const SidebarAddWaybill = props => {
       const timeout = setTimeout(() => {
         setShowError(false)
       }, 4000)
+
       return () => clearTimeout(timeout)
     }
   }, [showError])
@@ -203,11 +204,13 @@ const SidebarAddWaybill = props => {
                     }
                   }}
                 >
-                  {isLoading ? " " : data.vehicles.map(number => (
-                    <MenuItem key={number.id} value={number.id}>
-                      {number.vehicle_plate_number}
-                    </MenuItem>
-                  ))}
+                  {isLoading
+                    ? ' '
+                    : data.vehicles.map(number => (
+                        <MenuItem key={number.id} value={number.id}>
+                          {number.vehicle_plate_number}
+                        </MenuItem>
+                      ))}
                 </Select>
                 {!formData.id_vehicle && check && (
                   <FormHelperText sx={{ color: 'error.main' }}>waybills vehicle field is required</FormHelperText>
