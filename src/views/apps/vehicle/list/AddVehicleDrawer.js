@@ -1,4 +1,4 @@
-import { useEffect, useState, useReducer } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Drawer from '@mui/material/Drawer'
@@ -118,38 +118,8 @@ const defaultValues = {
   vehicle_status: ''
 }
 
-// const initialState = {
-//   id_vehicle_engine: '',
-//   id_vehicle_fuel: '',
-//   id_vehicle_type: '',
-//   id_vehicle_subject: '',
-//   id_vehicle_condition: '',
-//   id_vehicle_colon: ''
-// }
-
-// const reducer = (state, action) => {
-//   switch (action.type) {
-//     case 'UPDATE_SELECTED_ENGINE':
-//       return { ...state, id_vehicle_engine: action.payload }
-//     case 'UPDATE_SELECTED_FUEL':
-//       return { ...state, id_vehicle_fuel: action.payload }
-//     case 'UPDATE_SELECTED_TYPE':
-//       return { ...state, id_vehicle_type: action.payload }
-//     case 'UPDATE_SELECTED_KIND':
-//       return { ...state, id_vehicle_subject: action.payload }
-//     case 'UPDATE_SELECTED_TECHNICAL_CONDITIONS':
-//       return { ...state, id_vehicle_condition: action.payload }
-//     case 'UPDATE_SELECTED_STACKS':
-//       return { ...state, id_vehicle_colon: action.payload }
-//     default:
-//       return state
-//   }
-// }
-
 const SidebarAddUser = props => {
   const { open, toggle } = props
-
-  // const [state, dispatchSelect] = useReducer(reducer, initialState)
   const { data } = useGetAllVehiclesQuery()
   const [showError, setShowError] = useState(false)
 
@@ -167,15 +137,6 @@ const SidebarAddUser = props => {
   )
   const [createVehicle] = useCreateVehicleMutation()
   const [check, setCheck] = useState(false)
-
-  // const newStates = {
-  //   id_vehicle_engine: initialState.id_vehicle_engine,
-  //   id_vehicle_fuel: initialState.id_vehicle_fuel,
-  //   id_vehicle_type: state.id_vehicle_type,
-  //   id_vehicle_subject: state.id_vehicle_subject,
-  //   id_vehicle_condition: state.id_vehicle_condition,
-  //   id_vehicle_colon: state.id_vehicle_colon
-  // }
 
   const {
     reset,
@@ -200,31 +161,6 @@ const SidebarAddUser = props => {
       id_vehicle_condition: '',
       id_vehicle_colon: ''
     })
-
-    // dispatchSelect({
-    //   type: 'UPDATE_SELECTED_ENGINE',
-    //   payload: initialState.id_vehicle_engine
-    // })
-    // dispatchSelect({
-    //   type: 'UPDATE_SELECTED_FUEL',
-    //   payload: initialState.id_vehicle_fuel
-    // })
-    // dispatchSelect({
-    //   type: 'UPDATE_SELECTED_TYPE',
-    //   payload: initialState.id_vehicle_type
-    // })
-    // dispatchSelect({
-    //   type: 'UPDATE_SELECTED_KIND',
-    //   payload: initialState.id_vehicle_subject
-    // })
-    // dispatchSelect({
-    //   type: 'UPDATE_SELECTED_TECHNICAL_CONDITIONS',
-    //   payload: initialState.id_vehicle_condition
-    // })
-    // dispatchSelect({
-    //   type: 'UPDATE_SELECTED_STACKS',
-    //   payload: initialState.id_vehicle_colon
-    // })
   }
 
   const onSubmit = formData => {

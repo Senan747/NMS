@@ -29,10 +29,11 @@ import { useGetVehiclesQuery, useGetAllVehiclesQuery } from 'src/store/apps/vehi
 import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Custom Table Components Imports
-import TableHeader from 'src/views/apps/user/list/TableHeader'
-import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
-import UserUpdate from 'src/views/apps/user/list/UserUpdate'
-import Columns from 'src/views/apps/user/list/Columns'
+
+import TableHeader from 'src/views/apps/vehicle/list/TableHeader'
+import AddUserDrawer from 'src/views/apps/vehicle/list/AddVehicleDrawer'
+import UserUpdate from 'src/views/apps/vehicle/list/VehicleUpdate'
+import Columns from 'src/views/apps/vehicle/list/Columns'
 
 const UserList = () => {
   const [value, setValue] = useState('')
@@ -49,7 +50,7 @@ const UserList = () => {
   const [dataVehicles, setDataVehicles] = useState([])
   const { checkId } = useSelector(state => state.ShowUpdate)
   const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField, checkId })
-  const { data: allDataVehicle, isLoading: isAllLoading } = useGetAllVehiclesQuery()
+  const { data: allDataVehicle, isLoading: isAllLoading, isFetching: isAllFetching } = useGetAllVehiclesQuery()
 
   const [count, setCount] = useState(0)
   useEffect(() => {
@@ -387,7 +388,7 @@ const UserList = () => {
                 <TableRow>
                   {columnsDefinition.map(column => (
                     <TableCell key={column.field} align={column.align} sx={{ minWidth: column.minWidth }}>
-                      {column.headerName({ isAllLoading, allDataVehicle })}
+                      {column.headerName({ isAllLoading, allDataVehicle, isAllFetching })}
                     </TableCell>
                   ))}
                 </TableRow>

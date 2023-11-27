@@ -74,6 +74,7 @@ const CheckboxHeader = ({
           <Checkbox
             checked={checked}
             onClick={handleClick}
+            disabled={allDataLoading}
             name='controlled'
             indeterminate={checkWaybillId.length > 0 && !checked ? true : false}
           />
