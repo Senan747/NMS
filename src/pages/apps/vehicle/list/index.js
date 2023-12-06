@@ -26,7 +26,6 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { closeShowUpdate } from 'src/store/apps/vehicle/ShowUpdate'
 import { useDispatch, useSelector } from 'react-redux'
 import { useGetVehiclesQuery, useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
-import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Custom Table Components Imports
 
@@ -39,9 +38,7 @@ const UserList = () => {
   const [value, setValue] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   const dispatch = useDispatch()
-  const { updateId } = useSelector(state => state.ShowUpdate)
-  const { dataCondition } = useSelector(state => state.conditions)
-  const { sortField } = useSelector(state => state.sort)
+  const [sortField, setSortField] = useState('')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(15)
   const [sortDirection, setSortDirection] = useState('asc')
@@ -49,10 +46,27 @@ const UserList = () => {
   const { data, error, isLoading, isFetching } = useGetVehiclesQuery({ pageVehicle, value })
   const [dataVehicles, setDataVehicles] = useState([])
   const { checkId } = useSelector(state => state.ShowUpdate)
-  const columnsDefinition = Columns({ dispatch, setSortDirection, sortDirection, sortField, checkId })
-  const { data: allDataVehicle, isLoading: isAllLoading, isFetching: isAllFetching } = useGetAllVehiclesQuery()
 
+  const { data: allDataVehicle, isLoading: isAllLoading, isFetching: isAllFetching } = useGetAllVehiclesQuery()
+  const [filterSelections, setFilterSelections] = useState({
+    selectedEngine: '',
+    selectedCondition: '',
+    selectedFuel: '',
+    selectedKind: '',
+    selectedType: '',
+    selectedColon: ''
+  })
   const [count, setCount] = useState(0)
+  const [dataCondition, setDataCondition] = useState('')
+  const columnsDefinition = Columns({
+    dispatch,
+    setSortDirection,
+    sortDirection,
+    sortField,
+    setSortField,
+    checkId,
+    setDataCondition
+  })
   useEffect(() => {
     if (!isLoading) {
       setDataVehicles(data.vehicles.data)
@@ -67,7 +81,7 @@ const UserList = () => {
   useEffect(() => {
     if (dataCondition) {
       const timeoutId = setTimeout(() => {
-        dispatch(setAddDataCondition(''))
+        setDataCondition('')
       }, 4000)
 
       return () => clearTimeout(timeoutId)
@@ -79,36 +93,30 @@ const UserList = () => {
   }, [])
 
   const handleEngineChange = useCallback(e => {
-    setSelectedEngine(e.target.value)
+    setFilterSelections(prevSelections => ({ ...prevSelections, selectedEngine: e.target.value }))
   }, [])
 
   const handleFuelChange = useCallback(e => {
-    setSelectedFuel(e.target.value)
+    setFilterSelections(prevSelections => ({ ...prevSelections, selectedFuel: e.target.value }))
   }, [])
 
   const handleTypeChange = useCallback(e => {
-    setSelectedType(e.target.value)
+    setFilterSelections(prevSelections => ({ ...prevSelections, selectedType: e.target.value }))
   }, [])
 
   const handleKindChange = useCallback(e => {
-    setSelectedKind(e.target.value)
+    setFilterSelections(prevSelections => ({ ...prevSelections, selectedKind: e.target.value }))
   }, [])
 
   const handleConditionChange = useCallback(e => {
-    setSelectedCondition(e.target.value)
+    setFilterSelections(prevSelections => ({ ...prevSelections, selectedCondition: e.target.value }))
   }, [])
 
   const handleColonChange = useCallback(e => {
-    setSelectedColon(e.target.value)
+    setFilterSelections(prevSelections => ({ ...prevSelections, selectedColon: e.target.value }))
   }, [])
 
   const [filteredData, setFilteredData] = useState([])
-  const [selectedEngine, setSelectedEngine] = useState('')
-  const [selectedFuel, setSelectedFuel] = useState('')
-  const [selectedType, setSelectedType] = useState('')
-  const [selectedKind, setSelectedKind] = useState('')
-  const [selectedCondition, setSelectedCondition] = useState('')
-  const [selectedColon, setSelectedColon] = useState('')
 
   useEffect(() => {
     if (data !== null) {
@@ -121,18 +129,27 @@ const UserList = () => {
         const colonId = vehicle.id_vehicle_colon || ''
 
         return (
-          (selectedEngine === '' || engineId === selectedEngine) &&
-          (selectedFuel === '' || fuelId === selectedFuel) &&
-          (selectedType === '' || typeId === selectedType) &&
-          (selectedKind === '' || kindId === selectedKind) &&
-          (selectedCondition === '' || conditionId === selectedCondition) &&
-          (selectedColon === '' || colonId === selectedColon)
+          (filterSelections.selectedEngine === '' || engineId === filterSelections.selectedEngine) &&
+          (filterSelections.selectedFuel === '' || fuelId === filterSelections.selectedFuel) &&
+          (filterSelections.selectedType === '' || typeId === filterSelections.selectedType) &&
+          (filterSelections.selectedKind === '' || kindId === filterSelections.selectedKind) &&
+          (filterSelections.selectedCondition === '' || conditionId === filterSelections.selectedCondition) &&
+          (filterSelections.selectedColon === '' || colonId === filterSelections.selectedColon)
         )
       })
 
       setFilteredData(filteredData)
     }
-  }, [dataVehicles, value, selectedEngine, selectedFuel, selectedType, selectedKind, selectedCondition, selectedColon])
+  }, [
+    dataVehicles,
+    value,
+    filterSelections.selectedEngine,
+    filterSelections.selectedFuel,
+    filterSelections.selectedType,
+    filterSelections.selectedKind,
+    filterSelections.selectedCondition,
+    filterSelections.selectedColon
+  ])
 
   const [sortedData, setSortedData] = useState([])
 
@@ -222,16 +239,21 @@ const UserList = () => {
                   <InputLabel id='engine-select'>Select engine</InputLabel>
                   <Select
                     fullWidth
-                    value={selectedEngine}
+                    value={filterSelections.selectedEngine}
                     id='select-engine'
                     label='Select engine'
                     labelId='engine-select'
                     onChange={handleEngineChange}
                     inputProps={{ placeholder: 'Select engine' }}
                   >
-                    {selectedEngine !== '' && (
+                    {filterSelections.selectedEngine !== '' && (
                       <MenuItem value=''>
-                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedEngine('')} />
+                        <Icon
+                          icon='material-symbols:delete-outline'
+                          onClick={() =>
+                            setFilterSelections(prevSelections => ({ ...prevSelections, selectedEngine: '' }))
+                          }
+                        />
                       </MenuItem>
                     )}
                     {engineTypes.map(engine => (
@@ -247,16 +269,21 @@ const UserList = () => {
                   <InputLabel id='fuel-select'>Select fuel</InputLabel>
                   <Select
                     fullWidth
-                    value={selectedFuel}
+                    value={filterSelections.selectedFuel}
                     id='select-fuel'
                     label='Select fuel'
                     labelId='fuel-select'
                     onChange={handleFuelChange}
                     inputProps={{ placeholder: 'Select fuel' }}
                   >
-                    {selectedFuel !== '' && (
+                    {filterSelections.selectedFuel !== '' && (
                       <MenuItem value=''>
-                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedFuel('')} />
+                        <Icon
+                          icon='material-symbols:delete-outline'
+                          onClick={() =>
+                            setFilterSelections(prevSelections => ({ ...prevSelections, selectedFuel: '' }))
+                          }
+                        />
                       </MenuItem>
                     )}
                     {vehicleFuel.map(fuel => (
@@ -272,16 +299,21 @@ const UserList = () => {
                   <InputLabel id='status-select'>Select type</InputLabel>
                   <Select
                     fullWidth
-                    value={selectedType}
+                    value={filterSelections.selectedType}
                     id='select-type'
                     label='Select type'
                     labelId='type-select'
                     onChange={handleTypeChange}
                     inputProps={{ placeholder: 'Select Type' }}
                   >
-                    {selectedType !== '' && (
+                    {filterSelections.selectedType !== '' && (
                       <MenuItem value=''>
-                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedType('')} />
+                        <Icon
+                          icon='material-symbols:delete-outline'
+                          onClick={() =>
+                            setFilterSelections(prevSelections => ({ ...prevSelections, selectedType: '' }))
+                          }
+                        />
                       </MenuItem>
                     )}
                     {vehicleType.map(type => (
@@ -297,16 +329,21 @@ const UserList = () => {
                   <InputLabel id='status-select'>Select kind</InputLabel>
                   <Select
                     fullWidth
-                    value={selectedKind}
+                    value={filterSelections.selectedKind}
                     id='select-kind'
                     label='Select kind'
                     labelId='kind-select'
                     onChange={handleKindChange}
                     inputProps={{ placeholder: 'Select kind' }}
                   >
-                    {selectedKind !== '' && (
+                    {filterSelections.selectedKind !== '' && (
                       <MenuItem value=''>
-                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedKind('')} />
+                        <Icon
+                          icon='material-symbols:delete-outline'
+                          onClick={() =>
+                            setFilterSelections(prevSelections => ({ ...prevSelections, selectedKind: '' }))
+                          }
+                        />
                       </MenuItem>
                     )}
                     {vehicleKind.map(kind => (
@@ -322,18 +359,20 @@ const UserList = () => {
                   <InputLabel id='technical-condition-select'>Select technical condition</InputLabel>
                   <Select
                     fullWidth
-                    value={selectedCondition}
+                    value={filterSelections.selectedCondition}
                     id='select-technical condition'
                     label='Select technical condition'
                     labelId='technical-condition-select'
                     onChange={handleConditionChange}
                     inputProps={{ placeholder: 'Select technical condition' }}
                   >
-                    {selectedCondition !== '' && (
+                    {filterSelections.selectedCondition !== '' && (
                       <MenuItem value=''>
                         <Icon
                           icon='material-symbols:delete-outline'
-                          onClick={() => setSelectedConselectedCondition('')}
+                          onClick={() =>
+                            setFilterSelections(prevSelections => ({ ...prevSelections, selectedCondition: '' }))
+                          }
                         />
                       </MenuItem>
                     )}
@@ -350,16 +389,21 @@ const UserList = () => {
                   <InputLabel id='colon-select'>Select colon</InputLabel>
                   <Select
                     fullWidth
-                    value={selectedColon}
+                    value={filterSelections.selectedColon}
                     id='select-colon'
                     label='Select colon'
                     labelId='colon-select'
                     onChange={handleColonChange}
                     inputProps={{ placeholder: 'Select colon' }}
                   >
-                    {selectedColon !== '' && (
+                    {filterSelections.selectedColon !== '' && (
                       <MenuItem value=''>
-                        <Icon icon='material-symbols:delete-outline' onClick={() => setSelectedCoselectedColon('')} />
+                        <Icon
+                          icon='material-symbols:delete-outline'
+                          onClick={() =>
+                            setFilterSelections(prevSelections => ({ ...prevSelections, selectedColon: '' }))
+                          }
+                        />
                       </MenuItem>
                     )}
                     {stacks.map(stack => (
@@ -453,8 +497,8 @@ const UserList = () => {
           />
         </Card>
       </Grid>
-      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
-      {updateId ? <UserUpdate toggle={toggleUserUpdate} /> : ' '}
+      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} setDataCondition={setDataCondition} />
+      <UserUpdate toggle={toggleUserUpdate} setDataCondition={setDataCondition} />
     </Grid>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
 // ** MUI Imports
@@ -11,8 +11,6 @@ import Typography from '@mui/material/Typography'
 import Icon from 'src/@core/components/icon'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
-
 import CheckboxHeader from './CheckBoxHeader'
 
 // ** Store Imports
@@ -23,10 +21,8 @@ import {
   deleteCheckId,
   removeCheckId
 } from 'src/store/apps/vehicle/ShowUpdate'
-import { setSortField } from 'src/store/apps/vehicle/sort'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useDeleteVehicleMutation } from 'src/store/apps/vehicle/api'
-import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
@@ -58,7 +54,7 @@ const renderClient = row => {
   }
 }
 
-const RowOptions = ({ id }) => {
+const RowOptions = ({ id, setDataCondition }) => {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
@@ -78,11 +74,11 @@ const RowOptions = ({ id }) => {
       await deleteVehicle(id)
         .unwrap()
         .then(payload => {
-          dispatch(setAddDataCondition('delete'))
+          setDataCondition('delete')
           handleRowOptionsClose()
         })
         .catch(error => {
-          dispatch(setAddDataCondition('cantDelete'))
+          setDataCondition('cantDelete')
         })
     } catch (error) {}
   }
@@ -126,12 +122,12 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId }) => [
+const columns = ({ dispatch, setSortDirection, sortDirection, sortField, setSortField, checkId, setDataCondition }) => [
   {
     flex: 0.2,
     minWidth: 50,
     field: 'Checkbox',
-    headerName: ({ allDataVehicle, isAllLoading, isAllFetching }) => (
+    headerName: ({ allDataVehicle, isAllLoading }) => (
       <CheckboxHeader
         allDataVehicle={allDataVehicle}
         isAllLoading={isAllLoading}
@@ -190,10 +186,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('brand'))
+              setSortField('brand')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('brand'))
+              setSortField('brand')
               setSortDirection('asc')
             }
           }}
@@ -226,10 +222,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('year'))
+              setSortField('year')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('year'))
+              setSortField('year')
               setSortDirection('asc')
             }
           }}
@@ -299,10 +295,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('weight'))
+              setSortField('weight')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('weight'))
+              setSortField('weight')
               setSortDirection('asc')
             }
           }}
@@ -337,10 +333,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('power'))
+              setSortField('power')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('power'))
+              setSortField('power')
               setSortDirection('asc')
             }
           }}
@@ -411,10 +407,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('comsumption_km'))
+              setSortField('comsumption_km')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('comsumption_km'))
+              setSortField('comsumption_km')
               setSortDirection('asc')
             }
           }}
@@ -445,10 +441,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('comsumption_mc'))
+              setSortField('comsumption_mc')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('comsumption_mc'))
+              setSortField('comsumption_mc')
               setSortDirection('asc')
             }
           }}
@@ -480,10 +476,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('comsumption_day'))
+              setSortField('comsumption_day')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('comsumption_day'))
+              setSortField('comsumption_day')
               setSortDirection('asc')
             }
           }}
@@ -515,10 +511,10 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortField('milage'))
+              setSortField('milage')
               setSortDirection('desc')
             } else {
-              dispatch(setSortField('milage'))
+              setSortField('milage')
               setSortDirection('asc')
             }
           }}
@@ -589,7 +585,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortField, checkId
     headerName: () => {
       return <Box>Actions</Box>
     },
-    renderCell: ({ row }) => <RowOptions id={row.id} />
+    renderCell: ({ row }) => <RowOptions id={row.id} setDataCondition={setDataCondition} />
   }
 ]
 

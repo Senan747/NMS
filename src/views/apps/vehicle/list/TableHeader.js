@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField'
 import Icon from 'src/@core/components/icon'
 
 const TableHeader = props => {
-  // ** Props
   const { handleFilter, toggle, value } = props
 
   return (

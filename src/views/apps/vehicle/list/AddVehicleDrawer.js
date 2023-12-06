@@ -17,7 +17,6 @@ import Grid from '@mui/system/Unstable_Grid/Grid'
 import Alert from '@mui/material/Alert'
 import InputAdornment from '@mui/material/InputAdornment'
 import Icon from 'src/@core/components/icon'
-import { useCreateVehicleMutation } from 'src/store/apps/vehicle/api'
 
 // ** Third Party Imports
 import * as yup from 'yup'
@@ -27,8 +26,8 @@ import Cleave from 'cleave.js/react'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
+import { useCreateVehicleMutation } from 'src/store/apps/vehicle/api'
 import {
   fetchVehicleEngine,
   fetchVehicleFuel,
@@ -119,7 +118,7 @@ const defaultValues = {
 }
 
 const SidebarAddUser = props => {
-  const { open, toggle } = props
+  const { open, toggle, setDataCondition } = props
   const { data } = useGetAllVehiclesQuery()
   const [showError, setShowError] = useState(false)
 
@@ -174,7 +173,7 @@ const SidebarAddUser = props => {
       reset()
       resetForm()
       setShowError(false)
-      dispatch(setAddDataCondition('add'))
+      setDataCondition('add')
       setCheck(false)
     }
   }

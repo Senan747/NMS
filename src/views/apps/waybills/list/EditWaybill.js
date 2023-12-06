@@ -23,7 +23,6 @@ import { Alert } from '@mui/material'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
 import { useGetAllWaybillsQuery, useUpdateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetWaybillsIdQuery } from 'src/store/apps/waybills/apiWaybill'
@@ -38,7 +37,7 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const SidebarAddUser = props => {
-  const { toggle } = props
+  const { toggle, setDataCondition } = props
   const dispatch = useDispatch()
   const [date, setDate] = useState(new Date())
   const { editId } = useSelector(state => state.editWaybills)
@@ -107,7 +106,7 @@ const SidebarAddUser = props => {
     if (formData.waybills_no == idData.waybills_no) {
       updateWaybill({ editId, waybillData: combinedData })
       toggle()
-      dispatch(setAddWaybillCondition('update'))
+      setDataCondition('update')
       setDate(new Date())
       setShowError(false)
     } else {
@@ -116,7 +115,7 @@ const SidebarAddUser = props => {
       } else {
         updateWaybill({ editId, waybillData: combinedData })
         toggle()
-        dispatch(setAddWaybillCondition('update'))
+        setDataCondition('update')
         setDate(new Date())
         setShowError(false)
       }

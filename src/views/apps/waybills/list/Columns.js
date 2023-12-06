@@ -14,7 +14,7 @@ import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {
   openShowEdit,
   setEditId,
@@ -22,8 +22,7 @@ import {
   deleteCheckWaybillId,
   removeCheckWaybillId
 } from 'src/store/apps/waybills/editWaybills'
-import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
-import { setSortFieldWaybill } from 'src/store/apps/waybills/sortWaybills'
+
 import { useDeleteWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 
 // ** Utils Import
@@ -100,7 +99,7 @@ const renderClient = row => {
   }
 }
 
-const RowOptions = ({ id }) => {
+const RowOptions = ({ id, setDataCondition }) => {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
@@ -120,7 +119,7 @@ const RowOptions = ({ id }) => {
       await deleteWaybill(id)
         .unwrap()
         .then(payload => {
-          dispatch(setAddWaybillCondition('delete'))
+          setDataCondition('delete')
           handleRowOptionsClose()
         })
     } catch (error) {}
@@ -165,7 +164,15 @@ const RowOptions = ({ id }) => {
   )
 }
 
-const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, checkWaybillId }) => [
+const columns = ({
+  dispatch,
+  setSortDirection,
+  sortDirection,
+  sortField,
+  setSortField,
+  checkWaybillId,
+  setDataCondition
+}) => [
   {
     flex: 0.05,
     minWidth: 50,
@@ -209,15 +216,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('date'))
+              setSortField('date')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('date'))
+              setSortField('date')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'date' ? (
+          {sortDirection === 'asc' && sortField === 'date' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -249,15 +256,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('waybill_no'))
+              setSortField('waybill_no')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('waybill_no'))
+              setSortField('waybill_no')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'waybill_no' ? (
+          {sortDirection === 'asc' && sortField === 'waybill_no' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -284,15 +291,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('brand'))
+              setSortField('brand')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('brand'))
+              setSortField('brand')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'brand' ? (
+          {sortDirection === 'asc' && sortField === 'brand' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -367,15 +374,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('od_start'))
+              setSortField('od_start')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('od_start'))
+              setSortField('od_start')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'od_start' ? (
+          {sortDirection === 'asc' && sortField === 'od_start' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -402,15 +409,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('od_finish'))
+              setSortField('od_finish')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('od_finish'))
+              setSortField('od_finish')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'od_finish' ? (
+          {sortDirection === 'asc' && sortField === 'od_finish' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -437,15 +444,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('od_gone'))
+              setSortField('od_gone')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('od_gone'))
+              setSortField('od_gone')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'od_gone' ? (
+          {sortDirection === 'asc' && sortField === 'od_gone' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -472,15 +479,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('fuel_start'))
+              setSortField('fuel_start')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('fuel_start'))
+              setSortField('fuel_start')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'fuel_start' ? (
+          {sortDirection === 'asc' && sortField === 'fuel_start' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -508,15 +515,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('fuel_given'))
+              setSortField('fuel_given')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('fuel_given'))
+              setSortField('fuel_given')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'fuel_given' ? (
+          {sortDirection === 'asc' && sortField === 'fuel_given' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -544,15 +551,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('fuel_consumed'))
+              setSortField('fuel_consumed')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('fuel_consumed'))
+              setSortField('fuel_consumed')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'fuel_consumed' ? (
+          {sortDirection === 'asc' && sortField === 'fuel_consumed' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -580,15 +587,15 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
           size='small'
           onClick={() => {
             if (sortDirection === 'asc') {
-              dispatch(setSortFieldWaybill('fuel_finish'))
+              setSortField('fuel_finish')
               setSortDirection('desc')
             } else {
-              dispatch(setSortFieldWaybill('fuel_finish'))
+              setSortField('fuel_finish')
               setSortDirection('asc')
             }
           }}
         >
-          {sortDirection === 'asc' && sortFieldWaybill === 'fuel_finish' ? (
+          {sortDirection === 'asc' && sortField === 'fuel_finish' ? (
             <Icon icon='clarity:arrow-line' />
           ) : (
             <Icon icon='clarity:arrow-line' rotate={2} />
@@ -613,7 +620,7 @@ const columns = ({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, 
     headerName: () => {
       return <Box>Actions</Box>
     },
-    renderCell: ({ row }) => <RowOptions id={row.id} />
+    renderCell: ({ row }) => <RowOptions id={row.id} setDataCondition={setDataCondition} />
   }
 ]
 

@@ -20,7 +20,6 @@ import Cleave from 'cleave.js/react'
 
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { setAddDataCondition } from 'src/store/apps/vehicle/conditions'
 import { closeShowUpdate } from 'src/store/apps/vehicle/ShowUpdate'
 import { useGetAllVehiclesQuery, useUpdateVehicleMutation } from 'src/store/apps/vehicle/api'
 import { useGetVehiclesIdQuery } from 'src/store/apps/vehicle/api'
@@ -34,7 +33,7 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const SidebarAddUser = props => {
-  const { toggle } = props
+  const { toggle, setDataCondition } = props
   const dispatch = useDispatch()
   const { updateId } = useSelector(state => state.ShowUpdate)
   const { ShowUpdate } = useSelector(state => state.ShowUpdate)
@@ -117,7 +116,7 @@ const SidebarAddUser = props => {
     if (formData.vehicle_plate_number == data.vehicle_plate_number) {
       updateVehicle({ updateId, vehicleData: formData })
       toggle()
-      dispatch(setAddDataCondition('update'))
+      setDataCondition('update')
       setShowError(false)
     } else {
       if (dataVehicle.vehicles.some(vehicle => vehicle.vehicle_plate_number == formData.vehicle_plate_number)) {
@@ -125,7 +124,7 @@ const SidebarAddUser = props => {
       } else {
         updateVehicle({ updateId, vehicleData: formData })
         toggle()
-        dispatch(setAddDataCondition('update'))
+        setDataCondition('update')
         setShowError(false)
       }
     }
@@ -190,7 +189,7 @@ const SidebarAddUser = props => {
                     required
                     placeholder={isPlateNumberFocused ? '10 AA 999' : 'Plate number'}
                     label='Plate number'
-                    value={formData.vehicle_plate_number.toLocaleUpperCase()}
+                    value={formData.vehicle_plate_number?.toLocaleUpperCase()}
                     onChange={e =>
                       setFormData({ ...formData, vehicle_plate_number: e.target.value.toLocaleUpperCase() })
                     }

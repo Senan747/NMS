@@ -1,17 +1,17 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const apiWaybill = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://127.0.0.1:8000/api/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_APILINK }),
   reducerPath: 'apiWaybill',
   tagTypes: ['success'],
   endpoints: builder => ({
     getWaybills: builder.query({
-      query: ({pageWaybill, value}) => {
+      query: ({ pageWaybill, value }) => {
         let query = `waybills?page=${pageWaybill}`
-        if(value){
+        if (value) {
           query += `&waybills_no=${value}`
         }
-        return query;
+        return query
       },
       providesTags: ['success']
     }),
@@ -20,9 +20,9 @@ export const apiWaybill = createApi({
       providesTags: ['success']
     }),
     getWaybillsId: builder.query({
-      query: (editId) => {
+      query: editId => {
         let query = `waybills/${editId}`
-        return query;
+        return query
       },
       providesTags: ['success']
     }),
@@ -58,5 +58,5 @@ export const {
   useGetWaybillsIdQuery,
   useCreateWaybillMutation,
   useUpdateWaybillMutation,
-  useDeleteWaybillMutation,
+  useDeleteWaybillMutation
 } = apiWaybill

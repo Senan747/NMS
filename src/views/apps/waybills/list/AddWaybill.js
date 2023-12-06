@@ -26,8 +26,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
-import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
+import { useDispatch } from 'react-redux'
 import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
@@ -41,7 +40,7 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const SidebarAddWaybill = props => {
-  const { open, toggle } = props
+  const { open, toggle, setDataCondition } = props
   const [check, setCheck] = useState(false)
   const [date, setDate] = useState(new Date())
 
@@ -99,7 +98,7 @@ const SidebarAddWaybill = props => {
       toggle()
       resetForm()
       setDate(new Date())
-      dispatch(setAddWaybillCondition('add'))
+      setDataCondition('add')
       setCheck(false)
     }
   }

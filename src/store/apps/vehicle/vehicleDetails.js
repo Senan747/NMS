@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 export const fetchVehicleEngine = createAsyncThunk('vehicles/fetchVehicleEngine', async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/engine_types')
+    const response = await fetch(process.env.NEXT_PUBLIC_APILINK + 'engine_types')
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)
@@ -16,7 +16,7 @@ export const fetchVehicleEngine = createAsyncThunk('vehicles/fetchVehicleEngine'
 
 export const fetchVehicleFuel = createAsyncThunk('vehicles/fetchVehicleFuel', async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/fuel_kindes')
+    const response = await fetch(process.env.NEXT_PUBLIC_APILINK + 'fuel_kindes')
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)
@@ -30,7 +30,7 @@ export const fetchVehicleFuel = createAsyncThunk('vehicles/fetchVehicleFuel', as
 
 export const fetchVehicleTypes = createAsyncThunk('vehicles/fetchVehicleTypes', async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/vehicle_types')
+    const response = await fetch(process.env.NEXT_PUBLIC_APILINK + 'vehicle_types')
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)
@@ -45,7 +45,7 @@ export const fetchVehicleTypes = createAsyncThunk('vehicles/fetchVehicleTypes', 
 
 export const fetchVehicleKindes = createAsyncThunk('vehicles/fetchVehicleKindes', async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/vehicle_kindes')
+    const response = await fetch(process.env.NEXT_PUBLIC_APILINK + 'vehicle_kindes')
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)
@@ -60,7 +60,7 @@ export const fetchVehicleKindes = createAsyncThunk('vehicles/fetchVehicleKindes'
 
 export const fetchTechnicalConditions = createAsyncThunk('vehicles/fetchTechnicalConditions', async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/technical_conditions')
+    const response = await fetch(process.env.NEXT_PUBLIC_APILINK + 'technical_conditions')
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)
@@ -75,7 +75,7 @@ export const fetchTechnicalConditions = createAsyncThunk('vehicles/fetchTechnica
 
 export const fetchStacks = createAsyncThunk('vehicles/fetchStacks', async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/stacks')
+    const response = await fetch(process.env.NEXT_PUBLIC_APILINK + 'stacks')
 
     if (!response.ok) {
       throw new Error('HTTP error! Status: ' + response.status)

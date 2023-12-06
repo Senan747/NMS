@@ -25,7 +25,6 @@ import TablePagination from '@mui/material/TablePagination'
 // ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { closeShowEdit } from 'src/store/apps/waybills/editWaybills'
-import { setAddWaybillCondition } from 'src/store/apps/vehicle/conditions'
 import { fetchVehicleKindes } from 'src/store/apps/vehicle/vehicleDetails'
 import { useGetAllWaybillsQuery, useGetWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
@@ -47,12 +46,19 @@ const UserList = () => {
   let pageWaybill = page + 1
   const { data: waybill, isLoading, isFetching } = useGetWaybillsQuery({ pageWaybill, value })
   const [dataWaybills, setdataWaybills] = useState([])
-  const { waybillCondition } = useSelector(state => state.conditions)
-  const { sortFieldWaybill } = useSelector(state => state.sortWaybills)
+  const [sortField, setSortField] = useState('')
   const [sortDirection, setSortDirection] = useState('asc')
   const { checkWaybillId } = useSelector(state => state.editWaybills)
-  const columnsDefinition = columns({ dispatch, setSortDirection, sortDirection, sortFieldWaybill, checkWaybillId })
-  const { editId } = useSelector(state => state.editWaybills)
+  const [dataCondition, setDataCondition] = useState('')
+  const columnsDefinition = columns({
+    dispatch,
+    setSortDirection,
+    sortDirection,
+    sortField,
+    setSortField,
+    checkWaybillId,
+    setDataCondition
+  })
   const [count, setCount] = useState(0)
 
   useEffect(() => {
@@ -61,19 +67,19 @@ const UserList = () => {
       setCount(waybill.waybills.total)
     }
     dispatch(fetchVehicleKindes())
-  }, [waybill, page, value, waybillCondition])
+  }, [waybill, page, value, dataCondition])
 
   const { vehicleKind } = useSelector(state => state.vehicleDetails)
 
   useEffect(() => {
-    if (waybillCondition) {
+    if (dataCondition) {
       const timeoutId = setTimeout(() => {
-        dispatch(setAddWaybillCondition(''))
+        setDataCondition('')
       }, 3000)
 
       return () => clearTimeout(timeoutId)
     }
-  }, [waybillCondition])
+  }, [dataCondition])
 
   const handleFilter = useCallback(val => {
     setValue(val)
@@ -113,19 +119,19 @@ const UserList = () => {
   const [sortedData, setSortedData] = useState([])
 
   useEffect(() => {
-    if (sortFieldWaybill === 'date') {
+    if (sortField === 'date') {
       if (sortDirection === 'asc') {
         setSortedData([...filteredData].sort((a, b) => new Date(a['waybills_date']) - new Date(b['waybills_date'])))
       } else if (sortDirection === 'desc') {
         setSortedData([...filteredData].sort((a, b) => new Date(b['waybills_date']) - new Date(a['waybills_date'])))
       }
-    } else if (sortFieldWaybill === 'waybill_no') {
+    } else if (sortField === 'waybill_no') {
       if (sortDirection === 'asc') {
         setSortedData([...filteredData].sort((a, b) => a.waybills_no - b.waybills_no)) || 0
       } else if (sortDirection === 'desc') {
         setSortedData([...filteredData].sort((a, b) => b.waybills_no - a.waybills_no)) || 0
       }
-    } else if (sortFieldWaybill === 'brand') {
+    } else if (sortField === 'brand') {
       if (sortDirection === 'asc') {
         setSortedData(
           [...filteredData].sort(
@@ -139,31 +145,31 @@ const UserList = () => {
           )
         )
       }
-    } else if (sortFieldWaybill === 'od_start') {
+    } else if (sortField === 'od_start') {
       if (sortDirection === 'asc') {
         setSortedData([...filteredData].sort((a, b) => a.waybills_od_start - b.waybills_od_start)) || 0
       } else if (sortDirection === 'desc') {
         setSortedData([...filteredData].sort((a, b) => b.waybills_od_start - a.waybills_od_start)) || 0
       }
-    } else if (sortFieldWaybill === 'od_finish') {
+    } else if (sortField === 'od_finish') {
       if (sortDirection === 'asc') {
         setSortedData([...filteredData].sort((a, b) => a.waybills_od_finish - b.waybills_od_finish)) || 0
       } else if (sortDirection === 'desc') {
         setSortedData([...filteredData].sort((a, b) => b.waybills_od_finish - a.waybills_od_finish)) || 0
       }
-    } else if (sortFieldWaybill === 'fuel_start') {
+    } else if (sortField === 'fuel_start') {
       if (sortDirection === 'asc') {
         setSortedData([...filteredData].sort((a, b) => a.waybills_fuel_start - b.waybills_fuel_start)) || 0
       } else if (sortDirection === 'desc') {
         setSortedData([...filteredData].sort((a, b) => b.waybills_fuel_start - a.waybills_fuel_start)) || 0
       }
-    } else if (sortFieldWaybill === 'fuel_given') {
+    } else if (sortField === 'fuel_given') {
       if (sortDirection === 'asc') {
         setSortedData([...filteredData].sort((a, b) => a.waybills_fuel_given - b.waybills_fuel_given)) || 0
       } else if (sortDirection === 'desc') {
         setSortedData([...filteredData].sort((a, b) => b.waybills_fuel_given - a.waybills_fuel_given)) || 0
       }
-    } else if (sortFieldWaybill === 'fuel_consumed') {
+    } else if (sortField === 'fuel_consumed') {
       if (sortDirection === 'asc') {
         setSortedData([...filteredData].sort((a, b) => a.waybills_fuel_consumed - b.waybills_fuel_consumed)) || 0
       } else if (sortDirection === 'desc') {
@@ -172,7 +178,7 @@ const UserList = () => {
     } else {
       setSortedData([...filteredData])
     }
-  }, [sortFieldWaybill, filteredData, sortDirection])
+  }, [sortField, filteredData, sortDirection])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -184,14 +190,14 @@ const UserList = () => {
   }
 
   useEffect(() => {
-    if (waybillCondition) {
+    if (dataCondition) {
       const timeoutId = setTimeout(() => {
-        dispatch(setAddWaybillCondition(''))
+        setDataCondition('')
       }, 4000)
 
       return () => clearTimeout(timeoutId)
     }
-  }, [waybillCondition])
+  }, [dataCondition])
 
   return (
     <Grid container spacing={6}>
@@ -263,9 +269,9 @@ const UserList = () => {
           </CardContent>
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <Divider />
-          {waybillCondition == 'add' ? <Alert severity='success'>Data has added successfully</Alert> : ' '}
-          {waybillCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
-          {waybillCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
+          {dataCondition == 'add' ? <Alert severity='success'>Data has added successfully</Alert> : ' '}
+          {dataCondition == 'update' ? <Alert severity='success'>Data has updated successfully</Alert> : ' '}
+          {dataCondition == 'delete' ? <Alert severity='warning'>Data deleted</Alert> : ' '}
 
           <TableContainer component={Paper} sx={{ maxHeight: 550 }}>
             <Table stickyHeader aria-label='sticky table'>
@@ -328,8 +334,8 @@ const UserList = () => {
         </Card>
       </Grid>
 
-      <AddWaybills open={addUserOpen} toggle={toggleAddUserDrawer} />
-      {editId ? <EditWaybill toggle={toggleUserEdit} /> : ' '}
+      <AddWaybills open={addUserOpen} toggle={toggleAddUserDrawer} setDataCondition={setDataCondition} />
+      <EditWaybill toggle={toggleUserEdit} setDataCondition={setDataCondition} />
     </Grid>
   )
 }
