@@ -67,13 +67,13 @@ const SidebarAddUser = props => {
     if (idData) {
       setFormData({
         ...formData,
-        waybills_no: idData.waybills_no,
-        id_vehicle: idData.id_vehicle,
-        waybills_od_start: idData.waybills_od_start,
-        waybills_od_finish: idData.waybills_od_finish,
-        waybills_fuel_start: idData.waybills_fuel_start,
-        waybills_fuel_given: idData.waybills_fuel_given,
-        waybills_fuel_consumed: idData.waybills_fuel_consumed
+        waybills_no: idData.waybills_no || '',
+        id_vehicle: idData.id_vehicle || '',
+        waybills_od_start: idData.waybills_od_start || '',
+        waybills_od_finish: idData.waybills_od_finish || '',
+        waybills_fuel_start: idData.waybills_fuel_start || '',
+        waybills_fuel_given: idData.waybills_fuel_given || '',
+        waybills_fuel_consumed: idData.waybills_fuel_consumed || ''
       })
     }
   }, [idData])
@@ -172,7 +172,7 @@ const SidebarAddUser = props => {
         <Box sx={{ p: 3 }}>
           <form onSubmit={handleSubmit} key={editId}>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     value={formData.waybills_no || ''}
@@ -188,7 +188,8 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
+                {' '}
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <DatePickerWrapper>
                     <DatePicker
@@ -206,7 +207,8 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
+                {' '}
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <Select
                     fullWidth
@@ -221,7 +223,7 @@ const SidebarAddUser = props => {
                       }
                     }}
                   >
-                    {data.vehicles.map(number => (
+                    {data?.vehicles.map(number => (
                       <MenuItem key={number.id} value={number.id}>
                         {number.vehicle_plate_number}
                       </MenuItem>
@@ -233,7 +235,8 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
+                {' '}
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     value={formData.waybills_od_start || ''}
@@ -251,7 +254,7 @@ const SidebarAddUser = props => {
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     value={formData.waybills_od_finish || ''}
@@ -271,7 +274,8 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
+                {' '}
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -287,7 +291,8 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
+                {' '}
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -305,7 +310,7 @@ const SidebarAddUser = props => {
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item='true' xs={6}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required

@@ -151,7 +151,7 @@ const SidebarAddWaybill = props => {
       <Box sx={{ p: 3 }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   value={formData.waybills_no}
@@ -167,7 +167,7 @@ const SidebarAddWaybill = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <DatePickerWrapper>
                   <DatePicker
@@ -184,7 +184,7 @@ const SidebarAddWaybill = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='vehicle-select'>Select vehicle</InputLabel>
                 <Select
@@ -216,7 +216,7 @@ const SidebarAddWaybill = props => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   value={formData.waybills_od_start}
@@ -233,7 +233,7 @@ const SidebarAddWaybill = props => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   value={formData.waybills_od_finish}
@@ -251,7 +251,7 @@ const SidebarAddWaybill = props => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   value={formData.waybills_fuel_start}
@@ -268,7 +268,7 @@ const SidebarAddWaybill = props => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   value={formData.waybills_fuel_given}
@@ -285,7 +285,7 @@ const SidebarAddWaybill = props => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item="true" xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <TextField
                   value={formData.waybills_fuel_consumed}

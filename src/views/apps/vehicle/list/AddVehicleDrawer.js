@@ -224,7 +224,7 @@ const SidebarAddUser = props => {
       <Box sx={{ p: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={4}>
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_plate_number'
@@ -250,7 +250,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_brand'
@@ -272,7 +272,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_year'
@@ -294,7 +294,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='role-select'>Select engine</InputLabel>
                 <Select
@@ -318,7 +318,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='fuel-select'>Select Fuel</InputLabel>
                 <Select
@@ -342,7 +342,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='type-select'>Select Type</InputLabel>
                 <Select
@@ -366,7 +366,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='kind-select'>Select Kind</InputLabel>
                 <Select
@@ -390,7 +390,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='technical-conditions-select'>Select Technical Conditions</InputLabel>
                 <Select
@@ -414,7 +414,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id='stacks-select'>Select Stacks</InputLabel>
                 <Select
@@ -438,7 +438,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_weight'
@@ -463,7 +463,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_power'
@@ -488,7 +488,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_comsumption_km'
@@ -513,7 +513,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_comsumption_mc'
@@ -538,7 +538,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_comsumption_day'
@@ -560,7 +560,7 @@ const SidebarAddUser = props => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_milage'
@@ -581,7 +581,7 @@ const SidebarAddUser = props => {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item='true' xs={4}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='vehicle_status'

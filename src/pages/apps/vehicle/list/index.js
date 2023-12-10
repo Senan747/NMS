@@ -498,7 +498,7 @@ const UserList = () => {
         </Card>
       </Grid>
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} setDataCondition={setDataCondition} />
-      <UserUpdate toggle={toggleUserUpdate} setDataCondition={setDataCondition} />
+      <UserUpdate toggle={toggleUserUpdate} setDataCondition={setDataCondition} /> 
     </Grid>
   )
 }

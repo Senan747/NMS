@@ -46,7 +46,7 @@ const SidebarAddUser = props => {
   const { data: dataVehicle } = useGetAllVehiclesQuery()
   const { data, isLoading, isFetching } = useGetVehiclesIdQuery(updateId)
   const [updateVehicle] = useUpdateVehicleMutation()
-
+  const [isPlateNumberFocused, setIsPlateNumberFocused] = useState(false)
   const [formData, setFormData] = useState({
     vehicle_plate_number: '',
     vehicle_brand: '',
@@ -70,22 +70,22 @@ const SidebarAddUser = props => {
     if (data) {
       setFormData({
         ...formData,
-        vehicle_plate_number: data.vehicle_plate_number,
-        vehicle_brand: data.vehicle_brand,
-        vehicle_year: data.vehicle_year,
-        vehicle_weight: data.vehicle_weight,
-        vehicle_power: data.vehicle_power,
-        vehicle_comsumption_km: data.vehicle_comsumption_km,
-        vehicle_comsumption_mc: data.vehicle_comsumption_mc,
-        vehicle_comsumption_day: data.vehicle_comsumption_day,
-        vehicle_milage: data.vehicle_milage,
-        vehicle_status: data.vehicle_status,
-        id_vehicle_engine: data.id_vehicle_engine,
-        id_vehicle_fuel: data.id_vehicle_fuel,
-        id_vehicle_type: data.id_vehicle_type,
-        id_vehicle_subject: data.id_vehicle_subject,
-        id_vehicle_condition: data.id_vehicle_condition,
-        id_vehicle_colon: data.id_vehicle_colon
+        vehicle_plate_number: data.vehicle_plate_number || '',
+        vehicle_brand: data.vehicle_brand || '',
+        vehicle_year: data.vehicle_year || '',
+        vehicle_weight: data.vehicle_weight || '',
+        vehicle_power: data.vehicle_power || '',
+        vehicle_comsumption_km: data.vehicle_comsumption_km || '',
+        vehicle_comsumption_mc: data.vehicle_comsumption_mc || '',
+        vehicle_comsumption_day: data.vehicle_comsumption_day || '',
+        vehicle_milage: data.vehicle_milage || '',
+        vehicle_status: data.vehicle_status || '',
+        id_vehicle_engine: data.id_vehicle_engine || '',
+        id_vehicle_fuel: data.id_vehicle_fuel || '',
+        id_vehicle_type: data.id_vehicle_type || '',
+        id_vehicle_subject: data.id_vehicle_subject || '',
+        id_vehicle_condition: data.id_vehicle_condition || '',
+        id_vehicle_colon: data.id_vehicle_colon || ''
       })
     }
   }, [data])
@@ -93,22 +93,22 @@ const SidebarAddUser = props => {
   const resetForm = () => {
     setFormData({
       ...formData,
-      vehicle_plate_number: data.vehicle_plate_number,
-      vehicle_brand: data.vehicle_brand,
-      vehicle_year: data.vehicle_year,
-      vehicle_weight: data.vehicle_weight,
-      vehicle_power: data.vehicle_power,
-      vehicle_comsumption_km: data.vehicle_comsumption_km,
-      vehicle_comsumption_mc: data.vehicle_comsumption_mc,
-      vehicle_comsumption_day: data.vehicle_comsumption_day,
-      vehicle_milage: data.vehicle_milage,
-      vehicle_status: data.vehicle_status,
-      id_vehicle_engine: data.id_vehicle_engine,
-      id_vehicle_fuel: data.id_vehicle_fuel,
-      id_vehicle_type: data.id_vehicle_type,
-      id_vehicle_subject: data.id_vehicle_subject,
-      id_vehicle_condition: data.id_vehicle_condition,
-      id_vehicle_colon: data.id_vehicle_colon
+      vehicle_plate_number: data.vehicle_plate_number || '',
+      vehicle_brand: data.vehicle_brand || '',
+      vehicle_year: data.vehicle_year || '',
+      vehicle_weight: data.vehicle_weight || '',
+      vehicle_power: data.vehicle_power || '',
+      vehicle_comsumption_km: data.vehicle_comsumption_km || '',
+      vehicle_comsumption_mc: data.vehicle_comsumption_mc || '',
+      vehicle_comsumption_day: data.vehicle_comsumption_day || '',
+      vehicle_milage: data.vehicle_milage || '',
+      vehicle_status: data.vehicle_status || '',
+      id_vehicle_engine: data.id_vehicle_engine || '',
+      id_vehicle_fuel: data.id_vehicle_fuel || '',
+      id_vehicle_type: data.id_vehicle_type || '',
+      id_vehicle_subject: data.id_vehicle_subject || '',
+      id_vehicle_condition: data.id_vehicle_condition || '',
+      id_vehicle_colon: data.id_vehicle_colon || ''
     })
   }
 
@@ -152,8 +152,6 @@ const SidebarAddUser = props => {
     }
   }, [showError])
 
-  const [isPlateNumberFocused, setIsPlateNumberFocused] = useState(false)
-
   return (
     <Drawer
       open={ShowUpdate}
@@ -183,7 +181,7 @@ const SidebarAddUser = props => {
         <Box sx={{ p: 5 }}>
           <form onSubmit={handleSubmit} key={updateId}>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <Cleave
                     required
@@ -204,7 +202,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -220,7 +218,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -236,7 +234,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl required fullWidth sx={{ mb: 3 }}>
                   <InputLabel id='demo-simple-select-required-label'>Type</InputLabel>
                   <Select
@@ -259,7 +257,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl required fullWidth sx={{ mb: 3 }}>
                   <InputLabel id='demo-simple-select-required-label'>Subject</InputLabel>
                   <Select
@@ -282,7 +280,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -298,7 +296,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -314,7 +312,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl required fullWidth sx={{ mb: 3 }}>
                   <InputLabel id='demo-simple-select-required-label'>Fuel</InputLabel>
                   <Select
@@ -337,7 +335,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl required fullWidth sx={{ mb: 3 }}>
                   <InputLabel id='demo-simple-select-required-label'>Engine</InputLabel>
                   <Select
@@ -360,7 +358,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -379,7 +377,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -398,7 +396,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -417,7 +415,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required
@@ -434,7 +432,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl required fullWidth sx={{ mb: 3 }}>
                   <InputLabel id='demo-simple-select-required-label'>Condition</InputLabel>
                   <Select
@@ -459,7 +457,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl required fullWidth sx={{ mb: 3 }}>
                   <InputLabel id='demo-simple-select-required-label'>Colon</InputLabel>
                   <Select
@@ -482,7 +480,7 @@ const SidebarAddUser = props => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item='true' xs={4}>
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <TextField
                     required

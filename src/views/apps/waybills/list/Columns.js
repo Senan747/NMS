@@ -247,7 +247,7 @@ const columns = ({
   },
   {
     flex: 0.2,
-    minWidth: 200,
+    minWidth: 150,
     field: 'Waybills no',
     headerName: () => (
       <div>
@@ -309,7 +309,7 @@ const columns = ({
     ),
     renderCell: ({ row, data }) => (
       <div variant='body2' key={row.id}>
-        {data.vehicles
+        {data?.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
@@ -329,7 +329,7 @@ const columns = ({
     },
     renderCell: ({ row, data, vehicleKind }) => (
       <div variant='body2' key={row.id}>
-        {data.vehicles
+        {data?.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => {
             const kind = vehicleKind.find(k => k.id === type.id_vehicle_subject)
@@ -353,7 +353,7 @@ const columns = ({
     },
     renderCell: ({ row, data }) => (
       <div variant='body2' key={row.id}>
-        {data.vehicles
+        {data?.vehicles
           .filter(type => row.id_vehicle === type.id)
           .map(type => (
             <div sx={{ color: 'text.secondary', textTransform: 'capitalize' }} key={type.id}>
