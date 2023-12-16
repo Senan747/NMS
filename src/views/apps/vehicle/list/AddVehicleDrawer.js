@@ -114,13 +114,14 @@ const defaultValues = {
   vehicle_status: ''
 }
 
-const SidebarAddUser = props => {
+const SidebarAddVehicle = props => {
   const { open, toggle, setDataCondition } = props
   const { data } = useGetAllVehiclesQuery()
   const [showError, setShowError] = useState(false)
   const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
     state => state.vehicleDetails
-  )
+  ) 
+  const dispatch = useDispatch()
   const [createVehicle] = useCreateVehicleMutation()
   const [initialState, setInitialState] = useState({
     id_vehicle_engine: '',
@@ -133,14 +134,14 @@ const SidebarAddUser = props => {
 
   useEffect(() => {
     setInitialState({
-      id_vehicle_engine: data?.vehicles[0].id_vehicle_engine,
-      id_vehicle_fuel: data?.vehicles[0].id_vehicle_fuel,
-      id_vehicle_type: data?.vehicles[0].id_vehicle_type,
-      id_vehicle_subject: data?.vehicles[0].id_vehicle_subject,
-      id_vehicle_condition: data?.vehicles[0].id_vehicle_condition,
-      id_vehicle_colon: data?.vehicles[0].id_vehicle_colon
+      id_vehicle_engine: engineTypes.length > 0 ? engineTypes[0]?.id : '',
+      id_vehicle_fuel: vehicleFuel.length > 0 ? vehicleFuel[0]?.id : '',
+      id_vehicle_type: vehicleType.length > 0 ? vehicleType[0]?.id : '',
+      id_vehicle_subject: vehicleKind.length > 0 ? vehicleKind[0]?.id : '',
+      id_vehicle_condition: technicalConditions.length > 0 ? technicalConditions[0]?.id : '',
+      id_vehicle_colon: stacks.length > 0 ? stacks[0]?.id : ''
     })
-  }, [data])
+  }, [engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks])
 
   const {
     reset,
@@ -157,12 +158,12 @@ const SidebarAddUser = props => {
     reset(defaultValues)
 
     setInitialState({
-      id_vehicle_engine: data?.vehicles[0].id_vehicle_engine,
-      id_vehicle_fuel: data?.vehicles[0].id_vehicle_fuel,
-      id_vehicle_type: data?.vehicles[0].id_vehicle_type,
-      id_vehicle_subject: data?.vehicles[0].id_vehicle_subject,
-      id_vehicle_condition: data?.vehicles[0].id_vehicle_condition,
-      id_vehicle_colon: data?.vehicles[0].id_vehicle_colon
+      id_vehicle_engine: engineTypes[0]?.id,
+      id_vehicle_fuel: vehicleFuel[0]?.id,
+      id_vehicle_type: vehicleType[0]?.id,
+      id_vehicle_subject: vehicleKind[0]?.id,
+      id_vehicle_condition: technicalConditions[0]?.id,
+      id_vehicle_colon: stacks[0]?.id
     })
   }
 
@@ -187,7 +188,7 @@ const SidebarAddUser = props => {
     resetForm()
     setShowError(false)
   }
-  const dispatch = useDispatch()
+ 
 
   useEffect(() => {
     dispatch(fetchVehicleEngine())
@@ -199,6 +200,16 @@ const SidebarAddUser = props => {
   }, [dispatch])
 
   const [isPlateNumberFocused, setIsPlateNumberFocused] = useState(false)
+  
+  useEffect(() => {
+    if (showError == true) {
+      const timeout = setTimeout(() => {
+        setShowError(false)
+      }, 4000)
+
+      return () => clearTimeout(timeout)
+    }
+  }, [showError])
 
   return (
     <Drawer
@@ -235,7 +246,7 @@ const SidebarAddUser = props => {
                   render={({ field: { value, onChange } }) => (
                     <Cleave
                       value={value.toUpperCase()}
-                      error={Boolean(errors.vehicle_plate_number)}
+                      {...(errors.vehicle_plate_number && { error: 'true' })}
                       options={{ blocks: [2, 2, 3], delimiter: ' ', uppercase: true }}
                       onChange={onChange}
                       onFocus={() => setIsPlateNumberFocused(true)}
@@ -611,4 +622,4 @@ const SidebarAddUser = props => {
   )
 }
 
-export default SidebarAddUser
+export default SidebarAddVehicle

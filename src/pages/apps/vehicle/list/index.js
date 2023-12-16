@@ -30,7 +30,7 @@ import { useGetVehiclesQuery, useGetAllVehiclesQuery } from 'src/store/apps/vehi
 // ** Custom Table Components Imports
 
 import TableHeader from 'src/views/apps/vehicle/list/TableHeader'
-import AddUserDrawer from 'src/views/apps/vehicle/list/AddVehicleDrawer'
+import SidebarAddVehicle from 'src/views/apps/vehicle/list/AddVehicleDrawer'
 import UserUpdate from 'src/views/apps/vehicle/list/VehicleUpdate'
 import Columns from 'src/views/apps/vehicle/list/Columns'
 
@@ -497,8 +497,8 @@ const UserList = () => {
           />
         </Card>
       </Grid>
-      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} setDataCondition={setDataCondition} />
-      <UserUpdate toggle={toggleUserUpdate} setDataCondition={setDataCondition} /> 
+      <SidebarAddVehicle open={addUserOpen} toggle={toggleAddUserDrawer} setDataCondition={setDataCondition} />
+      <UserUpdate toggle={toggleUserUpdate} setDataCondition={setDataCondition} />
     </Grid>
   )
 }

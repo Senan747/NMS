@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, useState, useReducer } from 'react'
+import { useEffect, useState } from 'react'
 import { useTheme } from '@mui/material/styles'
 
 // ** UI Imports
@@ -16,20 +16,30 @@ import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
-import InputAdornment from '@mui/material/InputAdornment'
 import DatePicker from 'react-datepicker'
 import CustomInput from './CustomInput'
 import { Alert } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import Icon from 'src/@core/components/icon'
+import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
 
 // ** Store Imports
-import { useDispatch } from 'react-redux'
 import { useCreateWaybillMutation } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllWaybillsQuery } from 'src/store/apps/waybills/apiWaybill'
 import { useGetAllVehiclesQuery } from 'src/store/apps/vehicle/api'
+
+const showErrors = (field, valueLen, min) => {
+  const fieldNameWithoutUnderscores = field.replace(/_/g, '')
+  if (valueLen === 0) {
+    return `${fieldNameWithoutUnderscores} field is required`
+  } else if (valueLen > 0 && valueLen < min) {
+    return `${fieldNameWithoutUnderscores} must be at least ${min} characters`
+  } else {
+    return ''
+  }
+}
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -39,44 +49,82 @@ const Header = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default
 }))
 
+const schema = yup.object().shape({
+  waybills_no: yup
+    .number()
+    .typeError('Waybill no is required')
+    .min(1, obj => showErrors('Waybill no', obj.value, obj.min))
+    .required(),
+  waybills_od_start: yup
+    .number()
+    .typeError('Wabill od start is required')
+    .min(1, obj => showErrors('Wabill od start', obj.value, obj.min))
+    .required(),
+  waybills_od_finish: yup
+    .number()
+    .typeError('Wabill od finish is required')
+    .min(1, obj => showErrors('Wabill od finish', obj.value, obj.min))
+    .required(),
+  waybills_fuel_start: yup
+    .number()
+    .typeError('Wabill fuel start is required')
+    .min(1, obj => showErrors('Wabill fuel start', obj.value, obj.min))
+    .required(),
+  waybills_fuel_given: yup
+    .number()
+    .typeError('Wabill fuel given is required')
+    .min(1, obj => showErrors('Wabill fuel given', obj.value, obj.min))
+    .required(),
+  waybills_fuel_consumed: yup
+    .number()
+    .typeError('Wabill fuel conwaybills_fuel_consumed is required')
+    .min(1, obj => showErrors('Wabill fuel conwaybills_fuel_consumed', obj.value, obj.min))
+    .required()
+})
+
+const defaultValues = {
+  waybills_no: '',
+  waybills_od_start: '',
+  waybills_od_finish: '',
+  waybills_fuel_start: '',
+  waybills_fuel_given: '',
+  waybills_fuel_consumed: ''
+}
+
 const SidebarAddWaybill = props => {
   const { open, toggle, setDataCondition } = props
-  const [check, setCheck] = useState(false)
   const [date, setDate] = useState(new Date())
-
   const theme = useTheme()
   const { direction } = theme
   const popperPlacement = direction === 'ltr' ? 'bottom-start' : 'bottom-end'
   const [createWaybill] = useCreateWaybillMutation()
   const [showError, setShowError] = useState(false)
-  const [filteredItems, setFilteredItems] = useState([])
   const { data: dataWaybills } = useGetAllWaybillsQuery()
   const { data, isLoading } = useGetAllVehiclesQuery()
+  const [id_vehicle, setId_vehicle] = useState('')
 
-  const [formData, setFormData] = useState({
-    waybills_no: '',
-    id_vehicle: '',
-    waybills_od_start: '',
-    waybills_od_finish: '',
-    waybills_fuel_start: '',
-    waybills_fuel_given: '',
-    waybills_fuel_consumed: ''
+  useEffect(() => {
+    if (!isLoading) {
+      setId_vehicle(data?.vehicles[0]?.id)
+    }
+  }, [data])
+
+  const {
+    reset,
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    defaultValues,
+    mode: 'onChange',
+    resolver: yupResolver(schema)
   })
 
   const resetForm = () => {
-    setFormData({
-      ...formData,
-      waybills_no: '',
-      id_vehicle: '',
-      waybills_od_start: '',
-      waybills_od_finish: '',
-      waybills_fuel_start: '',
-      waybills_fuel_given: '',
-      waybills_fuel_consumed: ''
-    })
+    reset(defaultValues)
+    setDate(new Date())
+    setId_vehicle(data?.vehicles[0]?.id)
   }
-
-  const dispatch = useDispatch()
 
   const formatDate = date => {
     const year = date.getFullYear()
@@ -89,7 +137,7 @@ const SidebarAddWaybill = props => {
   const newDate = formatDate(date)
 
   const onSubmit = formData => {
-    const combinedData = { ...formData, waybills_date: newDate }
+    const combinedData = { ...formData, waybills_date: newDate, id_vehicle }
 
     if (dataWaybills.waybills.some(waybill => waybill.waybills_no == formData.waybills_no)) {
       setShowError(true)
@@ -97,22 +145,16 @@ const SidebarAddWaybill = props => {
       createWaybill(combinedData)
       toggle()
       resetForm()
-      setDate(new Date())
+
       setDataCondition('add')
-      setCheck(false)
     }
   }
 
   const handleClose = () => {
     toggle()
     resetForm()
-    setCheck(false)
-    setShowError(false)
-  }
 
-  const handleSubmit = e => {
-    e.preventDefault()
-    onSubmit(formData)
+    setShowError(false)
   }
 
   useEffect(() => {
@@ -149,31 +191,37 @@ const SidebarAddWaybill = props => {
       </Header>
       {showError ? <Alert severity='error'>Waybill already exists!</Alert> : ' '}
       <Box sx={{ p: 3 }}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            <Grid item="true" xs={6}>
+            <Grid item='true' xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_no}
-                  label='waybill no'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_no: e.target.value })}
-                  placeholder='10'
+                <Controller
+                  name='waybills_no'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      value={value}
+                      label='waybill no'
+                      onChange={onChange}
+                      placeholder='10'
+                      error={Boolean(errors.waybills_no)}
+                    />
+                  )}
                 />
 
-                {!formData.waybills_no && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills no field is required</FormHelperText>
+                {errors.waybills_no && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.waybills_no.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item="true" xs={6}>
+            <Grid item='true' xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <DatePickerWrapper>
                   <DatePicker
                     selected={date}
                     id='basic-input'
-                    required
                     value={date}
                     popperPlacement={popperPlacement}
                     onChange={date => setDate(date)}
@@ -184,17 +232,17 @@ const SidebarAddWaybill = props => {
               </FormControl>
             </Grid>
 
-            <Grid item="true" xs={6}>
+            <Grid item='true' xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
                 <InputLabel id='vehicle-select'>Select vehicle</InputLabel>
                 <Select
                   fullWidth
-                  onChange={e => setFormData({ ...formData, id_vehicle: e.target.value })}
+                  onChange={e => setId_vehicle(e.target.value)}
                   id='select-vehicle'
                   label='Select vehicle'
                   labelId='vehicle-select'
                   inputProps={{ placeholder: 'Select vehicle' }}
-                  value={formData.id_vehicle}
+                  value={id_vehicle}
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -211,101 +259,122 @@ const SidebarAddWaybill = props => {
                         </MenuItem>
                       ))}
                 </Select>
-                {!formData.id_vehicle && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills vehicle field is required</FormHelperText>
-                )}
               </FormControl>
             </Grid>
-            <Grid item="true" xs={6}>
+            <Grid item='true' xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_od_start}
-                  label='waybill od start'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_od_start: e.target.value })}
-                  placeholder='10'
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>Km</InputAdornment>
-                  }}
-                />
-                {!formData.waybills_od_start && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills od start field is required</FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item="true" xs={6}>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_od_finish}
-                  label='waybill od finish'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_od_finish: e.target.value })}
-                  placeholder='10'
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>Km</InputAdornment>
-                  }}
+                <Controller
+                  name='waybills_od_start'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      value={value}
+                      label='waybill od start'
+                      onChange={onChange}
+                      placeholder='10'
+                      error={Boolean(errors.waybills_od_start)}
+                    />
+                  )}
                 />
 
-                {!formData.waybills_od_finish && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills od finish field is required</FormHelperText>
+                {errors.waybills_od_start && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.waybills_od_start.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
-            <Grid item="true" xs={6}>
+            <Grid item='true' xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_fuel_start}
-                  label='waybill fuel start'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_fuel_start: e.target.value })}
-                  placeholder='10'
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
-                  }}
+                <Controller
+                  name='waybills_od_finish'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      value={value}
+                      label='waybill od finish'
+                      onChange={onChange}
+                      placeholder='10'
+                      error={Boolean(errors.waybills_od_finish)}
+                    />
+                  )}
                 />
-                {!formData.waybills_fuel_start && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills fuel start field is required</FormHelperText>
+
+                {errors.waybills_od_finish && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.waybills_od_finish.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
-            <Grid item="true" xs={6}>
+            <Grid item='true' xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_fuel_given}
-                  label='waybill fuel given'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_fuel_given: e.target.value })}
-                  placeholder='10'
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
-                  }}
+                <Controller
+                  name='waybills_fuel_start'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      value={value}
+                      label='waybill fuel start'
+                      onChange={onChange}
+                      placeholder='10'
+                      error={Boolean(errors.waybills_fuel_start)}
+                    />
+                  )}
                 />
-                {!formData.waybills_fuel_given && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills fuel given field is required</FormHelperText>
+
+                {errors.waybills_fuel_start && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.waybills_fuel_start.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
-            <Grid item="true" xs={6}>
+            <Grid item='true' xs={6}>
               <FormControl fullWidth sx={{ mb: 3 }}>
-                <TextField
-                  value={formData.waybills_fuel_consumed}
-                  label='waybill fuel consumed'
-                  required
-                  onChange={e => setFormData({ ...formData, waybills_fuel_consumed: e.target.value })}
-                  placeholder='10'
-                  InputProps={{
-                    startAdornment: <InputAdornment position='start'>L</InputAdornment>
-                  }}
+                <Controller
+                  name='waybills_fuel_given'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      value={value}
+                      label='waybill fuel given'
+                      onChange={onChange}
+                      placeholder='10'
+                      error={Boolean(errors.waybills_fuel_given)}
+                    />
+                  )}
                 />
-                {!formData.waybills_fuel_consumed && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>waybills fuel consumed field is required</FormHelperText>
+
+                {errors.waybills_fuel_given && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.waybills_fuel_given.message}</FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item='true' xs={6}>
+              <FormControl fullWidth sx={{ mb: 3 }}>
+                <Controller
+                  name='waybills_fuel_consumed'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange } }) => (
+                    <TextField
+                      value={value}
+                      label='waybill fuel consumed'
+                      onChange={onChange}
+                      placeholder='10'
+                      error={Boolean(errors.waybills_fuel_consumed)}
+                    />
+                  )}
+                />
+
+                {errors.waybills_fuel_consumed && (
+                  <FormHelperText sx={{ color: 'error.main' }}>{errors.waybills_fuel_consumed.message}</FormHelperText>
                 )}
               </FormControl>
             </Grid>
           </Grid>
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }} onClick={() => setCheck(true)}>
+            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
               Submit
             </Button>
             <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>
