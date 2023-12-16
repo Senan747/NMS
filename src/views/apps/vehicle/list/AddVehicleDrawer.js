@@ -40,7 +40,7 @@ import {
 const showErrors = (field, valueLen, min) => {
   const fieldNameWithoutUnderscores = field.replace(/_/g, '')
   if (valueLen === 0) {
-    return `${fieldNameWithoutUnderscores} field is  are required`
+    return `${fieldNameWithoutUnderscores} field is required`
   } else if (valueLen > 0 && valueLen < min) {
     return `${fieldNameWithoutUnderscores} must be at least ${min} characters`
   } else {
@@ -57,10 +57,7 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const schema = yup.object().shape({
-  vehicle_plate_number: yup
-    .string()
-    .typeError('Vehicle plate number is required')
-    .required('Vehicle plate number is required'),
+  vehicle_plate_number: yup.string().required('Vehicle plate number is required'),
   vehicle_brand: yup.string().required('Vehicle year is required'),
   vehicle_year: yup
     .number()
@@ -74,22 +71,22 @@ const schema = yup.object().shape({
     .required(),
   vehicle_power: yup
     .number()
-    .typeError('vehicle power field is required')
+    .typeError('Vehicle power field is required')
     .min(1, obj => showErrors('power', obj.value, obj.min))
     .required(),
   vehicle_comsumption_mc: yup
     .number()
-    .typeError('comsumption mc field is required')
+    .typeError('Comsumption mc field is required')
     .min(1, obj => showErrors('comsumption mc', obj.value, obj.min))
     .required(),
   vehicle_comsumption_day: yup
     .number()
-    .typeError('comsumption day field is required')
+    .typeError('Comsumption day field is required')
     .min(1, obj => showErrors('comsumption day', obj.value, obj.min))
     .required(),
   vehicle_comsumption_km: yup
     .number()
-    .typeError('comsumption km field is required')
+    .typeError('Comsumption km field is required')
     .min(1, obj => showErrors('comsumption km', obj.value, obj.min))
     .required(),
   vehicle_milage: yup
@@ -121,7 +118,10 @@ const SidebarAddUser = props => {
   const { open, toggle, setDataCondition } = props
   const { data } = useGetAllVehiclesQuery()
   const [showError, setShowError] = useState(false)
-
+  const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
+    state => state.vehicleDetails
+  )
+  const [createVehicle] = useCreateVehicleMutation()
   const [initialState, setInitialState] = useState({
     id_vehicle_engine: '',
     id_vehicle_fuel: '',
@@ -131,11 +131,16 @@ const SidebarAddUser = props => {
     id_vehicle_colon: ''
   })
 
-  const { engineTypes, vehicleFuel, vehicleType, vehicleKind, technicalConditions, stacks } = useSelector(
-    state => state.vehicleDetails
-  )
-  const [createVehicle] = useCreateVehicleMutation()
-  const [check, setCheck] = useState(false)
+  useEffect(() => {
+    setInitialState({
+      id_vehicle_engine: data?.vehicles[0].id_vehicle_engine,
+      id_vehicle_fuel: data?.vehicles[0].id_vehicle_fuel,
+      id_vehicle_type: data?.vehicles[0].id_vehicle_type,
+      id_vehicle_subject: data?.vehicles[0].id_vehicle_subject,
+      id_vehicle_condition: data?.vehicles[0].id_vehicle_condition,
+      id_vehicle_colon: data?.vehicles[0].id_vehicle_colon
+    })
+  }, [data])
 
   const {
     reset,
@@ -152,13 +157,12 @@ const SidebarAddUser = props => {
     reset(defaultValues)
 
     setInitialState({
-      ...initialState,
-      id_vehicle_engine: '',
-      id_vehicle_fuel: '',
-      id_vehicle_type: '',
-      id_vehicle_subject: '',
-      id_vehicle_condition: '',
-      id_vehicle_colon: ''
+      id_vehicle_engine: data?.vehicles[0].id_vehicle_engine,
+      id_vehicle_fuel: data?.vehicles[0].id_vehicle_fuel,
+      id_vehicle_type: data?.vehicles[0].id_vehicle_type,
+      id_vehicle_subject: data?.vehicles[0].id_vehicle_subject,
+      id_vehicle_condition: data?.vehicles[0].id_vehicle_condition,
+      id_vehicle_colon: data?.vehicles[0].id_vehicle_colon
     })
   }
 
@@ -174,7 +178,6 @@ const SidebarAddUser = props => {
       resetForm()
       setShowError(false)
       setDataCondition('add')
-      setCheck(false)
     }
   }
 
@@ -183,7 +186,6 @@ const SidebarAddUser = props => {
     reset()
     resetForm()
     setShowError(false)
-    setCheck(false)
   }
   const dispatch = useDispatch()
 
@@ -232,18 +234,27 @@ const SidebarAddUser = props => {
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
                     <Cleave
-                      required
                       value={value.toUpperCase()}
+                      error={Boolean(errors.vehicle_plate_number)}
                       options={{ blocks: [2, 2, 3], delimiter: ' ', uppercase: true }}
                       onChange={onChange}
                       onFocus={() => setIsPlateNumberFocused(true)}
                       onBlur={() => setIsPlateNumberFocused(false)}
                       label='Vehicle plate number'
-                      placeholder={isPlateNumberFocused ? '10 AA 999' : 'Plate number'}
-                      className='w-full p-[15px] rounded-[8px] border-bc text-base box-border transition duration-150 ease-in-out outline-none border-1 focus:shadow-outline-blue focus:border-blue-700'
+                      placeholder={
+                        isPlateNumberFocused
+                          ? errors.vehicle_plate_number
+                            ? '10 AA 999'
+                            : 'Plate number'
+                          : 'Plate number'
+                      }
+                      className={`w-full p-[15px] rounded-[8px] border-bc text-base box-border transition duration-150 ease-in-out outline-none border-1 focus:shadow-outline-blue focus:border-blue-700  ${
+                        errors.vehicle_plate_number ? 'border-red-500 placeholder:text-red-500' : ''
+                      }`}
                     />
                   )}
                 />
+
                 {errors.vehicle_plate_number && (
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.vehicle_plate_number.message}</FormHelperText>
                 )}
@@ -312,9 +323,6 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!initialState.id_vehicle_engine && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle engine field is required</FormHelperText>
-                )}
               </FormControl>
             </Grid>
 
@@ -336,9 +344,6 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!initialState.id_vehicle_fuel && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle fuel field is required</FormHelperText>
-                )}
               </FormControl>
             </Grid>
 
@@ -360,9 +365,6 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!initialState.id_vehicle_type && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle type field is required</FormHelperText>
-                )}
               </FormControl>
             </Grid>
 
@@ -384,9 +386,6 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!initialState.id_vehicle_subject && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle subject field is required</FormHelperText>
-                )}
               </FormControl>
             </Grid>
 
@@ -408,9 +407,6 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!initialState.id_vehicle_condition && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle condition field is required</FormHelperText>
-                )}
               </FormControl>
             </Grid>
 
@@ -432,9 +428,6 @@ const SidebarAddUser = props => {
                     </MenuItem>
                   ))}
                 </Select>
-                {!initialState.id_vehicle_colon && check && (
-                  <FormHelperText sx={{ color: 'error.main' }}>Vehicle colon field is required</FormHelperText>
-                )}
               </FormControl>
             </Grid>
 
@@ -605,7 +598,7 @@ const SidebarAddUser = props => {
           </Grid>
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }} onClick={() => setCheck(true)}>
+            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
               Submit
             </Button>
             <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>
