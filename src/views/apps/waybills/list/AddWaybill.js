@@ -18,6 +18,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Grid from '@mui/system/Unstable_Grid/Grid'
 import DatePicker from 'react-datepicker'
 import CustomInput from './CustomInput'
+import InputAdornment from '@mui/material/InputAdornment'
 import { Alert } from '@mui/material'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import Icon from 'src/@core/components/icon'
@@ -274,6 +275,10 @@ const SidebarAddWaybill = props => {
                       onChange={onChange}
                       placeholder='10'
                       error={Boolean(errors.waybills_od_start)}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                      }}
                     />
                   )}
                 />
@@ -296,6 +301,10 @@ const SidebarAddWaybill = props => {
                       onChange={onChange}
                       placeholder='10'
                       error={Boolean(errors.waybills_od_finish)}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>Km</InputAdornment>
+                      }}
                     />
                   )}
                 />
@@ -318,6 +327,10 @@ const SidebarAddWaybill = props => {
                       onChange={onChange}
                       placeholder='10'
                       error={Boolean(errors.waybills_fuel_start)}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                      }}
                     />
                   )}
                 />
@@ -340,6 +353,10 @@ const SidebarAddWaybill = props => {
                       onChange={onChange}
                       placeholder='10'
                       error={Boolean(errors.waybills_fuel_given)}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                      }}
                     />
                   )}
                 />
@@ -362,6 +379,10 @@ const SidebarAddWaybill = props => {
                       onChange={onChange}
                       placeholder='10'
                       error={Boolean(errors.waybills_fuel_consumed)}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position='start'>L</InputAdornment>
+                      }}
                     />
                   )}
                 />
