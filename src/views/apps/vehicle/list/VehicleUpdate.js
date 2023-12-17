@@ -129,20 +129,6 @@ const SidebarAddUser = props => {
     id_vehicle_colon: ''
   })
 
-  useEffect(() => {
-    if (data) {
-      setInitialState({
-        ...initialState,
-        id_vehicle_engine: data.id_vehicle_engine || '',
-        id_vehicle_fuel: data.id_vehicle_fuel || '',
-        id_vehicle_type: data.id_vehicle_type || '',
-        id_vehicle_subject: data.id_vehicle_subject || '',
-        id_vehicle_condition: data.id_vehicle_condition || '',
-        id_vehicle_colon: data.id_vehicle_colon || ''
-      })
-    }
-  }, [data])
-
   const {
     reset,
     control,
@@ -166,7 +152,15 @@ const SidebarAddUser = props => {
     setValue('vehicle_comsumption_day', data?.vehicle_comsumption_day || '')
     setValue('vehicle_milage', data?.vehicle_milage || '')
     setValue('vehicle_status', data?.vehicle_status || '')
-    // ... (other fields)
+    setInitialState({
+      ...initialState,
+      id_vehicle_engine: data?.id_vehicle_engine || '',
+      id_vehicle_fuel: data?.id_vehicle_fuel || '',
+      id_vehicle_type: data?.id_vehicle_type || '',
+      id_vehicle_subject: data?.id_vehicle_subject || '',
+      id_vehicle_condition: data?.id_vehicle_condition || '',
+      id_vehicle_colon: data?.id_vehicle_colon || ''
+    })
   }, [data])
 
   const resetForm = () => {
@@ -182,11 +176,9 @@ const SidebarAddUser = props => {
   }
 
   const onSubmit = formData => {
-    const combinedData = { updateId, ...formData, ...initialState }
-    console.log(formData)
-    console.log(combinedData)
+    const combinedData = { ...formData, ...initialState }
     if (formData.vehicle_plate_number == data.vehicle_plate_number) {
-      updateVehicle(combinedData)
+      updateVehicle({ updateId, vehicleData: combinedData })
       toggle()
       reset()
       resetForm()
@@ -196,7 +188,7 @@ const SidebarAddUser = props => {
       if (dataVehicle.vehicles.some(vehicle => vehicle.vehicle_plate_number == formData.vehicle_plate_number)) {
         setShowError(true)
       } else {
-        updateVehicle(combinedData)
+        updateVehicle({ updateId, vehicleData: combinedData })
         toggle()
         reset()
         resetForm()

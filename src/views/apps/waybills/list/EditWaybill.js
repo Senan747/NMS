@@ -100,26 +100,35 @@ const SidebarAddUser = props => {
   const [id_vehicle, setId_vehicle] = useState(idData?.id_vehicle || '')
 
   const defaultValues = {
-    waybills_no: idData?.waybills_no || '',
-    waybills_od_start: idData?.waybills_od_start || '',
-    waybills_od_finish: idData?.waybills_od_finish || '',
-    waybills_fuel_start: idData?.waybills_fuel_start || '',
-    waybills_fuel_given: idData?.waybills_fuel_given || '',
-    waybills_fuel_consumed: idData?.waybills_fuel_consumed || ''
+    waybills_no: '',
+    waybills_od_start: '',
+    waybills_od_finish: '',
+    waybills_fuel_start: '',
+    waybills_fuel_given: '',
+    waybills_fuel_consumed: ''
   }
 
-  console.log(idData)
-  console.log(defaultValues)
   const {
     reset,
     control,
     handleSubmit,
+    setValue,
     formState: { errors }
   } = useForm({
     defaultValues,
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
+
+  useEffect(() => {
+    setValue('waybills_no', idData?.waybills_no || '')
+    setValue('waybills_od_start', idData?.waybills_od_start || '')
+    setValue('waybills_od_finish', idData?.waybills_od_finish || '')
+    setValue('waybills_fuel_start', idData?.waybills_fuel_start || '')
+    setValue('waybills_fuel_given', idData?.waybills_fuel_given || '')
+    setValue('waybills_fuel_consumed', idData?.waybills_fuel_consumed || '')
+    setId_vehicle(idData?.id_vehicle || '')
+  }, [idData])
 
   const resetForm = () => {
     reset(defaultValues)
